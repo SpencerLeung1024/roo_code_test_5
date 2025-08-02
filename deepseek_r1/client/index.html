@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monopoly</title>
+    <style>
+        #gameBoard {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameBoard" width="800" height="800"></canvas>
+    <script>
+        const ws = new WebSocket('ws://localhost:3000');
+        
+        ws.onopen = () => {
+            console.log('Connected to server');
+        };
+    </script>
+</body>
+</html>
