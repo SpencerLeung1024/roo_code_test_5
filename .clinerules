@@ -13,6 +13,7 @@
 - The game will be single player, single web browser, at localhost:xxxx
 - You may assume that n "players" all take turns interacting with the same web browser
 - Correctness of values doesn't matter. I don't expect you to have perfect recall of the place names, prices, rents, all the chance cards, etc.
+- Since you can't create images or browse the internet, you do not need to implement any images. Cards and pieces can be text-only or colored rectangles
 - The game should have as many mechanics from Monopoly as possible
 - One exception: No Monopoly money bills. Use a number for everything. Half of every Monopoly game is spent counting bills and I hate it
 - All files must go inside your short name folder
