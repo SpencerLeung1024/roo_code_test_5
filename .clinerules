@@ -1,0 +1,31 @@
+# Roo Code Test 5: Make the entire Monopoly board game
+
+## See if the model is post-trained enough or is general enough to:
+- Use the Roo Code tools to manipulate files
+- Switch between Orchestrator, Architect, and Code modes
+- Break down the project into subtasks that fit within its context window
+- Maintain and follow a grand plan across numerous Roo Code subtasks
+- Use the terminal for installing dependencies and version control
+- Knowing when to ask for the user to clarify, test, or give feedback
+- Have at least a vague idea of what Monopoly is about in its training data
+
+## Implementation details:
+- The game will be single player, single web browser, at localhost:xxxx
+- You may assume that n "players" all take turns interacting with the same web browser
+- Correctness of values doesn't matter. I don't expect you to have perfect recall of the place names, prices, rents, all the chance cards, etc.
+- The game should have as many mechanics from Monopoly as possible
+- One exception: No Monopoly money bills. Use a number for everything. Half of every Monopoly game is spent counting bills and I hate it
+- All files must go inside your short name folder
+- Do not read results.txt or other models' files
+- You can use any framework you want. Use the terminal to install dependencies
+- Node.js, npm, and git are available in the terminal
+- Roo Code is set to auto-approve everything, including commands, so don't wander off and wipe everything ok?
+- If you think creating Monopoly goes against your Terms of Service or will lead to getting sued by Hasbro, you can make *Unus Venditor*, a legally distinct game about one player owning everything that is totally not Monopoly
+
+## OpenRouter model name > short name:
+- deepseek/deepseek-r1-0528 > deepseek_r1
+- deepseek/deepseek-chat-v3-0324 > deepseek_v3
+- qwen/qwen3-235b-a22b-thinking-2507 > qwen_thinking
+- qwen/qwen3-coder > qwen_coder
+- moonshotai/kimi-k2 > kimi
+- z-ai/glm-4.5 > glm
