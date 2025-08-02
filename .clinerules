@@ -6,7 +6,7 @@
 - Break down the project into subtasks that fit within its context window
 - Maintain and follow a grand plan across numerous Roo Code subtasks
 - Use the terminal for installing dependencies and version control
-- Knowing when to ask for the user to clarify, test, or give feedback
+- Know when to ask the user to clarify, test, or give feedback
 - Have at least a vague idea of what Monopoly is about in its training data
 
 ## Implementation details:
