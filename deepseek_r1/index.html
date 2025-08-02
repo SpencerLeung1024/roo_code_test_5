@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unus Venditor</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="board"></div>
+        <div id="players-panel"></div>
+        <div id="controls">
+            <button id="roll-dice">Roll Dice</button>
+            <button id="end-turn">End Turn</button>
+            <button id="reset-game">Reset Game</button>
+        </div>
+        <div id="status">Player 1's turn</div>
+    </div>
+
+    <div id="purchase-dialog" class="dialog" style="display:none;">
+        <div class="dialog-content">
+            <h3>Purchase Property</h3>
+            <p>You landed on <span id="prop-name"></span></p>
+            <p>Price: <span id="prop-price"></span></p>
+            <button id="buy-btn">Buy</button>
+            <button id="pass-btn">Pass</button>
+        </div>
+    </div>
+
+    <script src="board.js"></script>
+    <script src="players.js"></script>
+    <script src="properties.js"></script>
+    <script src="cards.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
