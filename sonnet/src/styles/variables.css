@@ -1,0 +1,132 @@
+/* CSS Custom Properties (Variables) for Monopoly Game */
+
+:root {
+  /* Colors - Main Theme */
+  --color-primary: #2c3e50;
+  --color-secondary: #34495e;
+  --color-accent: #3498db;
+  --color-success: #27ae60;
+  --color-warning: #f39c12;
+  --color-danger: #e74c3c;
+  --color-info: #9b59b6;
+
+  /* Background Colors */
+  --color-background: #ecf0f1;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f8f9fa;
+
+  /* Text Colors */
+  --color-text-primary: #2c3e50;
+  --color-text-secondary: #7f8c8d;
+  --color-text-light: #bdc3c7;
+  --color-text-inverse: #ffffff;
+
+  /* Border Colors */
+  --color-border: #bdc3c7;
+  --color-border-light: #ecf0f1;
+  --color-border-dark: #34495e;
+
+  /* Focus and Interaction */
+  --color-focus: #3498db;
+  --color-hover: #2980b9;
+  --color-active: #21618c;
+
+  /* Property Colors (Monopoly-specific) */
+  --color-property-brown: #8b4513;
+  --color-property-light-blue: #87ceeb;
+  --color-property-pink: #ff69b4;
+  --color-property-orange: #ffa500;
+  --color-property-red: #dc143c;
+  --color-property-yellow: #ffd700;
+  --color-property-green: #32cd32;
+  --color-property-dark-blue: #0000cd;
+  --color-railroad: #2c3e50;
+  --color-utility: #f0f0f0;
+
+  /* Typography */
+  --font-family-base: 'Arial', 'Helvetica', sans-serif;
+  --font-family-heading: 'Arial Black', 'Arial', sans-serif;
+  --font-family-mono: 'Courier New', monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Spacing */
+  --spacing-xs: 0.25rem;   /* 4px */
+  --spacing-sm: 0.5rem;    /* 8px */
+  --spacing-md: 1rem;      /* 16px */
+  --spacing-lg: 1.5rem;    /* 24px */
+  --spacing-xl: 2rem;      /* 32px */
+  --spacing-2xl: 3rem;     /* 48px */
+  --spacing-3xl: 4rem;     /* 64px */
+
+  /* Border Radius */
+  --radius-sm: 0.25rem;    /* 4px */
+  --radius-md: 0.5rem;     /* 8px */
+  --radius-lg: 0.75rem;    /* 12px */
+  --radius-xl: 1rem;       /* 16px */
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Z-index layers */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.3s ease-in-out;
+  --transition-slow: 0.5s ease-in-out;
+
+  /* Game-specific measurements */
+  --board-size: min(70vh, 70vw);
+  --space-size: calc(var(--board-size) / 11);
+  --corner-size: calc(var(--space-size) * 1.5);
+  --player-piece-size: 20px;
+  --dice-size: 40px;
+
+  /* Breakpoints (for use in JavaScript) */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* Dark theme (optional) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-background: #1a202c;
+    --color-surface: #2d3748;
+    --color-surface-alt: #4a5568;
+    --color-text-primary: #f7fafc;
+    --color-text-secondary: #a0aec0;
+    --color-text-light: #718096;
+    --color-border: #4a5568;
+    --color-border-light: #2d3748;
+  }
+}

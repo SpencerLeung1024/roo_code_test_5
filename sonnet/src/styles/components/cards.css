@@ -1,0 +1,28 @@
+/* Card component styles */
+
+.card-display {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+.chance-card {
+  border-color: var(--color-warning);
+}
+
+.community-chest-card {
+  border-color: var(--color-info);
+}
+
+.card-title {
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.card-text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}

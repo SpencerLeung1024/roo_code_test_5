@@ -1,0 +1,40 @@
+/* Desktop styles (1025px and above) */
+
+@media (min-width: 1025px) {
+  .game-container {
+    grid-template-columns: 1fr 320px;
+    grid-template-areas:
+      "header header"
+      "board panels"
+      "controls panels";
+  }
+
+  :root {
+    --board-size: min(70vh, 70vw);
+    --space-size: calc(var(--board-size) / 11);
+    --corner-size: calc(var(--space-size) * 1.5);
+    --player-piece-size: 20px;
+    --dice-size: 40px;
+  }
+
+  .board-space {
+    font-size: var(--font-size-xs);
+    padding: 2px;
+  }
+
+  .player-panels-section {
+    max-height: none;
+  }
+}
+
+/* Extra large screens */
+@media (min-width: 1400px) {
+  .game-container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  :root {
+    --board-size: min(80vh, 900px);
+  }
+}

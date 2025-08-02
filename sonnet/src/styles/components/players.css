@@ -1,0 +1,48 @@
+/* Player panel component styles */
+
+.player-panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  height: 100%;
+}
+
+.player-panel {
+  background: var(--color-surface);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+}
+
+.player-panel.current-player {
+  border-color: var(--color-accent);
+  background: var(--color-surface-alt);
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.player-name {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+}
+
+.player-money {
+  color: var(--color-success);
+  font-weight: var(--font-weight-medium);
+}
+
+.property-list {
+  margin-top: var(--spacing-sm);
+}
+
+.property-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-xs);
+  border-bottom: 1px solid var(--color-border-light);
+}

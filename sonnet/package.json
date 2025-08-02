@@ -1,6 +1,7 @@
 {
-  "name": "monopoly.json",
-  "version": "0.0.0",
+  "name": "monopoly-game",
+  "version": "1.0.0",
+  "description": "Complete Monopoly board game implementation",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,7 +12,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/**/*.{js,vue,css}"
   },
   "dependencies": {
     "vue": "^3.5.18"
@@ -24,6 +25,7 @@
     "eslint-plugin-vue": "~10.3.0",
     "globals": "^16.3.0",
     "prettier": "3.6.2",
+    "terser": "^5.43.1",
     "vite": "^7.0.6",
     "vite-plugin-vue-devtools": "^8.0.0"
   }

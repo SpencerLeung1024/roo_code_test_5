@@ -1,0 +1,187 @@
+/* Layout styles for Monopoly Game */
+
+/* Main layout container */
+.game-container {
+  width: 100%;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "board panels"
+    "controls panels";
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  background-color: var(--color-background);
+}
+
+/* Game header */
+.game-header {
+  grid-area: header;
+  background: var(--color-primary);
+  color: var(--color-text-inverse);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+/* Game board section */
+.game-board-section {
+  grid-area: board;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-dark);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--board-size);
+  position: relative;
+}
+
+/* Player panels section */
+.player-panels-section {
+  grid-area: panels;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  overflow-y: auto;
+}
+
+/* Game controls section */
+.game-controls-section {
+  grid-area: controls;
+  background: var(--color-surface);
+  border: 2px solid var(--color-border-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.justify-around {
+  justify-content: space-around;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+/* Grid utilities */
+.grid {
+  display: grid;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-cols-4 {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+/* Gap utilities */
+.gap-xs {
+  gap: var(--spacing-xs);
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+.gap-xl {
+  gap: var(--spacing-xl);
+}
+
+/* Spacing utilities */
+.p-xs { padding: var(--spacing-xs); }
+.p-sm { padding: var(--spacing-sm); }
+.p-md { padding: var(--spacing-md); }
+.p-lg { padding: var(--spacing-lg); }
+.p-xl { padding: var(--spacing-xl); }
+
+.m-xs { margin: var(--spacing-xs); }
+.m-sm { margin: var(--spacing-sm); }
+.m-md { margin: var(--spacing-md); }
+.m-lg { margin: var(--spacing-lg); }
+.m-xl { margin: var(--spacing-xl); }
+
+/* Width and height utilities */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+.w-auto { width: auto; }
+.h-auto { height: auto; }
+
+/* Text utilities */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+
+.font-light { font-weight: var(--font-weight-light); }
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }

@@ -1,0 +1,28 @@
+/* Tablet styles (641px - 1024px) */
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .game-container {
+    grid-template-columns: 1fr 250px;
+    grid-template-areas:
+      "header header"
+      "board panels"
+      "controls panels";
+  }
+
+  :root {
+    --board-size: min(60vh, 60vw);
+    --space-size: calc(var(--board-size) / 11);
+    --corner-size: calc(var(--space-size) * 1.3);
+    --player-piece-size: 18px;
+    --dice-size: 36px;
+  }
+
+  .board-space {
+    font-size: 10px;
+    padding: 1px;
+  }
+
+  .player-panels-section {
+    max-height: none;
+  }
+}

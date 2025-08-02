@@ -1,0 +1,85 @@
+/* Animation definitions */
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes roll {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Animation utility classes */
+.animate-slide-in {
+  animation: slideIn var(--transition-normal);
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-normal);
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-roll {
+  animation: roll 0.5s ease-in-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* Transition classes */
+.transition-all {
+  transition: all var(--transition-normal);
+}
+
+.transition-opacity {
+  transition: opacity var(--transition-normal);
+}
+
+.transition-transform {
+  transition: transform var(--transition-normal);
+}

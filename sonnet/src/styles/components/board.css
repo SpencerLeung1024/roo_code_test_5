@@ -1,0 +1,73 @@
+/* Board component styles */
+
+.monopoly-board {
+  width: var(--board-size);
+  height: var(--board-size);
+  position: relative;
+  background: var(--color-surface);
+  border: 3px solid var(--color-border-dark);
+  display: grid;
+  grid-template-columns: var(--corner-size) repeat(9, var(--space-size)) var(--corner-size);
+  grid-template-rows: var(--corner-size) repeat(9, var(--space-size)) var(--corner-size);
+}
+
+.board-space {
+  border: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: var(--font-size-xs);
+  text-align: center;
+  padding: 2px;
+}
+
+.board-space.corner {
+  background: var(--color-surface-alt);
+  font-weight: var(--font-weight-bold);
+}
+
+.board-space.property {
+  background: var(--color-surface);
+}
+
+.property-color-bar {
+  width: 100%;
+  height: 8px;
+  margin-bottom: 2px;
+}
+
+.player-pieces {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+}
+
+.player-piece {
+  width: var(--player-piece-size);
+  height: var(--player-piece-size);
+  border-radius: 50%;
+  border: 2px solid white;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+/* Property colors */
+.property-brown { background-color: var(--color-property-brown); }
+.property-light-blue { background-color: var(--color-property-light-blue); }
+.property-pink { background-color: var(--color-property-pink); }
+.property-orange { background-color: var(--color-property-orange); }
+.property-red { background-color: var(--color-property-red); }
+.property-yellow { background-color: var(--color-property-yellow); }
+.property-green { background-color: var(--color-property-green); }
+.property-dark-blue { background-color: var(--color-property-dark-blue); }
+.property-railroad { background-color: var(--color-railroad); }
+.property-utility { background-color: var(--color-utility); }

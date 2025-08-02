@@ -1,0 +1,205 @@
+/* Main CSS file for Monopoly Game */
+
+/* Import CSS variables and base styles */
+@import './variables.css';
+@import './layout.css';
+
+/* Import component styles */
+@import './components/board.css';
+@import './components/players.css';
+@import './components/controls.css';
+@import './components/cards.css';
+@import './components/modals.css';
+@import './components/animations.css';
+
+/* Import responsive styles */
+@import './responsive/mobile.css';
+@import './responsive/tablet.css';
+@import './responsive/desktop.css';
+
+/* Global styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  line-height: 1.6;
+}
+
+#app {
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Utility classes */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.clearfix::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Animation keyframes for game interactions */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+@keyframes diceRoll {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(90deg); }
+  50% { transform: rotate(180deg); }
+  75% { transform: rotate(270deg); }
+}
+
+/* Animation utility classes */
+.turn-transition-enter {
+  animation: slideInFromRight 0.5s ease;
+}
+
+.turn-transition-leave {
+  animation: slideInFromLeft 0.5s ease reverse;
+}
+
+.player-highlight {
+  animation: bounceIn 0.6s ease;
+}
+
+.money-change {
+  animation: fadeInUp 0.3s ease;
+}
+
+.property-purchase {
+  animation: bounceIn 0.5s ease;
+}
+
+.dice-rolling {
+  animation: diceRoll 0.5s infinite;
+}
+
+.phase-indicator {
+  transition: all 0.3s ease;
+}
+
+.phase-indicator.active {
+  animation: pulse 2s infinite;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.slide-enter-active, .slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  transform: translateX(30px);
+  opacity: 0;
+}
+
+.slide-leave-to {
+  transform: translateX(-30px);
+  opacity: 0;
+}

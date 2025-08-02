@@ -1,0 +1,51 @@
+/* Game controls component styles */
+
+.game-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  align-items: center;
+}
+
+.dice-roller {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.dice {
+  width: var(--dice-size);
+  height: var(--dice-size);
+  background: white;
+  border: 2px solid var(--color-border-dark);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.action-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--color-hover);
+}

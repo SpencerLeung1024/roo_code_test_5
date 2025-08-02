@@ -1,0 +1,44 @@
+/* Mobile styles (max-width: 640px) */
+
+@media (max-width: 640px) {
+  .game-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto auto;
+    grid-template-areas:
+      "header"
+      "board"
+      "controls"
+      "panels";
+    padding: var(--spacing-sm);
+  }
+
+  .game-board-section {
+    min-height: 50vh;
+  }
+
+  .player-panels-section {
+    max-height: 200px;
+  }
+
+  :root {
+    --board-size: min(80vw, 80vh);
+    --space-size: calc(var(--board-size) / 11);
+    --corner-size: calc(var(--space-size) * 1.2);
+    --player-piece-size: 16px;
+    --dice-size: 32px;
+  }
+
+  .board-space {
+    font-size: 8px;
+    padding: 1px;
+  }
+
+  .action-buttons {
+    justify-content: center;
+  }
+
+  .btn {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-sm);
+  }
+}
