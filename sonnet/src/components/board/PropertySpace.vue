@@ -105,26 +105,31 @@ export default {
 }
 
 .property-name {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: bold;
   text-align: center;
   color: #2c3e50;
-  line-height: 1.1;
+  line-height: 1.2;
   padding: 2px 4px;
   flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  min-height: 24px;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .property-price {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   text-align: center;
-  color: #7f8c8d;
-  padding: 1px 2px;
-  background: rgba(255,255,255,0.8);
+  color: #2c3e50;
+  font-weight: 600;
+  padding: 2px 4px;
+  background: rgba(255,255,255,0.95);
+  border-top: 1px solid #ecf0f1;
 }
 
 .ownership-section {

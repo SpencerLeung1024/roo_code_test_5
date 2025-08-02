@@ -167,19 +167,39 @@ export default {
       switch (space.side) {
         case 'bottom':
           gridRow = 11
-          gridColumn = 11 - space.sidePosition
+          if (space.sidePosition === 0) { // GO corner
+            gridColumn = 11
+          } else if (space.sidePosition === 10) { // Jail corner
+            gridColumn = 1
+          } else {
+            gridColumn = 11 - space.sidePosition
+          }
           break
         case 'left':
           gridColumn = 1
-          gridRow = 11 - space.sidePosition
+          if (space.sidePosition === 0) { // Jail corner
+            gridRow = 11
+          } else {
+            gridRow = 11 - space.sidePosition
+          }
           break
         case 'top':
           gridRow = 1
-          gridColumn = 2 + space.sidePosition
+          if (space.sidePosition === 0) { // Free Parking corner
+            gridColumn = 1
+          } else if (space.sidePosition === 10) { // Go to Jail corner
+            gridColumn = 11
+          } else {
+            gridColumn = 1 + space.sidePosition
+          }
           break
         case 'right':
           gridColumn = 11
-          gridRow = 2 + space.sidePosition
+          if (space.sidePosition === 0) { // Go to Jail corner
+            gridRow = 1
+          } else {
+            gridRow = 1 + space.sidePosition
+          }
           break
         default:
           gridRow = 1

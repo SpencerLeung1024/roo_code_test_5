@@ -1,5 +1,7 @@
 import { reactive, computed } from 'vue'
 import { BOARD_SPACES, PROPERTIES, RAILROADS, UTILITIES, COLOR_GROUPS } from '../data/boardData.js'
+import { CardDeckManager } from './CardDeck.js'
+import { createCardEffects } from './CardEffects.js'
 
 // Initialize game state with reactive data
 export const gameState = reactive({
@@ -77,11 +79,11 @@ export const gameState = reactive({
     ])
   ),
   
-  // Card decks (will be implemented later)
-  chanceCards: [],
-  communityChestCards: [],
-  chanceDiscard: [],
-  communityDiscard: [],
+  // Card system
+  cardDeckManager: null,
+  cardEffects: null,
+  cardHistory: [],
+  activeCardDraw: null,
   
   // Game economy
   bank: {
@@ -159,6 +161,7 @@ export const gameActions = {
       isBankrupt: false,
       isInJail: false,
       jailTurns: 0,
+      salaryCollectedThisTurn: false, // Track salary collection per turn
       
       // Special cards
       getOutOfJailCards: 0,
@@ -209,6 +212,12 @@ export const gameActions = {
       utility.rentMultiplier = utility.rentMultipliers[0]
     })
     
+    // Initialize card system
+    gameState.cardDeckManager = new CardDeckManager()
+    gameState.cardEffects = createCardEffects(gameState, gameActions)
+    gameState.cardHistory = []
+    gameState.activeCardDraw = null
+    
     gameState.gamePhase = 'playing'
   },
 
@@ -246,10 +255,25 @@ export const gameActions = {
         return this.payTax(action.playerId, action.amount)
       
       case 'draw-card':
-        return this.drawCard(action.playerId, action.cardType)
+        return this.drawCard(action.playerId, action.cardType || action.deckType)
+      
+      case 'execute-card':
+        return this.executeCardEffect(action.card, action.playerId)
+      
+      case 'keep-jail-card':
+        return this.giveJailCardToPlayer(action.playerId, action.card)
+      
+      case 'use-jail-card':
+        return this.useGetOutOfJailCard(action.playerId)
+      
+      case 'trade-jail-card':
+        return this.tradeJailCard(action.fromPlayerId, action.toPlayerId, action.price)
       
       case 'special-action':
         return this.executeSpecialAction(action.playerId, action.specialType)
+      
+      case 'land-on-space':
+        return this.processLanding(action.playerId, action.position)
       
       case 'end-turn':
         return this.endTurn()
@@ -294,10 +318,321 @@ export const gameActions = {
   },
 
   // Draw and execute a card
-  drawCard(playerId, cardType) {
-    // Placeholder for card system
-    console.log(`Player ${playerId} draws ${cardType} card`)
+  async drawCard(playerId, deckType) {
+    if (!gameState.cardDeckManager) {
+      console.error('Card deck manager not initialized')
+      return { success: false, error: 'Card system not initialized' }
+    }
+
+    const player = gameState.players.find(p => p.id === playerId)
+    if (!player) {
+      return { success: false, error: 'Player not found' }
+    }
+
+    try {
+      // Draw card from specified deck
+      const card = gameState.cardDeckManager.drawCard(deckType)
+      if (!card) {
+        return { success: false, error: 'No cards available in deck' }
+      }
+
+      // Add to history
+      const historyEntry = {
+        card: { ...card },
+        playerId,
+        deckType,
+        timestamp: new Date()
+      }
+      gameState.cardHistory.push(historyEntry)
+
+      // Set active card draw for UI
+      gameState.activeCardDraw = {
+        card,
+        playerId,
+        deckType,
+        timestamp: new Date()
+      }
+
+      return { success: true, card, deckType }
+    } catch (error) {
+      console.error('Error drawing card:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  // Execute card effect
+  async executeCardEffect(card, playerId) {
+    if (!gameState.cardEffects) {
+      return { success: false, error: 'Card effects system not initialized' }
+    }
+
+    try {
+      const result = await gameState.cardEffects.executeCardEffect(card, playerId)
+      
+      // Update history entry with result
+      const historyEntry = gameState.cardHistory.find(entry =>
+        entry.card.id === card.id && entry.playerId === playerId
+      )
+      if (historyEntry) {
+        historyEntry.result = result
+      }
+
+      // Discard card unless it's a jail card
+      if (!card.isGetOutOfJail) {
+        const deckType = card.id.startsWith('chance_') ? 'chance' : 'communityChest'
+        gameState.cardDeckManager.discardCard(card, deckType)
+      }
+
+      // Clear active card draw
+      gameState.activeCardDraw = null
+
+      return result
+    } catch (error) {
+      console.error('Error executing card effect:', error)
+      return { success: false, error: error.message }
+    }
+  },
+
+  // Handle "Get Out of Jail Free" card
+  giveJailCardToPlayer(playerId, card) {
+    const player = gameState.players.find(p => p.id === playerId)
+    if (!player) return false
+
+    player.getOutOfJailCards++
+    
+    // Clear active card draw
+    gameState.activeCardDraw = null
+    
+    this.addMessage(`${player.name} receives a "Get Out of Jail Free" card`)
     return true
+  },
+
+  // Use jail card
+  useGetOutOfJailCard(playerId) {
+    const player = gameState.players.find(p => p.id === playerId)
+    
+    if (!player || !player.isInJail || player.getOutOfJailCards <= 0) {
+      return { success: false, reason: 'Cannot use jail card' }
+    }
+    
+    player.isInJail = false
+    player.jailTurns = 0
+    player.getOutOfJailCards--
+    
+    // Return card to a random deck
+    if (gameState.cardDeckManager) {
+      const jailCard = {
+        id: 'jail_card_return',
+        type: 'special',
+        action: 'getOutOfJailFree',
+        isGetOutOfJail: true
+      }
+      gameState.cardDeckManager.returnJailCard(jailCard)
+    }
+    
+    this.addMessage(`${player.name} uses "Get Out of Jail Free" card`)
+    return { success: true }
+  },
+
+  // Trade jail card between players
+  tradeJailCard(fromPlayerId, toPlayerId, price = 0) {
+    const fromPlayer = gameState.players.find(p => p.id === fromPlayerId)
+    const toPlayer = gameState.players.find(p => p.id === toPlayerId)
+    
+    if (!fromPlayer || !toPlayer || fromPlayer.getOutOfJailCards <= 0) {
+      return { success: false, reason: 'Cannot trade jail card' }
+    }
+    
+    if (price > 0 && toPlayer.money < price) {
+      return { success: false, reason: 'Insufficient funds for trade' }
+    }
+    
+    // Execute trade
+    fromPlayer.getOutOfJailCards--
+    toPlayer.getOutOfJailCards++
+    
+    if (price > 0) {
+      fromPlayer.money += price
+      toPlayer.money -= price
+    }
+    
+    this.addMessage(`${toPlayer.name} acquired jail card from ${fromPlayer.name}${price > 0 ? ` for $${price}` : ''}`)
+    return { success: true }
+  },
+
+  // Handle insufficient funds
+  handleInsufficientFunds(playerId, amount) {
+    const player = gameState.players.find(p => p.id === playerId)
+    if (!player) return false
+
+    this.addMessage(`${player.name} has insufficient funds to pay $${amount}`)
+    
+    // Set game phase to handle bankruptcy/asset liquidation
+    gameState.turnPhase = 'liquidation'
+    gameState.pendingActions.push({
+      type: 'insufficient_funds',
+      playerId,
+      amount,
+      timestamp: new Date()
+    })
+    
+    return true
+  },
+
+  // Add message to game history
+  addMessage(message) {
+    gameState.history.push({
+      message,
+      timestamp: new Date(),
+      type: 'game_event'
+    })
+    console.log(`Game Event: ${message}`)
+  },
+
+  // Transfer money between entities (players, bank)
+  transferMoney(fromEntity, toEntity, amount) {
+    if (amount <= 0) return false
+
+    let fromPlayer = null
+    let toPlayer = null
+
+    // Get from entity
+    if (fromEntity === 'bank') {
+      if (gameState.bank.money < amount) return false
+    } else {
+      fromPlayer = gameState.players.find(p => p.id === fromEntity)
+      if (!fromPlayer || fromPlayer.money < amount) return false
+    }
+
+    // Get to entity
+    if (toEntity !== 'bank') {
+      toPlayer = gameState.players.find(p => p.id === toEntity)
+      if (!toPlayer) return false
+    }
+
+    // Execute transfer
+    if (fromEntity === 'bank') {
+      gameState.bank.money -= amount
+    } else {
+      fromPlayer.money -= amount
+    }
+
+    if (toEntity === 'bank') {
+      gameState.bank.money += amount
+    } else {
+      toPlayer.money += amount
+    }
+
+    return true
+  },
+
+  // Process landing on a space (used by card effects)
+  processLanding(playerId, position) {
+    const space = gameState.board[position]
+    if (!space) return
+
+    const spaceAction = this.getSpaceAction(space)
+    if (spaceAction) {
+      // Handle the space action
+      switch (spaceAction.action) {
+        case 'landOnProperty':
+          this.handlePropertyLanding(playerId, space)
+          break
+        case 'landOnRailroad':
+          this.handleRailroadLanding(playerId, space)
+          break
+        case 'landOnUtility':
+          this.handleUtilityLanding(playerId, space)
+          break
+        case 'payTax':
+          this.payTax(playerId, space.taxAmount)
+          break
+        case 'drawCard':
+          this.drawCard(playerId, space.cardType)
+          break
+      }
+    }
+  },
+
+  // Handle landing on property
+  handlePropertyLanding(playerId, space) {
+    const property = gameState.properties[space.id]
+    if (!property) return
+
+    const player = gameState.players.find(p => p.id === playerId)
+    if (!player) return
+
+    if (!property.ownerId) {
+      // Property is unowned - offer to buy
+      this.addMessage(`${player.name} can purchase ${property.name} for $${property.price}`)
+    } else if (property.ownerId !== playerId && !property.isMortgaged) {
+      // Pay rent
+      const rent = property.currentRent
+      const owner = gameState.players.find(p => p.id === property.ownerId)
+      
+      if (owner && rent > 0) {
+        if (this.transferMoney(playerId, property.ownerId, rent)) {
+          player.stats.rentPaid += rent
+          owner.stats.rentCollected += rent
+          this.addMessage(`${player.name} pays $${rent} rent to ${owner.name}`)
+        } else {
+          this.handleInsufficientFunds(playerId, rent)
+        }
+      }
+    }
+  },
+
+  // Handle landing on railroad
+  handleRailroadLanding(playerId, space) {
+    const railroad = gameState.railroads[space.id]
+    if (!railroad) return
+
+    const player = gameState.players.find(p => p.id === playerId)
+    if (!player) return
+
+    if (!railroad.ownerId) {
+      this.addMessage(`${player.name} can purchase ${railroad.name} for $${railroad.price}`)
+    } else if (railroad.ownerId !== playerId && !railroad.isMortgaged) {
+      const rent = railroad.currentRent
+      const owner = gameState.players.find(p => p.id === railroad.ownerId)
+      
+      if (owner && rent > 0) {
+        if (this.transferMoney(playerId, railroad.ownerId, rent)) {
+          player.stats.rentPaid += rent
+          owner.stats.rentCollected += rent
+          this.addMessage(`${player.name} pays $${rent} rent to ${owner.name}`)
+        } else {
+          this.handleInsufficientFunds(playerId, rent)
+        }
+      }
+    }
+  },
+
+  // Handle landing on utility
+  handleUtilityLanding(playerId, space) {
+    const utility = gameState.utilities[space.id]
+    if (!utility) return
+
+    const player = gameState.players.find(p => p.id === playerId)
+    if (!player) return
+
+    if (!utility.ownerId) {
+      this.addMessage(`${player.name} can purchase ${utility.name} for $${utility.price}`)
+    } else if (utility.ownerId !== playerId && !utility.isMortgaged) {
+      const diceTotal = gameState.dice.total
+      const rent = diceTotal * utility.rentMultiplier
+      const owner = gameState.players.find(p => p.id === utility.ownerId)
+      
+      if (owner && rent > 0) {
+        if (this.transferMoney(playerId, utility.ownerId, rent)) {
+          player.stats.rentPaid += rent
+          owner.stats.rentCollected += rent
+          this.addMessage(`${player.name} pays $${rent} rent to ${owner.name} (${utility.rentMultiplier}× dice roll)`)
+        } else {
+          this.handleInsufficientFunds(playerId, rent)
+        }
+      }
+    }
   },
 
   // Execute special space actions
@@ -307,7 +642,8 @@ export const gameActions = {
 
     switch (specialType) {
       case 'go':
-        this.collectSalary(playerId)
+        // GO space action - only manual salary collection, not automatic
+        console.log('[GameState] GO space landed on, no automatic action')
         return true
       
       case 'goToJail':
@@ -407,9 +743,10 @@ export const gameActions = {
     // Check for three doubles (go to jail)
     if (gameState.dice.doublesCount >= 3) {
       setTimeout(() => {
-        this.sendToJailWithAnimation(currentPlayer.id)
+        this.sendToJailWithAnimation(currentPlayer.id, 'threeDoubles')
         gameState.dice.doublesCount = 0
         gameState.animations.diceRolling = false
+        gameState.turnPhase = 'action'
       }, 1000) // Wait for dice animation
       return { movePlayer: false, specialAction: 'threeDoubles' }
     }
@@ -442,6 +779,8 @@ export const gameActions = {
     const player = gameState.players.find(p => p.id === playerId)
     if (!player) return { success: false, reason: 'Player not found' }
 
+    console.log('[GameState] movePlayerWithAnimation called:', { playerId, spaces, currentPosition: player.position })
+
     // Validate movement
     if (gameState.animations.movementInProgress) {
       return { success: false, reason: 'Movement already in progress' }
@@ -461,45 +800,34 @@ export const gameActions = {
     const newPosition = (player.position + spaces) % 40
     gameState.animations.movementEndSpace = newPosition
     
-    // Check if player will pass GO
-    const passedGO = newPosition < player.position && startPosition !== 0
+    console.log('[GameState] Calculated positions:', { startPosition, newPosition, spaces })
+    
+    // Check if player will pass GO (but not land exactly on GO from start)
+    const passedGO = (startPosition + spaces) > 39 && newPosition !== 0
     
     // Remove player from current space
     const currentSpace = gameState.board[player.position]
-    currentSpace.playersOnSpace = currentSpace.playersOnSpace.filter(id => id !== playerId)
-    
-    // Movement events that can be triggered
-    const movementEvents = {
-      passedGO: passedGO,
-      landedOnGO: newPosition === 0,
-      specialSpaces: [],
-      monetaryChanges: []
+    if (currentSpace) {
+      currentSpace.playersOnSpace = currentSpace.playersOnSpace.filter(id => id !== playerId)
     }
     
-    // Handle passing GO
+    // Handle passing GO (not landing on GO)
     if (passedGO) {
+      console.log('[GameState] Player passed GO, collecting salary')
       this.collectSalary(playerId)
-      movementEvents.monetaryChanges.push({
-        type: 'salary',
-        amount: gameState.settings.salariesOnGo,
-        reason: 'Passed GO'
-      })
     }
     
-    // Update player position
+    // Update player position IMMEDIATELY
     player.position = newPosition
+    console.log('[GameState] Updated player position to:', newPosition)
     
     // Add player to new space
-    gameState.board[newPosition].playersOnSpace.push(playerId)
-    
-    // Check for special space actions
-    const landedSpace = gameState.board[newPosition]
-    if (landedSpace) {
-      const spaceAction = this.getSpaceAction(landedSpace)
-      if (spaceAction) {
-        movementEvents.specialSpaces.push(spaceAction)
-      }
+    const newSpace = gameState.board[newPosition]
+    if (newSpace) {
+      newSpace.playersOnSpace.push(playerId)
     }
+    
+    console.log('[GameState] Player landed on space:', { spaceId: newPosition, spaceName: newSpace?.name, spaceType: newSpace?.type })
     
     // Return movement result for animation system
     return {
@@ -508,7 +836,8 @@ export const gameActions = {
       startPosition,
       endPosition: newPosition,
       spacesMoving: spaces,
-      events: movementEvents
+      passedGO,
+      landedSpace: newSpace
     }
   },
 
@@ -556,6 +885,66 @@ export const gameActions = {
     }
   },
 
+  // Execute space actions after landing
+  async executeSpaceActions(playerId, position, spaceActions) {
+    const player = gameState.players.find(p => p.id === playerId)
+    const space = gameState.board[position]
+    
+    if (!player || !space) return
+
+    // Process each space action
+    for (const spaceAction of spaceActions) {
+      switch (spaceAction.action) {
+        case 'landOnProperty':
+          this.handlePropertyLanding(playerId, space)
+          break
+          
+        case 'landOnRailroad':
+          this.handleRailroadLanding(playerId, space)
+          break
+          
+        case 'landOnUtility':
+          this.handleUtilityLanding(playerId, space)
+          break
+          
+        case 'payTax':
+          const taxAmount = space.taxAmount || space.amount || 0
+          if (taxAmount > 0) {
+            if (this.transferMoney(playerId, 'bank', taxAmount)) {
+              this.addMessage(`${player.name} pays $${taxAmount} in taxes`)
+            } else {
+              this.handleInsufficientFunds(playerId, taxAmount)
+            }
+          }
+          break
+          
+        case 'drawCard':
+          // Automatically draw card when landing on card spaces
+          const deckType = space.cardType || (space.name?.toLowerCase().includes('chance') ? 'chance' : 'communityChest')
+          this.addMessage(`${player.name} draws a ${deckType === 'chance' ? 'Chance' : 'Community Chest'} card`)
+          
+          // Draw the card
+          const drawResult = await this.drawCard(playerId, deckType)
+          if (drawResult.success) {
+            // Auto-execute the card effect after a brief delay for UI
+            setTimeout(async () => {
+              if (gameState.activeCardDraw) {
+                await this.executeCardEffect(gameState.activeCardDraw.card, playerId)
+              }
+            }, 2000) // 2 second delay to show the card
+          }
+          break
+          
+        default:
+          // Handle special actions
+          if (spaceAction.type === 'special') {
+            this.executeSpecialAction(playerId, spaceAction.action)
+          }
+          break
+      }
+    }
+  },
+
   // Complete movement animation
   completeMovementAnimation(playerId) {
     gameState.animations.movementInProgress = false
@@ -570,12 +959,23 @@ export const gameActions = {
   collectSalary(playerId) {
     const player = gameState.players.find(p => p.id === playerId)
     if (player) {
-      player.money += gameState.settings.salariesOnGo
+      // Check if player has already collected salary this turn
+      if (player.salaryCollectedThisTurn) {
+        console.log('[GameState] Salary already collected this turn')
+        return false
+      }
+      
+      const salary = 200 // Fixed salary amount
+      player.money += salary
+      player.salaryCollectedThisTurn = true
+      console.log('[GameState] Collected salary:', { playerId, amount: salary, newBalance: player.money })
+      return true
     }
+    return false
   },
   
   // Send player to jail with animation
-  async sendToJailWithAnimation(playerId) {
+  async sendToJailWithAnimation(playerId, reason = 'general') {
     const player = gameState.players.find(p => p.id === playerId)
     if (!player) return
 
@@ -598,17 +998,28 @@ export const gameActions = {
     // Add to jail space
     gameState.board[10].playersOnSpace.push(playerId)
     
+    // Add jail entry to history with reason
+    const reasons = {
+      'threeDoubles': 'three consecutive doubles',
+      'goToJailSpace': 'landing on Go to Jail space',
+      'card': 'drawing a Go to Jail card',
+      'general': 'going to jail'
+    }
+    
+    this.addMessage(`${player.name} goes to jail (${reasons[reason]})`)
+    
     return {
       success: true,
       playerId,
       actionType: 'goToJail',
+      reason,
       startPosition: gameState.animations.movementStartSpace,
       endPosition: 10
     }
   },
 
   // Send player to jail (immediate, no animation)
-  sendToJail(playerId) {
+  sendToJail(playerId, reason = 'general') {
     const player = gameState.players.find(p => p.id === playerId)
     if (!player) return
     
@@ -624,6 +1035,16 @@ export const gameActions = {
     
     // Add to jail space
     gameState.board[10].playersOnSpace.push(playerId)
+    
+    // Add jail entry to history with reason
+    const reasons = {
+      'threeDoubles': 'three consecutive doubles',
+      'goToJailSpace': 'landing on Go to Jail space',
+      'card': 'drawing a Go to Jail card',
+      'general': 'going to jail'
+    }
+    
+    this.addMessage(`${player.name} goes to jail (${reasons[reason]})`)
   },
   
   // Purchase property
@@ -726,12 +1147,17 @@ export const gameActions = {
   // End current player's turn with enhanced logic
   endTurn() {
     const currentPlayer = gameState.players[gameState.currentPlayerIndex]
-    currentPlayer.stats.turnsPlayed++
+    if (currentPlayer) {
+      currentPlayer.stats.turnsPlayed++
+      // Reset salary collection flag for this player
+      currentPlayer.salaryCollectedThisTurn = false
+    }
     
     // Check if player gets another turn (doubles)
     if (gameState.dice.isDoubles && !currentPlayer.isInJail && gameState.dice.doublesCount < 3) {
       // Player gets another turn
       gameState.turnPhase = 'rolling'
+      console.log('[GameState] Player gets another turn due to doubles')
       return
     }
     
@@ -747,8 +1173,15 @@ export const gameActions = {
       attempts++
     }
     
+    // Reset dice animation and movement states
+    gameState.animations.diceRolling = false
+    gameState.animations.movementInProgress = false
+    gameState.animations.currentMovingPlayer = null
+    
     gameState.turnPhase = 'rolling'
     gameState.turnNumber++
+    
+    console.log('[GameState] Turn ended, next player:', gameState.players[gameState.currentPlayerIndex]?.name)
     
     // Check for game end condition
     this.checkGameEnd()

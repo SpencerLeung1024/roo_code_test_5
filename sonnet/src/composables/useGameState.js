@@ -44,37 +44,33 @@ export function useGameState() {
   
   // Enhanced dice rolling with animation support
   const rollDice = async () => {
-    if (!canRollDice.value) return false
+    if (!canRollDice.value) return { success: false, reason: 'Cannot roll dice' }
     
     try {
       // Use enhanced rollDice method that returns movement info
       const rollResult = await actions.rollDice()
       
       if (rollResult.movePlayer) {
-        // Start movement animation
-        const movementResult = await actions.movePlayerWithAnimation(
-          currentPlayer.value.id,
-          state.dice.total
-        )
-        
-        if (movementResult.success) {
-          // Movement animation will be handled by the components
-          return {
-            success: true,
-            rollResult,
-            movementResult
-          }
+        // Start movement animation - let the UI components handle this
+        return {
+          success: true,
+          rollResult,
+          movePlayer: true,
+          spaces: state.dice.total
         }
       } else {
         // Handle special cases (jail, three doubles, etc.)
+        // Transition to action phase for non-moving scenarios
+        setTimeout(() => {
+          state.turnPhase = 'action'
+        }, 1000)
+        
         return {
           success: true,
           rollResult,
           specialAction: rollResult.specialAction
         }
       }
-      
-      return { success: true, rollResult }
     } catch (error) {
       console.error('Error during dice roll:', error)
       state.animations.diceRolling = false
@@ -147,6 +143,11 @@ export function useGameState() {
   const handleMovementComplete = (data) => {
     console.log('Movement completed:', data)
     completeMovementAnimation(data.playerId)
+    
+    // Transition to action phase after movement completes
+    setTimeout(() => {
+      state.turnPhase = 'action'
+    }, 500)
   }
 
   const handleSpaceReached = (data) => {

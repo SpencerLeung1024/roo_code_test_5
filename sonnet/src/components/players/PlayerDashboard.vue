@@ -148,22 +148,27 @@ export default {
 }
 
 .dashboard-header {
-  background: #34495e;
-  color: white;
+  background: #2c3e50;
+  color: #ffffff;
   padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-header h3 {
   margin: 0;
   font-size: 1.3rem;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .game-info {
   font-size: 0.9rem;
-  opacity: 0.9;
+  color: #ffffff;
+  opacity: 0.95;
+  font-weight: 500;
 }
 
 .separator {

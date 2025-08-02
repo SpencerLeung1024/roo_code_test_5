@@ -218,11 +218,16 @@ export default {
 
     // Animate player movement
     const animatePlayerMovement = async (playerId, fromSpace, toSpace, spacesToMove) => {
+      console.log('[PlayerMovement] Starting animation:', { playerId, fromSpace, toSpace, spacesToMove })
       const player = props.gameState.players.find(p => p.id === playerId)
-      if (!player) return
+      if (!player) {
+        console.error('[PlayerMovement] Player not found:', playerId)
+        return
+      }
 
       isMoving.value = true
       movingPlayer.value = player
+      console.log('[PlayerMovement] Set isMoving to true')
       
       // Calculate movement path
       const path = calculateMovementPath(fromSpace, toSpace, spacesToMove)
@@ -265,13 +270,16 @@ export default {
       }
       
       // Clean up
+      console.log('[PlayerMovement] Movement animation completed, cleaning up...')
       setTimeout(() => {
+        console.log('[PlayerMovement] Cleanup timeout triggered')
         isMoving.value = false
         movingPlayer.value = null
         movementTrail.value = []
         passedGO.value = false
         specialMovement.value = null
         
+        console.log('[PlayerMovement] Emitting movement-complete event:', { playerId, finalSpace: toSpace })
         emit('movement-complete', { playerId, finalSpace: toSpace })
       }, 500)
     }

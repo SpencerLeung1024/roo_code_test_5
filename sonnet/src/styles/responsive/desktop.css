@@ -1,40 +1,920 @@
-/* Desktop styles (1025px and above) */
+/* Enhanced Desktop Styles (min-width: 1025px) */
 
 @media (min-width: 1025px) {
-  .game-container {
-    grid-template-columns: 1fr 320px;
-    grid-template-areas:
-      "header header"
-      "board panels"
-      "controls panels";
-  }
-
+  /* Root adjustments for desktop */
   :root {
     --board-size: min(70vh, 70vw);
+    --board-min-size: 500px;
+    --board-max-size: 800px;
     --space-size: calc(var(--board-size) / 11);
-    --corner-size: calc(var(--space-size) * 1.5);
-    --player-piece-size: 20px;
-    --dice-size: 40px;
+    --corner-size: calc(var(--space-size) * 1.4);
+    --player-piece-size: 24px;
+    --dice-size: 48px;
+    --panel-width: 320px;
+    --header-height: 80px;
+  }
+
+  /* App Layout Desktop */
+  #monopoly-app {
+    overflow: visible;
+  }
+
+  /* Header Desktop */
+  .game-header {
+    padding: var(--spacing-5) var(--spacing-6);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+  }
+
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    max-width: var(--container-2xl);
+    margin: 0 auto;
+  }
+
+  .game-header h1 {
+    font-size: var(--font-size-3xl);
+    flex-shrink: 0;
+  }
+
+  .game-status {
+    flex: 1;
+    text-align: center;
+    margin: 0 var(--spacing-6);
+  }
+
+  .current-player-info {
+    font-size: var(--font-size-2xl);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .game-phase-info {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-2) var(--spacing-4);
+  }
+
+  .game-controls-header {
+    flex-direction: row;
+    gap: var(--spacing-3);
+    flex-shrink: 0;
+  }
+
+  .toggle-btn,
+  .restart-btn,
+  .history-btn {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+    min-width: 140px;
+    white-space: nowrap;
+  }
+
+  /* Game Container Desktop Layout */
+  .game-container {
+    grid-template-columns: 1fr var(--panel-width);
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+      "board panels"
+      "controls panels";
+    padding: var(--spacing-4);
+    gap: var(--spacing-4);
+    max-width: var(--container-2xl);
+    margin: 0 auto;
+  }
+
+  /* Board Section Desktop */
+  .game-board-section {
+    min-height: var(--board-size);
+    padding: var(--spacing-4);
+    position: relative;
+  }
+
+  .monopoly-board {
+    width: var(--board-size);
+    height: var(--board-size);
+    max-width: var(--board-max-size);
+    max-height: var(--board-max-size);
+    border-width: 4px;
   }
 
   .board-space {
     font-size: var(--font-size-xs);
-    padding: 2px;
+    padding: var(--spacing-1);
+    transition: var(--transition-all);
   }
 
+  .board-space:hover {
+    background: var(--color-surface-hover);
+    transform: scale(1.02);
+    z-index: 10;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .board-space.corner {
+    font-size: var(--font-size-sm);
+  }
+
+  .board-space.corner:hover {
+    transform: scale(1.05);
+  }
+
+  .property-name {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  .property-price {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  .property-color-bar {
+    height: var(--property-bar-height);
+  }
+
+  .board-center {
+    padding: var(--spacing-4);
+  }
+
+  .board-logo {
+    font-size: var(--font-size-4xl);
+    margin-bottom: var(--spacing-3);
+  }
+
+  .board-info {
+    font-size: var(--font-size-base);
+  }
+
+  /* Enhanced Player Pieces Desktop */
+  .player-piece {
+    width: var(--player-piece-size);
+    height: var(--player-piece-size);
+    font-size: var(--font-size-xs);
+    border-width: var(--player-piece-border);
+    transition: var(--transition-all);
+    cursor: pointer;
+  }
+
+  .player-piece:hover {
+    transform: scale(1.2);
+    z-index: 15;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .house,
+  .hotel {
+    width: var(--house-size);
+    height: var(--house-size);
+    font-size: var(--font-size-xs);
+    transition: var(--transition-all);
+  }
+
+  .house:hover,
+  .hotel:hover {
+    transform: scale(1.1);
+  }
+
+  /* Player Panels Desktop */
   .player-panels-section {
-    max-height: none;
+    height: 100%;
+    border-radius: var(--radius-2xl);
+    position: relative;
+  }
+
+  .panels-header {
+    padding: var(--spacing-4) var(--spacing-5);
+    font-size: var(--font-size-xl);
+  }
+
+  .player-panels {
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    height: calc(100% - 60px);
+    overflow-y: auto;
+  }
+
+  .player-panel {
+    width: 100%;
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
+    transition: var(--transition-all);
+  }
+
+  .player-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .player-header {
+    flex-direction: row;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .player-avatar {
+    width: 48px;
+    height: 48px;
+    font-size: var(--font-size-xl);
+    transition: var(--transition-all);
+  }
+
+  .player-avatar:hover {
+    transform: scale(1.1);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .player-name {
+    font-size: var(--font-size-lg);
+  }
+
+  .financial-info {
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .money-amount {
+    font-size: var(--font-size-lg);
+  }
+
+  .property-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .property-stat {
+    padding: var(--spacing-2);
+    transition: var(--transition-all);
+  }
+
+  .property-stat:hover {
+    background: var(--color-surface-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .property-count,
+  .monopoly-count,
+  .railroad-count {
+    font-size: var(--font-size-xl);
+  }
+
+  .property-list {
+    max-height: 200px;
+  }
+
+  .property-item {
+    padding: var(--spacing-2) var(--spacing-3);
+    transition: var(--transition-all);
+  }
+
+  .property-item:hover {
+    background: var(--color-surface-hover);
+    transform: translateX(2px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .property-name {
+    font-size: var(--font-size-sm);
+  }
+
+  .property-rent {
+    font-size: var(--font-size-sm);
+  }
+
+  .player-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  .action-btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    transition: var(--transition-all);
+  }
+
+  .action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Game Controls Desktop */
+  .game-controls-section {
+    min-height: 220px;
+    padding: var(--spacing-4);
+  }
+
+  .game-controls {
+    gap: var(--spacing-5);
+    padding: var(--spacing-4);
+  }
+
+  .dice-container {
+    gap: var(--spacing-3);
+    perspective: 1000px;
+  }
+
+  .dice {
+    width: var(--dice-size);
+    height: var(--dice-size);
+    font-size: var(--font-size-2xl);
+    transition: var(--transition-all);
+    cursor: pointer;
+    transform-style: preserve-3d;
+  }
+
+  .dice:hover {
+    transform: translateY(-2px) rotateX(5deg) rotateY(5deg);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .roll-button {
+    padding: var(--spacing-3) var(--spacing-6);
+    font-size: var(--font-size-lg);
+    min-width: 160px;
+    transition: var(--transition-all);
+  }
+
+  .roll-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-3);
+  }
+
+  .btn {
+    min-width: 120px;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-base);
+    transition: var(--transition-all);
+  }
+
+  .btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .turn-info {
+    font-size: var(--font-size-lg);
+  }
+
+  .current-turn {
+    font-size: var(--font-size-2xl);
+  }
+
+  .turn-phase {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-base);
+  }
+
+  .game-messages {
+    max-height: 120px;
+    padding: var(--spacing-4);
+  }
+
+  .message {
+    padding: var(--spacing-2);
+    transition: var(--transition-all);
+  }
+
+  .message:hover {
+    background: var(--color-surface-hover);
+  }
+
+  .message-text {
+    font-size: var(--font-size-base);
+  }
+
+  /* Modal Enhancements for Desktop */
+  .modal-overlay {
+    padding: var(--spacing-6);
+  }
+
+  .modal {
+    max-width: 600px;
+    width: 80%;
+    max-height: 85vh;
+    border-radius: var(--radius-2xl);
+  }
+
+  .modal.large {
+    max-width: 900px;
+    width: 90%;
+  }
+
+  .modal.fullscreen {
+    max-width: 95vw;
+    width: 95vw;
+    height: 90vh;
+    max-height: 90vh;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: var(--spacing-6);
+  }
+
+  .modal-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .modal-close {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-lg);
+    transition: var(--transition-all);
+  }
+
+  .modal-close:hover {
+    transform: scale(1.1);
+  }
+
+  .modal-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
+  }
+
+  .modal-btn {
+    min-width: 140px;
+    padding: var(--spacing-3) var(--spacing-5);
+    transition: var(--transition-all);
+  }
+
+  .modal-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Property Card Desktop */
+  .property-card {
+    margin: var(--spacing-6);
+    padding: var(--spacing-6);
+  }
+
+  .property-name {
+    font-size: var(--font-size-2xl);
+  }
+
+  .property-price {
+    font-size: var(--font-size-3xl);
+  }
+
+  .rent-info {
+    padding: var(--spacing-4);
+  }
+
+  .rent-row {
+    padding: var(--spacing-2) 0;
+    font-size: var(--font-size-base);
+    transition: var(--transition-all);
+  }
+
+  .rent-row:hover {
+    background: var(--color-surface-hover);
+  }
+
+  /* Trade Interface Desktop */
+  .trade-interface {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-6);
+  }
+
+  .trade-side {
+    padding: var(--spacing-4);
+  }
+
+  .trade-side-title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .money-input {
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-3);
+    transition: var(--transition-all);
+  }
+
+  .money-input:focus {
+    transform: scale(1.02);
+  }
+
+  .property-selection {
+    max-height: 250px;
+  }
+
+  .property-option {
+    padding: var(--spacing-2) var(--spacing-3);
+    transition: var(--transition-all);
+  }
+
+  .property-option:hover {
+    background: var(--color-surface-hover);
+    transform: translateX(2px);
+  }
+
+  .property-option-name {
+    font-size: var(--font-size-base);
+  }
+
+  /* Card System Desktop */
+  .card {
+    width: 320px;
+    height: 480px;
+    transition: var(--transition-all);
+  }
+
+  .card:hover {
+    transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+  }
+
+  .card-header {
+    padding: var(--spacing-4);
+  }
+
+  .card-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .card-body {
+    padding: var(--spacing-6);
+  }
+
+  .card-description {
+    font-size: var(--font-size-lg);
+  }
+
+  .card-amount {
+    font-size: var(--font-size-2xl);
+  }
+
+  .card-footer {
+    padding: var(--spacing-4);
+    flex-direction: row;
+    gap: var(--spacing-3);
+  }
+
+  .card-btn {
+    flex: 1;
+    max-width: 140px;
+    transition: var(--transition-all);
+  }
+
+  .card-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .card-draw-interface {
+    padding: var(--spacing-6);
+    max-width: 600px;
+    width: 70%;
+  }
+
+  .card-deck-selector {
+    flex-direction: row;
+    gap: var(--spacing-4);
+  }
+
+  .deck-option {
+    flex: 1;
+    padding: var(--spacing-4);
+    transition: var(--transition-all);
+  }
+
+  .deck-option:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .draw-button {
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-lg);
+    transition: var(--transition-all);
+  }
+
+  .draw-button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* Card History Desktop */
+  .card-history-modal {
+    max-width: 900px;
+    width: 85%;
+  }
+
+  .card-history-list {
+    max-height: 500px;
+  }
+
+  .card-history-item {
+    padding: var(--spacing-3);
+    transition: var(--transition-all);
+  }
+
+  .card-history-item:hover {
+    background: var(--color-surface-hover);
+    transform: translateX(2px);
+  }
+
+  .card-history-icon {
+    width: 48px;
+    height: 48px;
+    font-size: var(--font-size-xl);
+  }
+
+  .card-history-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .card-history-description {
+    font-size: var(--font-size-base);
+  }
+
+  /* Stats Modal Desktop */
+  .stats-modal {
+    margin: var(--spacing-6);
+    max-width: 900px;
+    border-radius: var(--radius-2xl);
+  }
+
+  .close-stats-btn {
+    width: 44px;
+    height: 44px;
+    top: var(--spacing-5);
+    right: var(--spacing-5);
+    transition: var(--transition-all);
+  }
+
+  .close-stats-btn:hover {
+    transform: scale(1.1);
+  }
+
+  /* Setup Message Desktop */
+  .setup-message {
+    padding: var(--spacing-10);
+    margin: var(--spacing-8);
+    max-width: 600px;
+  }
+
+  .setup-message h3 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .setup-message p {
+    font-size: var(--font-size-xl);
+  }
+
+  /* Form Elements Desktop */
+  .modal-input,
+  .modal-select,
+  .modal-textarea {
+    padding: var(--spacing-3);
+    font-size: var(--font-size-base);
+    transition: var(--transition-all);
+  }
+
+  .modal-input:focus,
+  .modal-select:focus,
+  .modal-textarea:focus {
+    transform: scale(1.02);
+  }
+
+  .modal-checkbox {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Enhanced Hover Effects for Desktop */
+  .interactive {
+    cursor: pointer;
+    transition: var(--transition-all);
+  }
+
+  .interactive:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  /* Scrollbar Styling for Desktop */
+  .player-panels::-webkit-scrollbar,
+  .property-list::-webkit-scrollbar,
+  .game-messages::-webkit-scrollbar,
+  .card-history-list::-webkit-scrollbar,
+  .modal-body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .player-panels::-webkit-scrollbar-track,
+  .property-list::-webkit-scrollbar-track,
+  .game-messages::-webkit-scrollbar-track,
+  .card-history-list::-webkit-scrollbar-track,
+  .modal-body::-webkit-scrollbar-track {
+    background: var(--color-surface-alt);
+    border-radius: var(--radius-sm);
+  }
+
+  .player-panels::-webkit-scrollbar-thumb,
+  .property-list::-webkit-scrollbar-thumb,
+  .game-messages::-webkit-scrollbar-thumb,
+  .card-history-list::-webkit-scrollbar-thumb,
+  .modal-body::-webkit-scrollbar-thumb {
+    background: var(--color-border-medium);
+    border-radius: var(--radius-sm);
+    transition: var(--transition-all);
+  }
+
+  .player-panels::-webkit-scrollbar-thumb:hover,
+  .property-list::-webkit-scrollbar-thumb:hover,
+  .game-messages::-webkit-scrollbar-thumb:hover,
+  .card-history-list::-webkit-scrollbar-thumb:hover,
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-dark);
+  }
+
+  /* Animation Optimizations for Desktop */
+  .dice.rolling {
+    animation-duration: 0.8s;
+  }
+
+  .card.flipping {
+    animation-duration: 0.8s;
+  }
+
+  .player-piece.current-player {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  .monopoly-indicator {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  /* Desktop Performance Optimizations */
+  .monopoly-board,
+  .player-panel,
+  .modal,
+  .card {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+
+  /* Keyboard Navigation Enhancements */
+  .board-space:focus,
+  .player-piece:focus,
+  .property-item:focus {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 2px;
+    z-index: 20;
+  }
+
+  /* Tooltip Enhancements for Desktop */
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-text-primary);
+    color: var(--color-text-inverse);
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-size-xs);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: var(--transition-all);
+    z-index: var(--z-tooltip);
+  }
+
+  .tooltip:hover::after {
+    opacity: 1;
+  }
+
+  /* Context Menu Support */
+  .context-menu {
+    position: absolute;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl);
+    padding: var(--spacing-2);
+    z-index: var(--z-popover);
+    min-width: 150px;
+  }
+
+  .context-menu-item {
+    padding: var(--spacing-2) var(--spacing-3);
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    transition: var(--transition-all);
+  }
+
+  .context-menu-item:hover {
+    background: var(--color-surface-hover);
   }
 }
 
-/* Extra large screens */
-@media (min-width: 1400px) {
-  .game-container {
-    max-width: 1400px;
-    margin: 0 auto;
+/* Large Desktop (min-width: 1280px) */
+@media (min-width: 1280px) {
+  :root {
+    --board-size: min(65vh, 65vw);
+    --panel-width: 360px;
+    --dice-size: 52px;
   }
 
+  .game-container {
+    grid-template-columns: 1fr var(--panel-width);
+    max-width: var(--container-2xl);
+  }
+
+  .game-header h1 {
+    font-size: var(--font-size-4xl);
+  }
+
+  .current-player-info {
+    font-size: var(--font-size-3xl);
+  }
+
+  .modal {
+    max-width: 700px;
+  }
+
+  .modal.large {
+    max-width: 1100px;
+  }
+
+  .card {
+    width: 340px;
+    height: 510px;
+  }
+
+  .setup-message {
+    max-width: 700px;
+  }
+
+  .property-summary {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Extra Large Desktop (min-width: 1536px) */
+@media (min-width: 1536px) {
   :root {
-    --board-size: min(80vh, 900px);
+    --board-size: min(60vh, 60vw);
+    --panel-width: 400px;
+    --dice-size: 56px;
+  }
+
+  .game-container {
+    grid-template-columns: 1fr var(--panel-width);
+    max-width: var(--container-2xl);
+    padding: var(--spacing-6);
+    gap: var(--spacing-6);
+  }
+
+  .game-header {
+    padding: var(--spacing-6) var(--spacing-8);
+  }
+
+  .game-header h1 {
+    font-size: var(--font-size-5xl);
+  }
+
+  .current-player-info {
+    font-size: var(--font-size-4xl);
+  }
+
+  .modal {
+    max-width: 800px;
+  }
+
+  .modal.large {
+    max-width: 1200px;
+  }
+
+  .setup-message {
+    max-width: 800px;
+    padding: var(--spacing-12);
+  }
+
+  .card {
+    width: 360px;
+    height: 540px;
   }
 }

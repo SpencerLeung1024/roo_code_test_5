@@ -21,7 +21,11 @@
           <div class="player-status">
             <span v-if="player.isBankrupt" class="status-bankrupt">Bankrupt</span>
             <span v-else-if="player.isInJail" class="status-jail">
+              <span class="jail-icon">🔒</span>
               In Jail ({{ player.jailTurns }} turns)
+              <span v-if="player.getOutOfJailCards > 0" class="jail-card-indicator">
+                🎫{{ player.getOutOfJailCards }}
+              </span>
             </span>
             <span v-else-if="isCurrent" class="status-current">Current Turn</span>
             <span v-else-if="isNext" class="status-next">Next</span>
@@ -138,12 +142,19 @@
       </div>
     </div>
 
-    <!-- Special Cards -->
-    <div v-if="player.getOutOfJailCards > 0" class="special-cards">
-      <div class="card-item">
-        <span class="card-icon">🗝️</span>
-        <span>Get Out of Jail Free ({{ player.getOutOfJailCards }})</span>
-      </div>
+    <!-- Jail Card Management -->
+    <div v-if="player.getOutOfJailCards > 0 || showJailCardManager" class="jail-cards-section">
+      <JailCard
+        :player-id="player.id"
+        :jail-card-count="player.getOutOfJailCards"
+        :is-in-jail="player.isInJail"
+        :available-players="otherActivePlayers"
+        :show-empty-state="false"
+        :trading-enabled="!player.isInJail"
+        @use-jail-card="handleUseJailCard"
+        @trade-jail-card="handleTradeJailCard"
+        @card-selected="handleJailCardSelected"
+      />
     </div>
 
     <!-- Player Actions (only show for current player) -->
@@ -155,9 +166,13 @@
 
 <script>
 import { ref, computed } from 'vue'
+import JailCard from '../cards/JailCard.vue'
 
 export default {
   name: 'PlayerPanel',
+  components: {
+    JailCard
+  },
   
   props: {
     player: {
@@ -178,7 +193,12 @@ export default {
     }
   },
 
-  emits: ['player-action'],
+  emits: [
+    'player-action',
+    'pay-jail-fine',
+    'use-jail-card',
+    'roll-for-doubles'
+  ],
 
   setup(props, { emit }) {
     const propertiesExpanded = ref(false)
@@ -247,6 +267,19 @@ export default {
       return worth
     })
 
+    // Jail card management
+    const showJailCardManager = computed(() => {
+      return props.isCurrent && (props.player.getOutOfJailCards > 0 || props.player.isInJail)
+    })
+
+    const otherActivePlayers = computed(() => {
+      return props.gameState.players?.filter(p =>
+        p.id !== props.player.id &&
+        p.isActive &&
+        !p.isBankrupt
+      ) || []
+    })
+
     // Methods
     const getPlayerPieceSymbol = () => {
       return gamePieces[props.player.piece] || props.player.piece || '❓'
@@ -278,6 +311,45 @@ export default {
       })
     }
 
+    // Jail card handlers
+    const handleUseJailCard = (data, callback) => {
+      emit('player-action', {
+        type: 'use-jail-card',
+        playerId: data.playerId,
+        card: data.card,
+        cardIndex: data.cardIndex
+      })
+      
+      // Simulate success for the callback
+      if (callback) {
+        setTimeout(() => {
+          callback({ success: true })
+        }, 100)
+      }
+    }
+
+    const handleTradeJailCard = (data, callback) => {
+      emit('player-action', {
+        type: 'trade-jail-card',
+        fromPlayerId: data.fromPlayerId,
+        toPlayerId: data.toPlayerId,
+        price: data.price,
+        card: data.card,
+        cardIndex: data.cardIndex
+      })
+      
+      // Simulate success for the callback
+      if (callback) {
+        setTimeout(() => {
+          callback({ success: true })
+        }, 100)
+      }
+    }
+
+    const handleJailCardSelected = (data) => {
+      console.log('Jail card selected:', data)
+    }
+
     return {
       propertiesExpanded,
       currentPositionName,
@@ -287,10 +359,15 @@ export default {
       totalProperties,
       hasProperties,
       netWorth,
+      showJailCardManager,
+      otherActivePlayers,
       getPlayerPieceSymbol,
       getPropertyColor,
       togglePropertiesExpanded,
-      selectProperty
+      selectProperty,
+      handleUseJailCard,
+      handleTradeJailCard,
+      handleJailCardSelected
     }
   }
 }
@@ -323,18 +400,42 @@ export default {
 }
 
 .player-panel.in-jail {
-  border-color: #95a5a6;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-color: #e74c3c;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+  position: relative;
+}
+
+.player-panel.in-jail::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    #e74c3c 0px,
+    #e74c3c 10px,
+    transparent 10px,
+    transparent 20px
+  );
+  animation: jailStripes 2s linear infinite;
+}
+
+@keyframes jailStripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 0; }
 }
 
 /* Player Header */
 .player-header {
-  background: #34495e;
-  color: white;
+  background: #2c3e50;
+  color: #ffffff;
   padding: 0.75rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .player-identity {
@@ -349,30 +450,63 @@ export default {
 }
 
 .player-name {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 1rem;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .player-status {
-  font-size: 0.8rem;
-  opacity: 0.9;
+  font-size: 0.85rem;
+  opacity: 1;
+  color: #ffffff;
+  font-weight: 500;
 }
 
 .status-current {
   color: #f1c40f;
   font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .status-next {
-  color: #3498db;
+  color: #74b9ff;
+  font-weight: 500;
+}
+
+.status-waiting {
+  color: #ddd;
+  font-weight: 500;
 }
 
 .status-bankrupt {
-  color: #e74c3c;
+  color: #ff7675;
+  font-weight: 500;
 }
 
 .status-jail {
-  color: #95a5a6;
+  color: #e74c3c;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  animation: jailPulse 3s infinite;
+}
+
+.jail-icon {
+  font-size: 0.9rem;
+}
+
+.jail-card-indicator {
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.1rem 0.3rem;
+  border-radius: 8px;
+  color: #2ecc71;
+}
+
+@keyframes jailPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .turn-indicator {
@@ -535,6 +669,13 @@ export default {
 
 .monopoly {
   color: #f1c40f;
+}
+
+/* Jail Cards Section */
+.jail-cards-section {
+  border-top: 1px solid #ecf0f1;
+  padding: 0.75rem;
+  background: #f8f9fa;
 }
 
 /* Special Cards */

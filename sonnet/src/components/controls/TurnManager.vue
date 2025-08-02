@@ -33,22 +33,19 @@
           @animation-complete="handleDiceAnimationComplete"
         />
         
-        <div v-if="currentPlayer?.isInJail" class="jail-options">
-          <button
-            @click="payJailFine"
-            :disabled="currentPlayer.money < 50"
-            class="btn secondary"
-          >
-            Pay $50 Fine
-          </button>
-          <button
-            v-if="currentPlayer?.getOutOfJailCards > 0"
-            @click="useJailCard"
-            class="btn secondary"
-          >
-            Use Get Out of Jail Card
-          </button>
-        </div>
+        <!-- Jail System Integration -->
+        <JailSystem
+          v-if="currentPlayer?.isInJail"
+          :game-state="gameState"
+          :current-player="currentPlayer"
+          :turn-phase="turnPhase"
+          :dice="dice"
+          @pay-jail-fine="handlePayJailFine"
+          @use-jail-card="handleUseJailCard"
+          @roll-for-doubles="handleRollForDoubles"
+          @end-turn="handleEndTurn"
+          @jail-exit="handleJailExit"
+        />
       </div>
 
       <!-- Moving Phase -->
@@ -171,12 +168,14 @@
 import { ref, computed, watch } from 'vue'
 import PlayerActions from './PlayerActions.vue'
 import DiceRoller from './DiceRoller.vue'
+import JailSystem from '../jail/JailSystem.vue'
 
 export default {
   name: 'TurnManager',
   components: {
     PlayerActions,
-    DiceRoller
+    DiceRoller,
+    JailSystem
   },
   
   props: {
@@ -398,12 +397,37 @@ export default {
       emit('player-action', action)
     }
 
-    const payJailFine = () => {
+    const handlePayJailFine = () => {
       emit('pay-jail-fine')
     }
 
-    const useJailCard = () => {
+    const handleUseJailCard = () => {
       emit('use-jail-card')
+    }
+
+    const handleRollForDoubles = () => {
+      emit('roll-dice')
+    }
+
+    const handleEndTurn = () => {
+      emit('end-turn')
+    }
+
+    const handleJailExit = (data) => {
+      // Handle different jail exit methods
+      switch (data.option) {
+        case 'pay-fine':
+          emit('pay-jail-fine')
+          break
+        case 'use-card':
+          emit('use-jail-card')
+          break
+        case 'roll-doubles':
+          emit('roll-dice')
+          break
+        default:
+          console.log('Jail exit:', data)
+      }
     }
 
     const cancelTrade = () => {
@@ -446,8 +470,11 @@ export default {
       handleDiceAnimationComplete,
       endTurn,
       handlePlayerAction,
-      payJailFine,
-      useJailCard,
+      handlePayJailFine,
+      handleUseJailCard,
+      handleRollForDoubles,
+      handleEndTurn,
+      handleJailExit,
       cancelTrade,
       finishDeveloping,
       openPropertyManagement,
@@ -473,22 +500,26 @@ export default {
 
 .turn-header {
   background: #2c3e50;
-  color: white;
+  color: #ffffff;
   padding: 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .turn-info h3 {
   margin: 0 0 0.5rem 0;
   font-size: 1.3rem;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .current-player-info {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: #ffffff;
 }
 
 .player-piece {
@@ -498,7 +529,9 @@ export default {
 
 .player-name {
   font-size: 1.1rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .phase-indicator {

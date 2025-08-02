@@ -2,14 +2,14 @@
 // Board positions 0-39, starting from GO and moving clockwise
 
 export const BOARD_SPACES = [
-  // Bottom row (0-10) - Right to left
+  // Bottom row (0-10) - GO to Jail (left to right when viewed from bottom)
   {
     id: 0,
     name: 'GO',
     type: 'special',
     specialType: 'go',
     side: 'bottom',
-    sidePosition: 10,
+    sidePosition: 0,
     color: '#ff0000',
     textColor: '#ffffff',
     action: 'special'
@@ -20,7 +20,7 @@ export const BOARD_SPACES = [
     type: 'property',
     colorGroup: '#8B4513',
     side: 'bottom',
-    sidePosition: 9,
+    sidePosition: 1,
     color: '#8B4513',
     textColor: '#ffffff',
     action: 'buy'
@@ -31,7 +31,7 @@ export const BOARD_SPACES = [
     type: 'card',
     cardType: 'communityChest',
     side: 'bottom',
-    sidePosition: 8,
+    sidePosition: 2,
     color: '#87CEEB',
     textColor: '#000000',
     action: 'card'
@@ -42,7 +42,7 @@ export const BOARD_SPACES = [
     type: 'property',
     colorGroup: '#8B4513',
     side: 'bottom',
-    sidePosition: 7,
+    sidePosition: 3,
     color: '#8B4513',
     textColor: '#ffffff',
     action: 'buy'
@@ -53,7 +53,7 @@ export const BOARD_SPACES = [
     type: 'tax',
     taxAmount: 200,
     side: 'bottom',
-    sidePosition: 6,
+    sidePosition: 4,
     color: '#D3D3D3',
     textColor: '#000000',
     action: 'tax'
@@ -74,7 +74,7 @@ export const BOARD_SPACES = [
     type: 'property',
     colorGroup: '#87CEEB',
     side: 'bottom',
-    sidePosition: 4,
+    sidePosition: 6,
     color: '#87CEEB',
     textColor: '#000000',
     action: 'buy'
@@ -85,7 +85,7 @@ export const BOARD_SPACES = [
     type: 'card',
     cardType: 'chance',
     side: 'bottom',
-    sidePosition: 3,
+    sidePosition: 7,
     color: '#FF6347',
     textColor: '#ffffff',
     action: 'card'
@@ -96,7 +96,7 @@ export const BOARD_SPACES = [
     type: 'property',
     colorGroup: '#87CEEB',
     side: 'bottom',
-    sidePosition: 2,
+    sidePosition: 8,
     color: '#87CEEB',
     textColor: '#000000',
     action: 'buy'
@@ -107,7 +107,7 @@ export const BOARD_SPACES = [
     type: 'property',
     colorGroup: '#87CEEB',
     side: 'bottom',
-    sidePosition: 1,
+    sidePosition: 9,
     color: '#87CEEB',
     textColor: '#000000',
     action: 'buy'

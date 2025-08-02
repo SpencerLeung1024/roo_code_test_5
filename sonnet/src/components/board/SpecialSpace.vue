@@ -16,10 +16,48 @@
       Collect $200
     </div>
     
-    <!-- Jail status for players -->
-    <div class="jail-info" v-if="space.specialType === 'jail' && playersInJail.length > 0">
-      <div class="jail-indicator">
-        In Jail: {{ playersInJail.length }}
+    <!-- Enhanced Jail status for players -->
+    <div class="jail-info" v-if="space.specialType === 'jail'">
+      <div class="jail-sections">
+        <!-- Just Visiting Section -->
+        <div class="jail-section visiting-section">
+          <div class="section-label">Visiting</div>
+          <div class="visiting-players">
+            <div
+              v-for="player in visitingPlayers"
+              :key="player.id"
+              class="visiting-player"
+              :style="{ backgroundColor: player.color }"
+              :title="player.name + ' - Just Visiting'"
+            >
+              {{ getPlayerPieceSymbol(player.piece) }}
+            </div>
+          </div>
+        </div>
+        
+        <!-- In Jail Section -->
+        <div class="jail-section imprisoned-section" v-if="playersInJail.length > 0">
+          <div class="section-label">In Jail</div>
+          <div class="imprisoned-players">
+            <div
+              v-for="player in playersInJail"
+              :key="player.id"
+              class="imprisoned-player"
+              :style="{ backgroundColor: player.color }"
+              :title="player.name + ' - ' + player.jailTurns + ' turns left'"
+            >
+              <span class="player-piece">{{ getPlayerPieceSymbol(player.piece) }}</span>
+              <span class="jail-turns">{{ player.jailTurns }}</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Jail Bars Visual Effect -->
+        <div class="jail-bars" v-if="playersInJail.length > 0">
+          <div class="bar"></div>
+          <div class="bar"></div>
+          <div class="bar"></div>
+        </div>
       </div>
     </div>
     
@@ -90,11 +128,39 @@ export default {
       }
       return []
     })
+
+    // Get players just visiting jail (on space but not in jail)
+    const visitingPlayers = computed(() => {
+      if (props.space.specialType === 'jail') {
+        const playersOnSpace = props.playersOnSpace || []
+        return gameState.players.filter(player =>
+          playersOnSpace.includes(player.id) && !player.isInJail
+        )
+      }
+      return []
+    })
+
+    // Get player piece symbol
+    const getPlayerPieceSymbol = (piece) => {
+      const gamePieces = {
+        'car': '🚗',
+        'dog': '🐕',
+        'hat': '🎩',
+        'boot': '👢',
+        'ship': '🚢',
+        'thimble': '🪡',
+        'iron': '🔨',
+        'wheelbarrow': '🛍️'
+      }
+      return gamePieces[piece] || piece || '❓'
+    }
     
     return {
       specialIcon,
       specialDescription,
-      playersInJail
+      playersInJail,
+      visitingPlayers,
+      getPlayerPieceSymbol
     }
   }
 }
@@ -179,14 +245,120 @@ export default {
 }
 
 .jail-info {
-  background: rgba(0,0,0,0.3);
-  padding: 2px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
-.jail-indicator {
+.jail-sections {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.jail-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.section-label {
   font-size: 0.4rem;
-  text-align: center;
   color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 1px 4px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.visiting-section {
+  background: rgba(52, 152, 219, 0.3);
+}
+
+.imprisoned-section {
+  background: rgba(231, 76, 60, 0.5);
+  border-top: 1px solid rgba(255,255,255,0.3);
+}
+
+.visiting-players,
+.imprisoned-players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  padding: 2px;
+  flex: 1;
+  align-content: flex-start;
+}
+
+.visiting-player,
+.imprisoned-player {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.4rem;
+  color: #fff;
+  position: relative;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.imprisoned-player {
+  border: 1px solid #e74c3c;
+  animation: prisonPulse 2s infinite;
+}
+
+.imprisoned-player .jail-turns {
+  position: absolute;
+  bottom: -8px;
+  right: -4px;
+  font-size: 0.3rem;
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 50%;
+  width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.jail-bars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: stretch;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.jail-bars .bar {
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.6) 100%);
+  box-shadow: 1px 0 2px rgba(0,0,0,0.3);
+}
+
+@keyframes prisonPulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.9);
+  }
 }
 
 /* Corner space specific styling */

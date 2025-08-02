@@ -1,28 +1,725 @@
-/* Tablet styles (641px - 1024px) */
+/* Enhanced Tablet Styles (768px - 1024px) */
 
-@media (min-width: 641px) and (max-width: 1024px) {
-  .game-container {
-    grid-template-columns: 1fr 250px;
-    grid-template-areas:
-      "header header"
-      "board panels"
-      "controls panels";
-  }
-
+@media (min-width: 769px) and (max-width: 1024px) {
+  /* Root adjustments for tablet */
   :root {
-    --board-size: min(60vh, 60vw);
+    --board-size: min(75vh, 75vw);
+    --board-min-size: 400px;
     --space-size: calc(var(--board-size) / 11);
     --corner-size: calc(var(--space-size) * 1.3);
-    --player-piece-size: 18px;
-    --dice-size: 36px;
+    --player-piece-size: 20px;
+    --dice-size: 42px;
+    --panel-width: 280px;
+    --header-height: 80px;
+  }
+
+  /* App Layout Adjustments */
+  #monopoly-app {
+    overflow-x: auto;
+  }
+
+  /* Header Optimizations */
+  .game-header {
+    padding: var(--spacing-4) var(--spacing-5);
+  }
+
+  .header-content {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .game-header h1 {
+    font-size: var(--font-size-2xl);
+    flex-shrink: 0;
+  }
+
+  .game-status {
+    flex: 1;
+    text-align: center;
+    margin: 0 var(--spacing-4);
+  }
+
+  .current-player-info {
+    font-size: var(--font-size-xl);
+  }
+
+  .game-phase-info {
+    font-size: var(--font-size-sm);
+    padding: var(--spacing-1) var(--spacing-3);
+  }
+
+  .game-controls-header {
+    flex-direction: column;
+    gap: var(--spacing-2);
+    flex-shrink: 0;
+  }
+
+  .toggle-btn,
+  .restart-btn,
+  .history-btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    min-width: 120px;
+  }
+
+  /* Game Container Tablet Layout */
+  .game-container {
+    grid-template-columns: 1fr var(--panel-width);
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+      "board panels"
+      "controls panels";
+    padding: var(--spacing-3);
+    gap: var(--spacing-3);
+  }
+
+  /* Board Section Tablet */
+  .game-board-section {
+    min-height: var(--board-size);
+    padding: var(--spacing-3);
+  }
+
+  .monopoly-board {
+    width: var(--board-size);
+    height: var(--board-size);
   }
 
   .board-space {
-    font-size: 10px;
-    padding: 1px;
+    font-size: var(--font-size-xs);
+    padding: var(--spacing-1);
   }
 
+  .board-space.corner {
+    font-size: var(--font-size-sm);
+  }
+
+  .property-name {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-tight);
+  }
+
+  .property-price {
+    font-size: var(--font-size-2xs);
+  }
+
+  .property-color-bar {
+    height: 10px;
+  }
+
+  .board-center {
+    padding: var(--spacing-3);
+  }
+
+  .board-logo {
+    font-size: var(--font-size-3xl);
+  }
+
+  .board-info {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Player Pieces Tablet */
+  .player-piece {
+    width: var(--player-piece-size);
+    height: var(--player-piece-size);
+    font-size: var(--font-size-xs);
+    border-width: 2px;
+  }
+
+  .house,
+  .hotel {
+    width: 14px;
+    height: 14px;
+    font-size: var(--font-size-2xs);
+  }
+
+  /* Player Panels Tablet */
   .player-panels-section {
-    max-height: none;
+    height: 100%;
+    border-radius: var(--radius-xl);
+  }
+
+  .panels-header {
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--font-size-lg);
+  }
+
+  .player-panels {
+    flex-direction: column;
+    gap: var(--spacing-3);
+    padding: var(--spacing-3);
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .player-panel {
+    min-width: auto;
+    width: 100%;
+    padding: var(--spacing-4);
+    margin-bottom: var(--spacing-2);
+  }
+
+  .player-header {
+    flex-direction: row;
+    gap: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .player-avatar {
+    width: 42px;
+    height: 42px;
+    font-size: var(--font-size-lg);
+  }
+
+  .player-name {
+    font-size: var(--font-size-lg);
+  }
+
+  .financial-info {
+    padding: var(--spacing-3);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .money-amount {
+    font-size: var(--font-size-lg);
+  }
+
+  .property-summary {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-2);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .property-stat {
+    padding: var(--spacing-2);
+  }
+
+  .property-count,
+  .monopoly-count,
+  .railroad-count {
+    font-size: var(--font-size-xl);
+  }
+
+  .property-list {
+    max-height: 180px;
+  }
+
+  .property-item {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  .property-name {
+    font-size: var(--font-size-sm);
+  }
+
+  .property-rent {
+    font-size: var(--font-size-sm);
+  }
+
+  .player-actions {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2);
+  }
+
+  .action-btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+  }
+
+  /* Game Controls Tablet */
+  .game-controls-section {
+    min-height: 200px;
+    padding: var(--spacing-3);
+  }
+
+  .game-controls {
+    gap: var(--spacing-4);
+    padding: var(--spacing-4);
+  }
+
+  .dice-container {
+    gap: var(--spacing-3);
+  }
+
+  .dice {
+    width: var(--dice-size);
+    height: var(--dice-size);
+    font-size: var(--font-size-2xl);
+  }
+
+  .roll-button {
+    padding: var(--spacing-3) var(--spacing-5);
+    font-size: var(--font-size-lg);
+    min-width: 140px;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-2);
+  }
+
+  .btn {
+    min-width: 100px;
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-sm);
+  }
+
+  .turn-info {
+    font-size: var(--font-size-base);
+  }
+
+  .current-turn {
+    font-size: var(--font-size-xl);
+  }
+
+  .turn-phase {
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-sm);
+  }
+
+  .game-messages {
+    max-height: 100px;
+    padding: var(--spacing-3);
+  }
+
+  .message {
+    padding: var(--spacing-2);
+  }
+
+  .message-text {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Modal Adjustments for Tablet */
+  .modal-overlay {
+    padding: var(--spacing-4);
+  }
+
+  .modal {
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    border-radius: var(--radius-2xl);
+  }
+
+  .modal.large {
+    max-width: 900px;
+  }
+
+  .modal.fullscreen {
+    max-width: 95vw;
+    width: 95vw;
+    height: 90vh;
+    max-height: 90vh;
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: var(--spacing-5);
+  }
+
+  .modal-title {
+    font-size: var(--font-size-2xl);
+  }
+
+  .modal-close {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-lg);
+  }
+
+  .modal-footer {
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: var(--spacing-3);
+  }
+
+  .modal-btn {
+    min-width: 120px;
+    padding: var(--spacing-3) var(--spacing-5);
+  }
+
+  /* Property Card Tablet */
+  .property-card {
+    margin: var(--spacing-5);
+    padding: var(--spacing-5);
+  }
+
+  .property-name {
+    font-size: var(--font-size-2xl);
+  }
+
+  .property-price {
+    font-size: var(--font-size-3xl);
+  }
+
+  .rent-info {
+    padding: var(--spacing-4);
+  }
+
+  .rent-row {
+    padding: var(--spacing-2) 0;
+    font-size: var(--font-size-base);
+  }
+
+  /* Trade Interface Tablet */
+  .trade-interface {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-5);
+  }
+
+  .trade-side {
+    padding: var(--spacing-4);
+  }
+
+  .trade-side-title {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-4);
+  }
+
+  .money-input {
+    font-size: var(--font-size-lg);
+    padding: var(--spacing-3);
+  }
+
+  .property-selection {
+    max-height: 200px;
+  }
+
+  .property-option {
+    padding: var(--spacing-2) var(--spacing-3);
+  }
+
+  .property-option-name {
+    font-size: var(--font-size-base);
+  }
+
+  /* Card System Tablet */
+  .card {
+    width: 300px;
+    height: 450px;
+  }
+
+  .card-header {
+    padding: var(--spacing-4);
+  }
+
+  .card-title {
+    font-size: var(--font-size-xl);
+  }
+
+  .card-body {
+    padding: var(--spacing-5);
+  }
+
+  .card-description {
+    font-size: var(--font-size-lg);
+  }
+
+  .card-amount {
+    font-size: var(--font-size-2xl);
+  }
+
+  .card-footer {
+    padding: var(--spacing-4);
+    flex-direction: row;
+    gap: var(--spacing-3);
+  }
+
+  .card-btn {
+    flex: 1;
+    max-width: 140px;
+  }
+
+  .card-draw-interface {
+    padding: var(--spacing-5);
+    max-width: 500px;
+    width: 80%;
+  }
+
+  .card-deck-selector {
+    flex-direction: row;
+    gap: var(--spacing-3);
+  }
+
+  .deck-option {
+    flex: 1;
+    padding: var(--spacing-4);
+  }
+
+  .draw-button {
+    padding: var(--spacing-4) var(--spacing-6);
+    font-size: var(--font-size-lg);
+  }
+
+  /* Card History Tablet */
+  .card-history-modal {
+    max-width: 800px;
+    width: 90%;
+  }
+
+  .card-history-list {
+    max-height: 400px;
+  }
+
+  .card-history-item {
+    padding: var(--spacing-3);
+  }
+
+  .card-history-icon {
+    width: 40px;
+    height: 40px;
+    font-size: var(--font-size-lg);
+  }
+
+  .card-history-title {
+    font-size: var(--font-size-base);
+  }
+
+  .card-history-description {
+    font-size: var(--font-size-sm);
+  }
+
+  /* Stats Modal Tablet */
+  .stats-modal {
+    margin: var(--spacing-4);
+    max-width: 800px;
+    border-radius: var(--radius-2xl);
+  }
+
+  .close-stats-btn {
+    width: 40px;
+    height: 40px;
+    top: var(--spacing-4);
+    right: var(--spacing-4);
+  }
+
+  /* Setup Message Tablet */
+  .setup-message {
+    padding: var(--spacing-8);
+    margin: var(--spacing-6);
+    max-width: 500px;
+  }
+
+  .setup-message h3 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .setup-message p {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Form Elements Tablet */
+  .modal-input,
+  .modal-select,
+  .modal-textarea {
+    padding: var(--spacing-3);
+    font-size: var(--font-size-base);
+  }
+
+  .modal-checkbox {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Touch Improvements for Tablet */
+  .interactive,
+  .btn,
+  .card-btn,
+  .modal-btn,
+  .action-btn,
+  .toggle-btn,
+  .restart-btn,
+  .history-btn,
+  .roll-button,
+  .draw-button,
+  .board-space,
+  .player-piece,
+  .property-item,
+  .deck-option,
+  .card {
+    min-height: 40px;
+    min-width: 40px;
+    touch-action: manipulation;
+  }
+
+  /* Scrollbar Styling for Tablet */
+  .player-panels::-webkit-scrollbar,
+  .property-list::-webkit-scrollbar,
+  .game-messages::-webkit-scrollbar,
+  .card-history-list::-webkit-scrollbar,
+  .modal-body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .player-panels::-webkit-scrollbar-thumb,
+  .property-list::-webkit-scrollbar-thumb,
+  .game-messages::-webkit-scrollbar-thumb,
+  .card-history-list::-webkit-scrollbar-thumb,
+  .modal-body::-webkit-scrollbar-thumb {
+    background: var(--color-border-medium);
+    border-radius: var(--radius-sm);
+  }
+
+  .player-panels::-webkit-scrollbar-thumb:hover,
+  .property-list::-webkit-scrollbar-thumb:hover,
+  .game-messages::-webkit-scrollbar-thumb:hover,
+  .card-history-list::-webkit-scrollbar-thumb:hover,
+  .modal-body::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-dark);
+  }
+
+  /* Animation Adjustments for Tablet */
+  .dice.rolling {
+    animation-duration: 0.7s;
+  }
+
+  .card.flipping {
+    animation-duration: 0.7s;
+  }
+
+  .player-piece:hover {
+    transform: scale(1.15);
+  }
+
+  .board-space:hover {
+    transform: scale(1.03);
+  }
+
+  /* Tablet-specific Performance Optimizations */
+  .monopoly-board,
+  .player-panel,
+  .modal,
+  .card {
+    will-change: transform;
+  }
+
+  /* Landscape Orientation Optimizations */
+  @media (orientation: landscape) {
+    .game-container {
+      grid-template-columns: 1fr 300px;
+    }
+
+    .game-board-section {
+      min-height: 70vh;
+    }
+
+    .player-panels-section {
+      height: 100%;
+    }
+
+    .game-controls-section {
+      min-height: 160px;
+    }
+  }
+
+  /* Portrait Orientation Optimizations */
+  @media (orientation: portrait) {
+    .game-container {
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr auto auto;
+      grid-template-areas:
+        "board"
+        "panels"
+        "controls";
+    }
+
+    .player-panels-section {
+      max-height: 35vh;
+    }
+
+    .player-panels {
+      flex-direction: row;
+      overflow-x: auto;
+      gap: var(--spacing-2);
+    }
+
+    .player-panel {
+      min-width: 260px;
+      flex-shrink: 0;
+    }
+
+    .game-controls-section {
+      min-height: 180px;
+    }
+  }
+
+  /* iPad specific adjustments */
+  @media (min-width: 768px) and (max-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+    :root {
+      --board-size: min(70vh, 70vw);
+      --dice-size: 44px;
+      --player-piece-size: 22px;
+    }
+
+    .game-header {
+      padding: var(--spacing-4) var(--spacing-6);
+    }
+
+    .monopoly-board {
+      border-width: 3px;
+    }
+
+    .board-space {
+      font-size: var(--font-size-sm);
+    }
+
+    .property-color-bar {
+      height: 12px;
+    }
+
+    /* Enhanced touch targets for iPad */
+    .board-space,
+    .player-piece,
+    .btn,
+    .action-btn {
+      min-height: 48px;
+      min-width: 48px;
+    }
+  }
+}
+
+/* Tablet Pro and Large Tablets (min-width: 900px and max-width: 1024px) */
+@media (min-width: 900px) and (max-width: 1024px) {
+  :root {
+    --board-size: min(65vh, 65vw);
+    --panel-width: 320px;
+    --dice-size: 46px;
+  }
+
+  .game-container {
+    grid-template-columns: 1fr var(--panel-width);
+    max-width: var(--container-xl);
+    margin: 0 auto;
+  }
+
+  .game-header h1 {
+    font-size: var(--font-size-3xl);
+  }
+
+  .current-player-info {
+    font-size: var(--font-size-2xl);
+  }
+
+  .modal {
+    max-width: 800px;
+  }
+
+  .modal.large {
+    max-width: 1000px;
+  }
+
+  .card {
+    width: 320px;
+    height: 480px;
+  }
+
+  .setup-message {
+    max-width: 600px;
   }
 }
