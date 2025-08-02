@@ -852,7 +852,8 @@ export const gameActions = {
     }
     
     return this.purchaseProperty(playerId, propertyId)
-  }
+  },
+
   // === ENHANCED PROPERTY TRANSACTION SYSTEM ===
   
   // Enhanced property validation
