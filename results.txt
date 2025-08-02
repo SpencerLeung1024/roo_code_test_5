@@ -3,6 +3,12 @@
 - openrouter/horizon-beta > horizon_beta
 
 - anthropic/claude-sonnet-4 > sonnet
+$27.3, 29.5M
+I gave up after it made no progress in moving players off GO in several turns
+It chose to use Vue.js and Vite
+Actually extremely thorough (wrote like 10 markdown docs at the beginning)
+Never encountered an error in the log, just buggy behavior
+Maybe the throughness and complexity of its plan killed it
 
 - anthropic/claude-opus-4 > opus
 
@@ -11,6 +17,7 @@
 - x-ai/grok-4 > grok
 
 - deepseek/deepseek-r1-0528 > deepseek_r1
+$0.922, 1.9M
 I gave up after 10 turns
 It keeps forgetting to do the last items (almost as if it's in a rush?)
 It chose to use no framework. Pure HTML, CSS, and JS.
