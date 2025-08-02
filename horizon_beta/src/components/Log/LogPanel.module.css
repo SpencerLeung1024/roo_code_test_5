@@ -1,0 +1,23 @@
+.wrap {
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.item {
+  font-size: 12px;
+  padding: 2px 0;
+  border-bottom: 1px dashed #eee;
+}
+
+.item:last-child {
+  border-bottom: none;
+}
+
+.ts {
+  color: #888;
+  margin-right: 6px;
+}

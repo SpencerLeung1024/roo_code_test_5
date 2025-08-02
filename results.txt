@@ -6,6 +6,11 @@ Surprisingly managed to get a working Monopoly core gameplay loop
 Movement, buying property, rent
 
 - openrouter/horizon-beta > horizon_beta
+FREE, 5.3M
+It decided that all subtasks were implemented and completed the orchestrating task
+It chose to use React.ts and Vite
+Game is unplayable (unclosable modals)
+Board is messed up
 
 - anthropic/claude-sonnet-4 > sonnet
 $28.4, 29.5M

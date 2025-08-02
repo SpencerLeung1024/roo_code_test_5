@@ -1,0 +1,16 @@
+:root {
+  --bg: #f5f7fb;
+  --text: #1f2937;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Arial, sans-serif;
+}
+button, input {
+  font-family: inherit;
+}

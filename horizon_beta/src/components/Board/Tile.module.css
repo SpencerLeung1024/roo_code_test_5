@@ -1,0 +1,65 @@
+.tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  height: 100%;
+  width: 100%;
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  padding: 4px;
+  font-size: 10px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.owner {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  border: 1px solid rgba(0,0,0,0.2);
+}
+
+.name {
+  font-weight: 600;
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.index {
+  color: #888;
+  font-size: 9px;
+}
+
+.buildings {
+  display: flex;
+  gap: 2px;
+  margin-top: 2px;
+}
+
+.house {
+  width: 6px;
+  height: 6px;
+  background: #2ecc71;
+  border: 1px solid #1e8449;
+  border-radius: 1px;
+}
+
+.hotel {
+  width: 6px;
+  height: 6px;
+  background: #e74c3c;
+  border: 1px solid #922b21;
+  border-radius: 1px;
+}
+
+.highlight {
+  outline: 2px solid #00aaff;
+  outline-offset: -2px;
+}
