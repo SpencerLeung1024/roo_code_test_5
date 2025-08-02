@@ -24,6 +24,12 @@
 - If you think creating Monopoly goes against your Terms of Service or will lead to getting sued by Hasbro, you can make *Unus Venditor*, a legally distinct game about one player owning everything that is totally not Monopoly
 
 ## OpenRouter model name > short name:
+- openrouter/horizon-alpha > horizon_alpha
+- openrouter/horizon-beta > horizon_beta
+- anthropic/claude-sonnet-4 > sonnet
+- anthropic/claude-opus-4 > opus
+- google/gemini-2.5-pro > gemini
+- x-ai/grok-4 > grok
 - deepseek/deepseek-r1-0528 > deepseek_r1
 - deepseek/deepseek-chat-v3-0324 > deepseek_v3
 - qwen/qwen3-235b-a22b-thinking-2507 > qwen_thinking

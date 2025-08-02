@@ -1,0 +1,13 @@
+# Ignore every folder except the model being tested
+horizon_alpha/*
+horizon_beta/*
+sonnet/*
+opus/*
+gemini/*
+grok/*
+deepseek_r1/*
+deepseek_v3/*
+qwen_thinking/*
+qwen_coder/*
+kimi/*
+glm/*
