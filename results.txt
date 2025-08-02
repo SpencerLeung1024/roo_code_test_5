@@ -1,4 +1,9 @@
 - openrouter/horizon-alpha > horizon_alpha
+FREE, 5.86M
+I gave up after it kept messing up board tile sizes further and further
+It chose to use React.ts and Vite
+Surprisingly managed to get a working Monopoly core gameplay loop
+Movement, buying property, rent
 
 - openrouter/horizon-beta > horizon_beta
 
@@ -20,8 +25,8 @@ Maybe the throughness and complexity of its plan killed it
 $0.922, 1.9M
 I gave up after 10 turns
 It keeps forgetting to do the last items (almost as if it's in a rush?)
-It chose to use no framework. Pure HTML, CSS, and JS.
-Undefined bugs everywhere.
+It chose to use no framework. Pure HTML, CSS, and JS
+Undefined bugs everywhere
 
 - deepseek/deepseek-chat-v3-0324 > deepseek_v3
 

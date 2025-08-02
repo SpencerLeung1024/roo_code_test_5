@@ -1,6 +1,6 @@
 # Ignore every folder except the model being tested
-# horizon_alpha/*
-horizon_beta/*
+horizon_alpha/*
+# horizon_beta/*
 sonnet/*
 opus/*
 gemini/*
