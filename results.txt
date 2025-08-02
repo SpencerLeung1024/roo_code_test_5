@@ -3,7 +3,7 @@
 - openrouter/horizon-beta > horizon_beta
 
 - anthropic/claude-sonnet-4 > sonnet
-$27.3, 29.5M
+$28.4, 29.5M
 I gave up after it made no progress in moving players off GO in several turns
 It chose to use Vue.js and Vite
 Actually extremely thorough (wrote like 10 markdown docs at the beginning)

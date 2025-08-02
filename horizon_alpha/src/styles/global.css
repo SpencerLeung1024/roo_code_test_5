@@ -1,0 +1,396 @@
+:root {
+  --bg: #0f0f11;
+  --panel: #17181b;
+  --text: #e7e7ea;
+  --muted: #a0a3aa;
+  --accent: #69d2ff;
+  --ok: #37d67a;
+  --warn: #ffce56;
+  --danger: #ff6b6b;
+  --gap: 16px;
+  --radius: 8px;
+  --border: 1px solid #26282d;
+}
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body, #app { height: 100%; }
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--text);
+}
+
+.app-shell {
+  min-height: 100%;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
+
+.app-header, .app-footer {
+  padding: 8px 12px;
+  background: var(--panel);
+  border-bottom: var(--border);
+}
+
+.app-footer { border-top: var(--border); border-bottom: none; color: var(--muted); }
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.app-header.compact .app-title {
+  font-size: 16px;
+  margin: 0 8px 0 0;
+}
+.app-header.compact .badge.small {
+  padding: 2px 6px;
+  font-size: 11px;
+  margin-left: 4px;
+}
+.app-header .header-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.app-header .header-status {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.badge {
+  background: #14333d;
+  color: var(--accent);
+  border: 1px solid #235868;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.app-main {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: 2fr 1fr;
+  padding: var(--gap);
+}
+.app-main.two-col .side-area {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.panel {
+  background: var(--panel);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--gap);
+}
+
+.section-title {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.board-placeholder {
+  height: 420px;
+  border: 2px dashed #2e3138;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  border-radius: calc(var(--radius) - 4px);
+}
+
+/* Board 11x11 grid with explicit named areas */
+.board11 {
+  display: grid;
+
+  /* Sizing variables per spec */
+  --corner: 110px;     /* square corners */
+  --edgeDepth: 80px;   /* top/bottom shallow height */
+  --edgeLen: 120px;    /* left/right wide width and top/bottom tile width units */
+
+  /* Track sizing:
+     - Columns 1 and 11 are corners width (--corner)
+     - Columns 2..10 are edge tiles along top/bottom measured in --edgeLen
+     - Rows 1 and 11 are corners height (--corner)
+     - Rows 2..10 are edgeDepth for top/bottom shallow rows
+     The center area is created by grid-template-areas spanning rows 3..9 and cols 3..9; we keep container square.
+  */
+  grid-template-columns:
+    var(--corner)
+    repeat(9, var(--edgeLen))
+    var(--corner);
+  grid-template-rows:
+    var(--corner)
+    repeat(9, var(--edgeDepth))
+    var(--corner);
+
+  /* Explicit grid areas mapping (Monopoly order already used in Board.tsx):
+     Top row: t21..t30 (left to right)
+     Right col: t31..t39 (top to bottom)
+     Bottom row: t0..t10 (right to left visually; our mapping keeps indices consistent)
+     Left col: t11..t20 (bottom to top)
+  */
+  grid-template-areas:
+    "t21  t22  t23  t24  t25  t26  t27  t28  t29  t30  t31"
+    "t20  .    .    .    .    .    .    .    .    .    t32"
+    "t19  .    center center center center center center center .    t33"
+    "t18  .    center center center center center center center .    t34"
+    "t17  .    center center center center center center center .    t35"
+    "t16  .    center center center center center center center .    t36"
+    "t15  .    center center center center center center center .    t37"
+    "t14  .    center center center center center center center .    t38"
+    "t13  .    center center center center center center center .    t39"
+    "t12  .    .    .    .    .    .    .    .    .    t0"
+    "t11  t10  t9   t8   t7   t6   t5   t4   t3   t2   t1";
+
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  min-width: 720px;
+  min-height: 720px;
+  max-width: 840px;
+  max-height: 840px;
+  margin: 0 auto;
+  background: #0c0d10;
+  border: 2px solid #2e3138;
+  border-radius: 8px;
+  position: relative;
+  gap: 2px; /* thin gutters */
+  padding: 6px;
+}
+
+/* Assign each tile index to its named area */
+.t0  { grid-area: t0; }
+.t1  { grid-area: t1; }
+.t2  { grid-area: t2; }
+.t3  { grid-area: t3; }
+.t4  { grid-area: t4; }
+.t5  { grid-area: t5; }
+.t6  { grid-area: t6; }
+.t7  { grid-area: t7; }
+.t8  { grid-area: t8; }
+.t9  { grid-area: t9; }
+.t10 { grid-area: t10; }
+.t11 { grid-area: t11; }
+.t12 { grid-area: t12; }
+.t13 { grid-area: t13; }
+.t14 { grid-area: t14; }
+.t15 { grid-area: t15; }
+.t16 { grid-area: t16; }
+.t17 { grid-area: t17; }
+.t18 { grid-area: t18; }
+.t19 { grid-area: t19; }
+.t20 { grid-area: t20; }
+.t21 { grid-area: t21; }
+.t22 { grid-area: t22; }
+.t23 { grid-area: t23; }
+.t24 { grid-area: t24; }
+.t25 { grid-area: t25; }
+.t26 { grid-area: t26; }
+.t27 { grid-area: t27; }
+.t28 { grid-area: t28; }
+.t29 { grid-area: t29; }
+.t30 { grid-area: t30; }
+.t31 { grid-area: t31; }
+.t32 { grid-area: t32; }
+.t33 { grid-area: t33; }
+.t34 { grid-area: t34; }
+.t35 { grid-area: t35; }
+.t36 { grid-area: t36; }
+.t37 { grid-area: t37; }
+.t38 { grid-area: t38; }
+.t39 { grid-area: t39; }
+
+.board-center {
+  grid-area: center;
+  background: #121319;
+  border: 1px dashed #2d3240;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 14px;
+  /* Keep the play area visually square even as edge sizes change */
+  aspect-ratio: 1 / 1;
+}
+
+/* Perimeter tiles */
+.board-tile {
+  background: #171a20;
+  border: 1px solid #2b2f37;
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+  display: grid;
+  place-items: stretch;
+}
+
+/* Corner enforcement: rely on grid tracks using --corner (square) */
+
+/* Top/bottom edges: shallow height comes from --edgeDepth rows; width from --edgeLen columns */
+/* Left/right edges: wide width from --edgeLen columns; height from repeated rows */
+
+/* Make left and right edge tiles landscape without rotating text.
+   The component rotates the whole tile for orientation; counter-rotate inner.
+   Keep the inner content readable and laid out horizontally. */
+.board-tile .tile-inner {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-items: start;
+}
+
+/* Ensure content doesn't overflow in tighter heights */
+.board11 .tile-name {
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+.board11 .tile-players {
+  flex-wrap: wrap;
+  row-gap: 4px;
+}
+
+/* Reduce inner padding slightly for better fit on shallow edges */
+.board11 .tile-label {
+  padding: 6px;
+}
+.board-tile .tile-inner .tile-label {
+  /* ensure compact spacing */
+}
+.board-tile.rot { transform-origin: center; }
+.tile-inner {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.tile-label.owner-colored {
+  border-left-width: 3px;
+  border-left-style: solid;
+  border-left-color: transparent;
+  padding-left: 6px;
+}
+
+/* Property color band */
+.color-band {
+  height: 10px;
+  width: 100%;
+  border-bottom: 1px solid rgba(0,0,0,0.25);
+}
+.set-brown { background: #8b5a2b; }
+.set-lightblue { background: #9ad0ff; }
+.set-pink { background: #ff77c8; }
+.set-orange { background: #ff9a3d; }
+.set-red { background: #ff4d4d; }
+.set-yellow { background: #ffd83b; }
+.set-green { background: #2ecb70; }
+.set-darkblue { background: #3360ff; }
+
+.tile-label {
+  padding: 6px;
+  display: grid;
+  gap: 2px;
+}
+.tile-name {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.15;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
+.tile-sub {
+  font-size: 10px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile-players {
+  padding: 4px 6px 6px 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-content: flex-start;
+}
+.token {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #0b0c0f;
+  font-weight: 800;
+  border: 2px solid rgba(0,0,0,0.35);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+}
+
+/* Simple board grid container fallback used earlier */
+.board-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.tile {
+  background: #131417;
+  border: 1px solid #26282d;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+/* Buttons and misc */
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+button {
+  background: #1e2127;
+  color: var(--text);
+  border: 1px solid #2b2f37;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover { background: #232730; }
+
+.log-list {
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  padding-left: 18px;
+  color: var(--muted);
+}
+
+.players {
+  display: grid;
+  gap: 8px;
+}
+.player {
+  display: flex;
+  justify-content: space-between;
+  background: #131417;
+  border: 1px solid #26282d;
+  border-radius: 6px;
+  padding: 8px;
+}
