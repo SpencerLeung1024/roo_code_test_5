@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Dice System Demo</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/dice.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .demo-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .demo-content {
+            padding: 30px;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+        }
+        
+        .demo-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .player-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .player-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .player-position {
+            color: #7f8c8d;
+        }
+        
+        .player-money {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        
+        .game-log {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 2px 0;
+        }
+        
+        .log-entry.doubles {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        
+        .log-entry.jail {
+            color: #8e44ad;
+            font-weight: bold;
+        }
+        
+        .log-entry.move {
+            color: #3498db;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn.primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .control-btn.secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎲 Monopoly Dice System Demo</h1>
+            <p>Test the complete dice rolling mechanics with player movement</p>
+        </div>
+        
+        <div class="demo-content">
+            <div class="demo-section">
+                <h3>Current Player</h3>
+                <div class="player-info">
+                    <div class="player-name">Player: <span id="current-player-name">Alice</span></div>
+                    <div class="player-position">Position: <span id="current-player-position">0</span> (GO)</div>
+                    <div class="player-money">Money: $<span id="current-player-money">1500</span></div>
+                    <div>In Jail: <span id="current-player-jail">No</span></div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>Dice Controls</h3>
+                <div id="dice-container"></div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>Game Log</h3>
+                <div class="game-log" id="game-log">
+                    <div class="log-entry">Game started. Alice's turn to roll.</div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>Dice Statistics</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-rolls">0</div>
+                        <div class="stat-label">Total Rolls</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="doubles-count">0</div>
+                        <div class="stat-label">Doubles</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="jail-visits">0</div>
+                        <div class="stat-label">Jail Visits</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="go-passes">0</div>
+                        <div class="stat-label">GO Passes</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="demo-section">
+                <h3>Testing Controls</h3>
+                <div class="controls">
+                    <button class="control-btn primary" onclick="demoGame.nextTurn()">Next Turn</button>
+                    <button class="control-btn secondary" onclick="demoGame.forceRoll(6, 6)">Force Double</button>
+                    <button class="control-btn secondary" onclick="demoGame.forceRoll(1, 1)">Force Snake Eyes</button>
+                    <button class="control-btn secondary" onclick="demoGame.resetGame()">Reset Game</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Player } from './js/models/Player.js';
+        import { dice } from './js/models/Dice.js';
+        import { diceUI } from './js/ui/DiceUI.js';
+        import { constants } from './js/config/constants.js';
+
+        class DemoGame {
+            constructor() {
+                this.players = [
+                    new Player({ id: '1', name: 'Alice', token: 'hat' }),
+                    new Player({ id: '2', name: 'Bob', token: 'car' })
+                ];
+                this.currentPlayerIndex = 0;
+                this.currentPlayer = this.players[0];
+                this.stats = {
+                    totalRolls: 0,
+                    doublesCount: 0,
+                    jailVisits: 0,
+                    goPasses: 0
+                };
+                
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.updateDisplay();
+                diceUI.init();
+            }
+
+            setupEventListeners() {
+                // Listen for dice rolls
+                document.addEventListener('dice:rolled', (e) => {
+                    this.handleDiceRoll(e.detail);
+                });
+
+                // Listen for player moves
+                document.addEventListener('player:move', (e) => {
+                    this.handlePlayerMove(e.detail);
+                });
+
+                // Listen for jail events
+                document.addEventListener('jail:entered', (e) => {
+                    this.handleJailEntry(e.detail);
+                });
+            }
+
+            handleDiceRoll(rollResult) {
+                this.stats.totalRolls++;
+                if (rollResult.isDoubles) {
+                    this.stats.doublesCount++;
+                }
+
+                this.addLogEntry(`Rolled ${rollResult.dice1} + ${rollResult.dice2} = ${rollResult.total}`, 
+                    rollResult.isDoubles ? 'doubles' : '');
+                
+                if (rollResult.shouldGoToJail) {
+                    this.addLogEntry('🚨 Three doubles! Going to jail!', 'jail');
+                }
+                
+                this.updateStats();
+            }
+
+            handlePlayerMove(moveData) {
+                const square = constants.BOARD_SQUARES[moveData.to];
+                this.addLogEntry(`Moved to ${square.name} (position ${moveData.to})`, 'move');
+                
+                if (moveData.passedGo) {
+                    this.stats.goPasses++;
+                    this.addLogEntry('Passed GO! Collected $200');
+                }
+                
+                this.updateDisplay();
+            }
+
+            handleJailEntry(jailData) {
+                this.stats.jailVisits++;
+                this.addLogEntry(`${jailData.player.name} is now in jail`, 'jail');
+                this.updateStats();
+            }
+
+            addLogEntry(message, className = '') {
+                const log = document.getElementById('game-log');
+                const entry = document.createElement('div');
+                entry.className = `log-entry ${className}`;
+                entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+                log.appendChild(entry);
+                log.scrollTop = log.scrollHeight;
+            }
+
+            updateDisplay() {
+                document.getElementById('current-player-name').textContent = this.currentPlayer.name;
+                document.getElementById('current-player-position').textContent = this.currentPlayer.position;
+                document.getElementById('current-player-money').textContent = this.currentPlayer.money;
+                document.getElementById('current-player-jail').textContent = this.currentPlayer.inJail ? 'Yes' : 'No';
+                
+                const square = constants.BOARD_SQUARES[this.currentPlayer.position];
+                if (square) {
+                    document.getElementById('current-player-position').textContent = 
+                        `${this.currentPlayer.position} (${square.name})`;
+                }
+            }
+
+            updateStats() {
+                document.getElementById('total-rolls').textContent = this.stats.totalRolls;
+                document.getElementById('doubles-count').textContent = this.stats.doublesCount;
+                document.getElementById('jail-visits').textContent = this.stats.jailVisits;
+                document.getElementById('go-passes').textContent = this.stats.goPasses;
+            }
+
+            nextTurn() {
+                this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
+                this.currentPlayer = this.players[this.currentPlayerIndex];
+                this.updateDisplay();
+                this.addLogEntry(`${this.currentPlayer.name}'s turn to roll.`);
+                
+                // Reset dice for new turn
+                dice.setCanRoll(true);
+            }
+
+            forceRoll(dice1, dice2) {
+                if (!dice.canRoll) return;
+                
+                const result = dice.simulateRoll(dice1, dice2);
+                
+                // Manually trigger movement
+                const newPosition = (this.currentPlayer.position + result.total) % constants.BOARD.SIZE;
+                
+                if (result.shouldGoToJail) {
+                    this.currentPlayer.goToJail();
+                } else {
+                    this.currentPlayer.moveTo(newPosition);
+                    
+                    // Handle doubles
+                    if (result.isDoubles && !this.currentPlayer.inJail) {
+                        setTimeout(() => {
+                            dice.setCanRoll(true);
+                        }, 1000);
+                    }
+                }
+                
+                this.updateDisplay();
+            }
+
+            resetGame() {
+                this.players.forEach(player => player.reset());
+                this.currentPlayerIndex = 0;
+                this.currentPlayer = this.players[0];
+                this.stats = {
+                    totalRolls: 0,
+                    doublesCount: 0,
+                    jailVisits: 0,
+                    goPasses: 0
+                };
+                
+                dice.reset();
+                document.getElementById('game-log').innerHTML = 
+                    '<div class="log-entry">Game reset. Alice\'s turn to roll.</div>';
+                this.updateDisplay();
+                this.updateStats();
+            }
+        }
+
+        // Initialize demo
+        window.demoGame = new DemoGame();
+    </script>
+</body>
+</html>

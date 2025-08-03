@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Property Transactions Demo</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/board.css">
+    <style>
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .demo-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 5px;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 15px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .property-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .property-item {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .property-item.owned {
+            border-color: #3498db;
+            background: #e8f4f8;
+        }
+        
+        .property-item.mortgaged {
+            border-color: #e74c3c;
+            background: #fff5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>Monopoly Property Transaction System Demo</h1>
+        
+        <div class="demo-section">
+            <h2>Test Controls</h2>
+            <div class="test-controls">
+                <button class="btn btn-primary" onclick="runPropertyTests()">Run All Tests</button>
+                <button class="btn btn-secondary" onclick="setupDemoGame()">Setup Demo Game</button>
+                <button class="btn btn-secondary" onclick="showPurchaseModal()">Show Purchase Modal</button>
+                <button class="btn btn-secondary" onclick="showManagementModal()">Show Management Modal</button>
+                <button class="btn btn-secondary" onclick="showAuctionModal()">Show Auction Modal</button>
+            </div>
+            <div id="test-results" class="test-results">Click "Run All Tests" to start testing...</div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Game State</h2>
+            <div id="game-state">
+                <p>Game not started. Click "Setup Demo Game" to begin.</p>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Player Properties</h2>
+            <div id="player-properties">
+                <p>No players active.</p>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>Board Properties</h2>
+            <div id="board-properties">
+                <p>Board not loaded.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Property Modal Container -->
+    <div id="property-modal-container"></div>
+
+    <script type="module">
+        import { GameEngine } from './js/engine/GameEngine.js';
+        import { PropertyTransactionTest } from './js/test-property-transactions.js';
+
+        let gameEngine = null;
+
+        // Initialize demo
+        async function initDemo() {
+            console.log('Initializing property transaction demo...');
+            
+            gameEngine = new GameEngine();
+            await gameEngine.init();
+            
+            console.log('Demo initialized successfully');
+        }
+
+        // Setup demo game
+        window.setupDemoGame = async function() {
+            const config = {
+                players: [
+                    { name: 'Alice', token: 'hat' },
+                    { name: 'Bob', token: 'car' },
+                    { name: 'Charlie', token: 'ship' }
+                ]
+            };
+            
+            await gameEngine.startNewGame(config);
+            updateGameState();
+            updatePlayerProperties();
+            updateBoardProperties();
+        };
+
+        // Run property tests
+        window.runPropertyTests = async function() {
+            const test = new PropertyTransactionTest();
+            const resultsDiv = document.getElementById('test-results');
+            resultsDiv.textContent = 'Running tests...';
+            
+            try {
+                await test.runTests();
+                resultsDiv.textContent = 'Tests completed! Check console for details.';
+            } catch (error) {
+                resultsDiv.textContent = `Error: ${error.message}`;
+            }
+        };
+
+        // Show purchase modal
+        window.showPurchaseModal = function() {
+            if (!gameEngine) {
+                alert('Please setup demo game first');
+                return;
+            }
+            
+            const player = gameEngine.getCurrentPlayer();
+            const board = gameEngine.getBoard();
+            const mediterranean = board.getSquare(1);
+            
+            alert(`Purchase modal would show for ${mediterranean.data.name} ($${mediterranean.data.price})`);
+        };
+
+        // Show management modal
+        window.showManagementModal = function() {
+            if (!gameEngine) {
+                alert('Please setup demo game first');
+                return;
+            }
+            
+            const player = gameEngine.getCurrentPlayer();
+            alert(`Management modal would show for ${player.name}'s properties`);
+        };
+
+        // Show auction modal
+        window.showAuctionModal = function() {
+            if (!gameEngine) {
+                alert('Please setup demo game first');
+                return;
+            }
+            
+            const board = gameEngine.getBoard();
+            const mediterranean = board.getSquare(1);
+            alert(`Auction modal would show for ${mediterranean.data.name}`);
+        };
+
+        // Update game state display
+        function updateGameState() {
+            const stateDiv = document.getElementById('game-state');
+            if (!gameEngine || !gameEngine.isGameActive()) {
+                stateDiv.innerHTML = '<p>Game not started. Click "Setup Demo Game" to begin.</p>';
+                return;
+            }
+            
+            const currentPlayer = gameEngine.getCurrentPlayer();
+            stateDiv.innerHTML = `
+                <p><strong>Current Player:</strong> ${currentPlayer.name} (${currentPlayer.token})</p>
+                <p><strong>Money:</strong> $${currentPlayer.money}</p>
+                <p><strong>Position:</strong> ${currentPlayer.position}</p>
+                <p><strong>Properties:</strong> ${currentPlayer.properties.length}</p>
+                <p><strong>Round:</strong> ${gameEngine.getCurrentRound()}</p>
+            `;
+        }
+
+        // Update player properties display
+        function updatePlayerProperties() {
+            const propsDiv = document.getElementById('player-properties');
+            if (!gameEngine || !gameEngine.isGameActive()) {
+                propsDiv.innerHTML = '<p>No players active.</p>';
+                return;
+            }
+            
+            let html = '';
+            gameEngine.getPlayers().forEach(player => {
+                html += `<h4>${player.name} (${player.token})</h4>`;
+                html += `<p>Money: $${player.money}</p>`;
+                
+                if (player.properties.length > 0) {
+                    html += '<div class="property-list">';
+                    player.properties.forEach(prop => {
+                        const status = prop.isMortgaged ? 'mortgaged' : 'owned';
+                        html += `
+                            <div class="property-item ${status}">
+                                <strong>${prop.name}</strong><br>
+                                Price: $${prop.price}<br>
+                                ${prop.isMortgaged ? 'Mortgaged' : 'Owned'}
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<p>No properties owned</p>';
+                }
+                html += '<hr>';
+            });
+            propsDiv.innerHTML = html;
+        }
+
+        // Update board properties display
+        function updateBoardProperties() {
+            const boardDiv = document.getElementById('board-properties');
+            if (!gameEngine || !gameEngine.isGameActive()) {
+                boardDiv.innerHTML = '<p>Board not loaded.</p>';
+                return;
+            }
+            
+            const board = gameEngine.getBoard();
+            let html = '<div class="property-list">';
+            
+            board.getSquares().forEach((square, index) => {
+                if (square.type === 'property' || square.type === 'railroad' || square.type === 'utility') {
+                    const owner = square.data?.owner ? square.data.owner.name : 'Unowned';
+                    const status = square.data?.owner ? 'owned' : '';
+                    
+                    html += `
+                        <div class="property-item ${status}">
+                            <strong>${square.name}</strong><br>
+                            Price: $${square.data?.price || 'N/A'}<br>
+                            Owner: ${owner}
+                        </div>
+                    `;
+                }
+            });
+            
+            html += '</div>';
+            boardDiv.innerHTML = html;
+        }
+
+        // Initialize demo on load
+        initDemo();
+    </script>
+</body>
+</html>

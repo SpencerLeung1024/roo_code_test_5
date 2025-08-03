@@ -1,0 +1,302 @@
+/* Player Components */
+.player-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    transition: all 0.3s ease;
+}
+
+.player-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.player-card.active {
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.player-card.bankrupt {
+    opacity: 0.5;
+    background: #f8f9fa;
+}
+
+.player-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.player-token-small {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.player-token-small.player-1 { background-color: #e74c3c; }
+.player-token-small.player-2 { background-color: #3498db; }
+.player-token-small.player-3 { background-color: #2ecc71; }
+.player-token-small.player-4 { background-color: #f39c12; }
+.player-token-small.player-5 { background-color: #9b59b6; }
+.player-token-small.player-6 { background-color: #1abc9c; }
+
+.player-name {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.player-money {
+    font-size: 16px;
+    font-weight: bold;
+    color: #27ae60;
+}
+
+.player-details {
+    font-size: 12px;
+    color: #666;
+}
+
+.player-position {
+    margin-bottom: 4px;
+}
+
+.player-properties {
+    margin-top: 8px;
+}
+
+.player-properties h5 {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 4px;
+}
+
+.property-count {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    margin-left: 4px;
+}
+
+/* Player Status Indicators */
+.player-status {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.status-badge {
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.status-badge.in-jail {
+    background: #f39c12;
+    color: white;
+}
+
+.status-badge.get-out-free {
+    background: #27ae60;
+    color: white;
+}
+
+.status-badge.mortgaged {
+    background: #e74c3c;
+    color: white;
+}
+
+/* Current Player Highlight */
+.current-player-highlight {
+    position: relative;
+}
+
+.current-player-highlight::before {
+    content: '→';
+    position: absolute;
+    left: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #3498db;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* Player Actions */
+.player-actions {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+
+.player-actions .btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    border-radius: 4px;
+}
+
+/* Player Token Styles */
+.player-token {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.player-token:hover {
+    transform: scale(1.2);
+    z-index: 20;
+}
+
+/* Transaction Feedback */
+.transaction-feedback {
+    z-index: 15;
+    animation: float-up 2s forwards;
+}
+
+@keyframes float-up {
+    0% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Money Change Animation */
+.money-changed {
+    animation: money-flash 1s;
+}
+
+@keyframes money-flash {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(39, 174, 96, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.money-changed.negative {
+    animation: money-flash-negative 1s;
+}
+
+@keyframes money-flash-negative {
+    0% { background-color: transparent; }
+    50% { background-color: rgba(231, 76, 60, 0.2); }
+    100% { background-color: transparent; }
+}
+
+/* Negative Money */
+.player-money.negative {
+    color: #e74c3c;
+}
+
+/* Building Count */
+.building-count {
+    display: inline-block;
+    background: #95a5a6;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    margin-left: 4px;
+}
+
+/* Current Indicator */
+.current-indicator {
+    color: #3498db;
+    font-weight: bold;
+    margin-left: auto;
+}
+
+/* Player Net Worth */
+.player-net-worth {
+    font-size: 11px;
+    color: #7f8c8d;
+    margin-top: 4px;
+}
+
+/* Player Details Modal */
+.player-details-modal .modal-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.player-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.stat-label {
+    font-weight: bold;
+    color: #495057;
+}
+
+.stat-value {
+    color: #28a745;
+}
+
+.property-group {
+    margin-bottom: 15px;
+}
+
+.property-group h4 {
+    color: #495057;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 4px;
+}
+
+.property-group ul {
+    list-style: none;
+    padding: 0;
+    margin: 8px 0;
+}
+
+.property-group li {
+    padding: 4px 8px;
+    background: #f8f9fa;
+    margin-bottom: 2px;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Responsive Player Cards */
+@media (max-width: 768px) {
+    .player-card {
+        padding: 8px;
+    }
+    
+    .player-name {
+        font-size: 12px;
+    }
+    
+    .player-money {
+        font-size: 14px;
+    }
+    
+    .player-stats {
+        grid-template-columns: 1fr;
+    }
+}

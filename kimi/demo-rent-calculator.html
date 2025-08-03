@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Calculator Demo - Monopoly Game</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components/rent-display.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .demo-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        
+        .property-selector {
+            margin: 20px 0;
+        }
+        
+        .property-selector select, .property-selector input {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .rent-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        
+        .color-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            margin: 2px;
+        }
+        
+        .brown { background-color: #8B4513; }
+        .light-blue { background-color: #87CEEB; color: #333; }
+        .pink { background-color: #FF69B4; }
+        .orange { background-color: #FFA500; }
+        .red { background-color: #FF0000; }
+        .yellow { background-color: #FFFF00; color: #333; }
+        .green { background-color: #008000; }
+        .dark-blue { background-color: #0000FF; }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🧮 Monopoly Rent Calculator Demo</h1>
+        <p>This demo showcases the complete rent calculation system for Monopoly properties, railroads, and utilities.</p>
+        
+        <div class="test-section">
+            <h2>🏠 Property Rent Calculator</h2>
+            <div class="property-selector">
+                <label>Select Property:</label>
+                <select id="property-select">
+                    <option value="mediterranean">Mediterranean Avenue (Brown)</option>
+                    <option value="baltic">Baltic Avenue (Brown)</option>
+                    <option value="oriental">Oriental Avenue (Light Blue)</option>
+                    <option value="vermont">Vermont Avenue (Light Blue)</option>
+                    <option value="connecticut">Connecticut Avenue (Light Blue)</option>
+                    <option value="st-charles">St. Charles Place (Pink)</option>
+                    <option value="states">States Avenue (Pink)</option>
+                    <option value="virginia">Virginia Avenue (Pink)</option>
+                    <option value="reading">Reading Railroad</option>
+                    <option value="pennsylvania">Pennsylvania Railroad</option>
+                    <option value="electric">Electric Company</option>
+                    <option value="water">Water Works</option>
+                </select>
+                
+                <label>Houses:</label>
+                <select id="houses-select">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                
+                <label>Hotel:</label>
+                <input type="checkbox" id="hotel-checkbox">
+                
+                <label>Mortgaged:</label>
+                <input type="checkbox" id="mortgage-checkbox">
+                
+                <label>Dice Roll (for utilities):</label>
+                <input type="number" id="dice-roll" min="2" max="12" value="7">
+                
+                <button class="btn btn-primary" onclick="calculateRent()">Calculate Rent</button>
+            </div>
+            
+            <div id="rent-display" class="rent-display">
+                <p>Select a property and click "Calculate Rent" to see results.</p>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🎯 Quick Tests</h2>
+            <button class="btn btn-success" onclick="runQuickTests()">Run Quick Tests</button>
+            <button class="btn btn-secondary" onclick="clearResults()">Clear Results</button>
+            <div id="test-results" class="test-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📊 Rent Summary</h2>
+            <button class="btn btn-primary" onclick="showRentSummary()">Show All Properties Rent</button>
+            <div id="summary-display" class="rent-display"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Property } from './js/models/Property.js';
+        import { Player } from './js/models/Player.js';
+        import { RentCalculationService } from './js/services/RentCalculationService.js';
+        import { Board } from './js/models/Board.js';
+
+        // Initialize demo components
+        const board = new Board();
+        const testPlayer = new Player({ id: 'demo', name: 'Demo Player', money: 1500 });
+        const rentService = new RentCalculationService({ board });
+        
+        // Property data mapping
+        const propertyData = {
+            mediterranean: { name: 'Mediterranean Avenue', price: 60, color: 'brown', rent: [2, 10, 30, 90, 160, 250], houseCost: 50 },
+            baltic: { name: 'Baltic Avenue', price: 60, color: 'brown', rent: [4, 20, 60, 180, 320, 450], houseCost: 50 },
+            oriental: { name: 'Oriental Avenue', price: 100, color: 'light-blue', rent: [6, 30, 90, 270, 400, 550], houseCost: 50 },
+            vermont: { name: 'Vermont Avenue', price: 100, color: 'light-blue', rent: [6, 30, 90, 270, 400, 550], houseCost: 50 },
+            connecticut: { name: 'Connecticut Avenue', price: 120, color: 'light-blue', rent: [8, 40, 100, 300, 450, 600], houseCost: 50 },
+            'st-charles': { name: 'St. Charles Place', price: 140, color: 'pink', rent: [10, 50, 150, 450, 625, 750], houseCost: 100 },
+            states: { name: 'States Avenue', price: 140, color: 'pink', rent: [10, 50, 150, 450, 625, 750], houseCost: 100 },
+            virginia: { name: 'Virginia Avenue', price: 160, color: 'pink', rent: [12, 60, 180, 500, 700, 900], houseCost: 100 },
+            reading: { name: 'Reading Railroad', price: 200, type: 'railroad' },
+            pennsylvania: { name: 'Pennsylvania Railroad', price: 200, type: 'railroad' },
+            electric: { name: 'Electric Company', price: 150, type: 'utility' },
+            water: { name: 'Water Works', price: 150, type: 'utility' }
+        };
+
+        // Global functions for demo
+        window.calculateRent = function() {
+            const propertyKey = document.getElementById('property-select').value;
+            const houses = parseInt(document.getElementById('houses-select').value);
+            const hasHotel = document.getElementById('hotel-checkbox').checked;
+            const isMortgaged = document.getElementById('mortgage-checkbox').checked;
+            const diceRoll = parseInt(document.getElementById('dice-roll').value);
+            
+            const data = propertyData[propertyKey];
+            let property;
+            
+            if (data.type === 'railroad') {
+                property = new Property(data.name, data.price, 'railroad', [25, 50, 100, 200]);
+            } else if (data.type === 'utility') {
+                property = new Property(data.name, data.price, 'utility', [4, 10]);
+            } else {
+                property = new Property(data.name, data.price, data.color, data.rent, data.houseCost);
+            }
+            
+            property.setOwner(testPlayer);
+            property.houses = houses;
+            property.hasHotel = hasHotel;
+            property.isMortgaged = isMortgaged;
+            
+            const rent = property.getCurrentRent(diceRoll);
+            const display = document.getElementById('rent-display');
+            
+            display.innerHTML = `
+                <h3>${data.name}</h3>
+                <p><strong>Type:</strong> ${property.type}</p>
+                <p><strong>Owner:</strong> ${testPlayer.name}</p>
+                <p><strong>Houses:</strong> ${houses}</p>
+                <p><strong>Hotel:</strong> ${hasHotel ? 'Yes' : 'No'}</p>
+                <p><strong>Mortgaged:</strong> ${isMortgaged ? 'Yes' : 'No'}</p>
+                ${property.type === 'utility' ? `<p><strong>Dice Roll:</strong> ${diceRoll}</p>` : ''}
+                <h4>Current Rent: $${rent}</h4>
+            `;
+        };
+
+        window.runQuickTests = function() {
+            const results = document.getElementById('test-results');
+            let output = 'Running quick rent tests...\n\n';
+            
+            // Test 1: Basic property rent
+            const prop1 = new Property('Test Property', 200, 'orange', [14, 70, 200, 550, 750, 950], 100);
+            prop1.setOwner(testPlayer);
+            output += `Base rent: $${prop1.getCurrentRent()}\n`;
+            
+            // Test 2: Property with houses
+            prop1.houses = 2;
+            output += `2 houses rent: $${prop1.getCurrentRent()}\n`;
+            
+            // Test 3: Railroad rent
+            const railroad = new Property('Test Railroad', 200, 'railroad', [25, 50, 100, 200]);
+            railroad.setOwner(testPlayer);
+            output += `1 railroad rent: $${railroad.getCurrentRent()}\n`;
+            
+            // Test 4: Utility rent
+            const utility = new Property('Test Utility', 150, 'utility', [4, 10]);
+            utility.setOwner(testPlayer);
+            output += `1 utility rent (dice 7): $${utility.getCurrentRent(7)}\n`;
+            
+            // Test 5: Mortgaged property
+            prop1.isMortgaged = true;
+            output += `Mortgaged property rent: $${prop1.getCurrentRent()}\n`;
+            
+            results.textContent = output;
+        };
+
+        window.clearResults = function() {
+            document.getElementById('test-results').textContent = '';
+            document.getElementById('rent-display').innerHTML = '<p>Select a property and click "Calculate Rent" to see results.</p>';
+            document.getElementById('summary-display').innerHTML = '';
+        };
+
+        window.showRentSummary = function() {
+            const summary = document.getElementById('summary-display');
+            let html = '<h3>Complete Rent Summary</h3>';
+            
+            // Properties
+            html += '<h4>Properties</h4><table style="width:100%; border-collapse: collapse;">';
+            html += '<tr><th>Property</th><th>Color</th><th>Base</th><th>1H</th><th>2H</th><th>3H</th><th>4H</th><th>Hotel</th></tr>';
+            
+            const properties = [
+                { name: 'Mediterranean', color: 'brown', rent: [2, 10, 30, 90, 160, 250] },
+                { name: 'Baltic', color: 'brown', rent: [4, 20, 60, 180, 320, 450] },
+                { name: 'Oriental', color: 'light-blue', rent: [6, 30, 90, 270, 400, 550] },
+                { name: 'Connecticut', color: 'light-blue', rent: [8, 40, 100, 300, 450, 600] }
+            ];
+            
+            properties.forEach(prop => {
+                html += `<tr>
+                    <td>${prop.name}</td>
+                    <td><span class="color-badge ${prop.color}">${prop.color}</span></td>
+                    <td>$${prop.rent[0]}</td>
+                    <td>$${prop.rent[1]}</td>
+                    <td>$${prop.rent[2]}</td>
+                    <td>$${prop.rent[3]}</td>
+                    <td>$${prop.rent[4]}</td>
+                    <td>$${prop.rent[5]}</td>
+                </tr>`;
+            });
+            
+            html += '</table>';
+            
+            // Railroads
+            html += '<h4>Railroads</h4><p>1: $25, 2: $50, 3: $100, 4: $200</p>';
+            
+            // Utilities
+            html += '<h4>Utilities</h4><p>1: 4× dice roll, 2: 10× dice roll</p>';
+            
+            summary.innerHTML = html;
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,181 @@
+/* Default Theme Variables */
+:root {
+    /* Primary Colors */
+    --theme-primary: #2c3e50;
+    --theme-primary-light: #34495e;
+    --theme-primary-dark: #1a252f;
+    
+    /* Secondary Colors */
+    --theme-secondary: #95a5a6;
+    --theme-secondary-light: #bdc3c7;
+    --theme-secondary-dark: #7f8c8d;
+    
+    /* Accent Colors */
+    --theme-accent: #3498db;
+    --theme-accent-light: #5dade2;
+    --theme-accent-dark: #2980b9;
+    
+    /* Success Colors */
+    --theme-success: #27ae60;
+    --theme-success-light: #2ecc71;
+    --theme-success-dark: #229954;
+    
+    /* Warning Colors */
+    --theme-warning: #f39c12;
+    --theme-warning-light: #f4d03f;
+    --theme-warning-dark: #d68910;
+    
+    /* Danger Colors */
+    --theme-danger: #e74c3c;
+    --theme-danger-light: #ec7063;
+    --theme-danger-dark: #c0392b;
+    
+    /* Neutral Colors */
+    --theme-white: #ffffff;
+    --theme-light: #f8f9fa;
+    --theme-gray-100: #f8f9fa;
+    --theme-gray-200: #e9ecef;
+    --theme-gray-300: #dee2e6;
+    --theme-gray-400: #ced4da;
+    --theme-gray-500: #adb5bd;
+    --theme-gray-600: #6c757d;
+    --theme-gray-700: #495057;
+    --theme-gray-800: #343a40;
+    --theme-gray-900: #212529;
+    --theme-black: #000000;
+    
+    /* Property Colors */
+    --theme-brown: #8B4513;
+    --theme-light-blue: #87CEEB;
+    --theme-pink: #FF69B4;
+    --theme-orange: #FFA500;
+    --theme-red: #FF0000;
+    --theme-yellow: #FFFF00;
+    --theme-green: #008000;
+    --theme-dark-blue: #0000FF;
+    --theme-railroad: #6c757d;
+    --theme-utility: #20c997;
+    
+    /* Typography */
+    --theme-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --theme-font-size-xs: 0.75rem;
+    --theme-font-size-sm: 0.875rem;
+    --theme-font-size-base: 1rem;
+    --theme-font-size-lg: 1.125rem;
+    --theme-font-size-xl: 1.25rem;
+    --theme-font-size-2xl: 1.5rem;
+    --theme-font-size-3xl: 1.875rem;
+    --theme-font-size-4xl: 2.25rem;
+    
+    /* Spacing */
+    --theme-spacing-0: 0;
+    --theme-spacing-1: 0.25rem;
+    --theme-spacing-2: 0.5rem;
+    --theme-spacing-3: 0.75rem;
+    --theme-spacing-4: 1rem;
+    --theme-spacing-5: 1.25rem;
+    --theme-spacing-6: 1.5rem;
+    --theme-spacing-8: 2rem;
+    --theme-spacing-10: 2.5rem;
+    --theme-spacing-12: 3rem;
+    --theme-spacing-16: 4rem;
+    --theme-spacing-20: 5rem;
+    --theme-spacing-24: 6rem;
+    
+    /* Border Radius */
+    --theme-border-radius-none: 0;
+    --theme-border-radius-sm: 0.125rem;
+    --theme-border-radius: 0.25rem;
+    --theme-border-radius-md: 0.375rem;
+    --theme-border-radius-lg: 0.5rem;
+    --theme-border-radius-xl: 0.75rem;
+    --theme-border-radius-2xl: 1rem;
+    --theme-border-radius-full: 9999px;
+    
+    /* Shadows */
+    --theme-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --theme-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --theme-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --theme-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    
+    /* Transitions */
+    --theme-transition-fast: 150ms ease-in-out;
+    --theme-transition-normal: 300ms ease-in-out;
+    --theme-transition-slow: 500ms ease-in-out;
+    
+    /* Z-index */
+    --theme-z-dropdown: 1000;
+    --theme-z-sticky: 1020;
+    --theme-z-fixed: 1030;
+    --theme-z-modal-backdrop: 1040;
+    --theme-z-modal: 1050;
+    --theme-z-popover: 1060;
+    --theme-z-tooltip: 1070;
+}
+
+/* Dark Theme Variables */
+[data-theme="dark"] {
+    --theme-primary: #34495e;
+    --theme-primary-light: #4a5f7a;
+    --theme-primary-dark: #2c3e50;
+    
+    --theme-secondary: #7f8c8d;
+    --theme-secondary-light: #95a5a6;
+    --theme-secondary-dark: #6c7b7d;
+    
+    --theme-light: #2c3e50;
+    --theme-gray-100: #34495e;
+    --theme-gray-200: #4a5f7a;
+    --theme-gray-300: #5d6d7e;
+    --theme-gray-400: #7f8c8d;
+    --theme-gray-500: #95a5a6;
+    --theme-gray-600: #b3b6b7;
+    --theme-gray-700: #d5dbdb;
+    --theme-gray-800: #eaeded;
+    --theme-gray-900: #f8f9fa;
+    
+    --theme-white: #2c3e50;
+    --theme-black: #ffffff;
+}
+
+/* Apply theme variables */
+body {
+    background-color: var(--theme-light);
+    color: var(--theme-gray-800);
+}
+
+.game-header {
+    background: var(--theme-primary);
+    color: var(--theme-white);
+}
+
+.btn-primary {
+    background: var(--theme-accent);
+    color: var(--theme-white);
+}
+
+.btn-primary:hover {
+    background: var(--theme-accent-dark);
+}
+
+.btn-secondary {
+    background: var(--theme-secondary);
+    color: var(--theme-white);
+}
+
+.btn-secondary:hover {
+    background: var(--theme-secondary-dark);
+}
+
+/* Property color mapping */
+.color-brown { background-color: var(--theme-brown); }
+.color-light-blue { background-color: var(--theme-light-blue); }
+.color-pink { background-color: var(--theme-pink); }
+.color-orange { background-color: var(--theme-orange); }
+.color-red { background-color: var(--theme-red); }
+.color-yellow { background-color: var(--theme-yellow); }
+.color-green { background-color: var(--theme-green); }
+.color-dark-blue { background-color: var(--theme-dark-blue); }
+.color-railroad { background-color: var(--theme-railroad); }
+.color-utility { background-color: var(--theme-utility); }

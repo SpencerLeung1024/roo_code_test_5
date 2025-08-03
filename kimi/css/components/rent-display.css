@@ -1,0 +1,258 @@
+/**
+ * Rent Display Styles
+ * Styles for enhanced rent calculation display
+ */
+
+/* Enhanced rent table styles */
+.rent-table.enhanced {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.rent-table.enhanced th,
+.rent-table.enhanced td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.rent-table.enhanced th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.rent-table.enhanced tr.current {
+    background-color: #e8f5e8;
+    font-weight: bold;
+}
+
+.rent-table.enhanced tr.current td {
+    color: #2d5a2d;
+}
+
+/* Property details modal styles */
+.property-details {
+    max-width: 500px;
+}
+
+.property-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.color-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.color-badge.brown { background-color: #8B4513; }
+.color-badge.light-blue { background-color: #87CEEB; color: #333; }
+.color-badge.pink { background-color: #FF69B4; }
+.color-badge.orange { background-color: #FFA500; }
+.color-badge.red { background-color: #FF0000; }
+.color-badge.yellow { background-color: #FFFF00; color: #333; }
+.color-badge.green { background-color: #008000; }
+.color-badge.dark-blue { background-color: #0000FF; }
+
+/* Development info styles */
+.development-info {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}
+
+.development-info h4 {
+    margin-top: 0;
+    color: #333;
+}
+
+/* Monopoly info styles */
+.monopoly-info {
+    margin: 15px 0;
+    padding: 10px;
+    background-color: #f0f8ff;
+    border-radius: 5px;
+    border-left: 4px solid #4CAF50;
+}
+
+.monopoly-bonus {
+    color: #4CAF50;
+    font-weight: bold;
+    margin: 5px 0;
+}
+
+/* Rent calculation modal styles */
+.rent-calculation {
+    text-align: center;
+}
+
+.rent-breakdown {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+.rent-breakdown-list {
+    text-align: left;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.rent-breakdown-list li {
+    margin: 5px 0;
+    padding: 5px;
+    background-color: white;
+    border-radius: 3px;
+}
+
+/* Mortgage warning styles */
+.mortgage-warning {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.mortgage-status {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* Rent zero styles */
+.rent-zero {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .rent-table.enhanced {
+        font-size: 12px;
+    }
+    
+    .rent-table.enhanced th,
+    .rent-table.enhanced td {
+        padding: 6px 8px;
+    }
+    
+    .property-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* Animation styles */
+.rent-table.enhanced tr {
+    transition: background-color 0.3s ease;
+}
+
+.rent-table.enhanced tr:hover {
+    background-color: #f5f5f5;
+}
+
+.rent-table.enhanced tr.current:hover {
+    background-color: #d8f0d8;
+}
+
+/* Color group specific styles */
+.property-group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.property-group-header .color-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+}
+
+/* Rent summary styles */
+.rent-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+
+.rent-summary-item {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.rent-summary-item h5 {
+    margin: 0 0 5px 0;
+    color: #333;
+}
+
+.rent-summary-item .rent-amount {
+    font-size: 18px;
+    font-weight: bold;
+    color: #28a745;
+}
+
+/* Interactive elements */
+.btn-rent-calc {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.btn-rent-calc:hover {
+    background-color: #0056b3;
+}
+
+.btn-rent-calc:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Tooltip styles */
+.rent-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.rent-tooltip .tooltiptext {
+    visibility: hidden;
+    width: 200px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.rent-tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

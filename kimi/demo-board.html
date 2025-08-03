@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Board Demo</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/board.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .demo-controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .demo-controls button {
+            margin: 5px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .demo-info {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .demo-board-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .property-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            max-width: 250px;
+            display: none;
+        }
+        
+        .property-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        
+        .property-info p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>Monopoly Board Demo</h1>
+            <p>Complete 40-square Monopoly board with all properties, railroads, and utilities</p>
+        </div>
+        
+        <div class="demo-controls">
+            <button onclick="testBoard()">Test Board</button>
+            <button onclick="showAllProperties()">Show Properties</button>
+            <button onclick="resetBoard()">Reset</button>
+        </div>
+        
+        <div class="demo-info">
+            <h3>Board Statistics</h3>
+            <div id="board-stats">
+                Loading...
+            </div>
+        </div>
+        
+        <div class="demo-board-container">
+            <div id="game-board" class="game-board">
+                <div id="board-grid" class="board-grid">
+                    <!-- Board will be rendered here -->
+                </div>
+                <div id="player-tokens" class="player-tokens">
+                    <!-- Player tokens will be positioned here -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="property-info" class="property-info">
+            <h3>Property Details</h3>
+            <div id="property-details"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { Board } from './js/models/Board.js';
+        import { BoardRenderer } from './js/ui/BoardRenderer.js';
+        
+        // Global variables for demo
+        window.board = new Board();
+        window.renderer = new BoardRenderer();
+        
+        // Initialize demo
+        async function initDemo() {
+            console.log('🎮 Initializing Monopoly Board Demo...');
+            
+            // Initialize renderer
+            await window.renderer.init();
+            
+            // Render the board
+            window.renderer.renderBoard(window.board);
+            
+            // Update statistics
+            updateBoardStats();
+            
+            // Add event listeners
+            document.addEventListener('square:hover', (e) => {
+                showPropertyInfo(e.detail.square, e.detail.position);
+            });
+            
+            document.addEventListener('square:leave', () => {
+                hidePropertyInfo();
+            });
+            
+            console.log('✅ Demo initialized successfully!');
+        }
+        
+        function updateBoardStats() {
+            const squares = window.board.getSquares();
+            const stats = {
+                total: squares.length,
+                properties: squares.filter(s => s.type === 'property').length,
+                railroads: squares.filter(s => s.type === 'railroad').length,
+                utilities: squares.filter(s => s.type === 'utility').length,
+                chance: squares.filter(s => s.type === 'chance').length,
+                communityChest: squares.filter(s => s.type === 'community-chest').length,
+                tax: squares.filter(s => s.type === 'tax').length,
+                corners: squares.filter(s => ['go', 'jail', 'free-parking', 'go-to-jail'].includes(s.type)).length
+            };
+            
+            document.getElementById('board-stats').innerHTML = `
+                <p><strong>Total Squares:</strong> ${stats.total}</p>
+                <p><strong>Properties:</strong> ${stats.properties}</p>
+                <p><strong>Railroads:</strong> ${stats.railroads}</p>
+                <p><strong>Utilities:</strong> ${stats.utilities}</p>
+                <p><strong>Chance Cards:</strong> ${stats.chance}</p>
+                <p><strong>Community Chest:</strong> ${stats.communityChest}</p>
+                <p><strong>Tax Squares:</strong> ${stats.tax}</p>
+                <p><strong>Corner Squares:</strong> ${stats.corners}</p>
+            `;
+        }
+        
+        function showPropertyInfo(square, position) {
+            if (square.type !== 'property') return;
+            
+            const info = document.getElementById('property-info');
+            const details = document.getElementById('property-details');
+            
+            details.innerHTML = `
+                <p><strong>Name:</strong> ${square.name}</p>
+                <p><strong>Type:</strong> ${square.type}</p>
+                <p><strong>Price:</strong> $${square.data?.price || 0}</p>
+                <p><strong>Color Group:</strong> ${square.data?.colorGroup || 'N/A'}</p>
+                <p><strong>Base Rent:</strong> $${square.data?.baseRent || 0}</p>
+                ${square.data?.houseCost ? `<p><strong>House Cost:</strong> $${square.data.houseCost}</p>` : ''}
+                <p><strong>Position:</strong> ${position}</p>
+            `;
+            
+            info.style.display = 'block';
+        }
+        
+        function hidePropertyInfo() {
+            document.getElementById('property-info').style.display = 'none';
+        }
+        
+        // Global functions for buttons
+        window.testBoard = function() {
+            console.log('🧪 Running board tests...');
+            const squares = window.board.getSquares();
+            
+            // Test some key squares
+            const tests = [
+                { pos: 0, name: 'GO', type: 'go' },
+                { pos: 1, name: 'Mediterranean Avenue', type: 'property' },
+                { pos: 5, name: 'Reading Railroad', type: 'railroad' },
+                { pos: 12, name: 'Electric Company', type: 'utility' },
+                { pos: 20, name: 'Free Parking', type: 'free-parking' },
+                { pos: 39, name: 'Boardwalk', type: 'property' }
+            ];
+            
+            tests.forEach(test => {
+                const square = window.board.getSquare(test.pos);
+                if (square.name === test.name && square.type === test.type) {
+                    console.log(`✅ ${test.name} at position ${test.pos}`);
+                } else {
+                    console.error(`❌ ${test.name} test failed`);
+                }
+            });
+            
+            alert('Board tests completed! Check console for details.');
+        };
+        
+        window.showAllProperties = function() {
+            const squares = window.board.getSquares();
+            const properties = squares.filter(s => s.type === 'property');
+            
+            console.log('🏠 All Properties:');
+            properties.forEach(prop => {
+                console.log(`${prop.position}: ${prop.name} ($${prop.data?.price}) - ${prop.data?.colorGroup}`);
+            });
+            
+            alert(`Found ${properties.length} properties. Check console for full list.`);
+        };
+        
+        window.resetBoard = function() {
+            window.renderer.renderBoard(window.board);
+            updateBoardStats();
+            console.log('🔄 Board reset');
+        };
+        
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', initDemo);
+    </script>
+</body>
+</html>

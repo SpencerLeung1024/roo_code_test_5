@@ -1,0 +1,336 @@
+/**
+ * Dice UI Styles
+ * Visual styling for dice display and animations
+ */
+
+.dice-ui {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.dice-display {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+}
+
+.dice {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.dice:hover {
+    transform: scale(1.05);
+}
+
+.dice-face {
+    width: 100%;
+    height: 100%;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.dice-face::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.8) 0%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        rgba(0, 0, 0, 0.1) 100%);
+    border-radius: 10px;
+}
+
+.dots {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: #2c3e50;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Rolling animation */
+.dice.rolling {
+    animation: dice-roll 0.8s ease-in-out infinite;
+}
+
+@keyframes dice-roll {
+    0% { transform: rotate(0deg) scale(1); }
+    25% { transform: rotate(90deg) scale(1.1); }
+    50% { transform: rotate(180deg) scale(1); }
+    75% { transform: rotate(270deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.dice.rolling .dice-face {
+    animation: face-shake 0.1s ease-in-out infinite;
+}
+
+@keyframes face-shake {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(2px); }
+}
+
+/* Dice controls */
+.dice-controls {
+    margin-top: 1rem;
+}
+
+.roll-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.roll-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.roll-button:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+}
+
+.roll-button:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.btn-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Dice result display */
+.dice-result {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.total-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.total-label {
+    color: #7f8c8d;
+    font-size: 1rem;
+}
+
+.total-value {
+    color: #e74c3c;
+    margin-left: 0.5rem;
+}
+
+/* Doubles indicator */
+.doubles-indicator {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 20px;
+    font-weight: bold;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.doubles-text {
+    display: block;
+    font-size: 1.1rem;
+}
+
+.roll-again-text {
+    display: block;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Roll history */
+.roll-history {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 250px;
+}
+
+.roll-history h4 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1rem;
+}
+
+.history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.history-item.latest {
+    background: rgba(102, 126, 234, 0.1);
+    font-weight: bold;
+}
+
+.dice-values {
+    color: #2c3e50;
+}
+
+.total {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+.doubles-badge {
+    background: #e74c3c;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .dice-ui {
+        padding: 1rem;
+        margin: 0.5rem;
+    }
+    
+    .dice {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .dot {
+        width: 10px;
+        height: 10px;
+    }
+    
+    .roll-button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .dice-ui {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+    }
+    
+    .dice-face {
+        background: #34495e;
+        box-shadow: 
+            0 2px 4px rgba(0, 0, 0, 0.3),
+            inset 0 1px 2px rgba(255, 255, 255, 0.1);
+    }
+    
+    .dot {
+        background: #ecf0f1;
+    }
+    
+    .total-display {
+        color: #ecf0f1;
+    }
+    
+    .history-item {
+        background: rgba(52, 73, 94, 0.7);
+        color: #ecf0f1;
+    }
+}
+
+/* Special effects */
+.dice[data-value="6"] .dots {
+    animation: lucky-six 0.5s ease-in-out;
+}
+
+@keyframes lucky-six {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+/* 3D effect enhancement */
+.dice-face {
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+}
+
+.dice:hover .dice-face {
+    transform: rotateX(10deg) rotateY(10deg);
+}
+
+/* Success animation for good rolls */
+.dice.success .dice-face {
+    animation: success-glow 0.6s ease-in-out;
+}
+
+@keyframes success-glow {
+    0% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+    50% { box-shadow: 0 0 20px rgba(46, 204, 113, 0.6); }
+    100% { box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+}

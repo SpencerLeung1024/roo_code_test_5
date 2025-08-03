@@ -1,0 +1,436 @@
+/* Game Board Layout */
+.board-grid {
+    display: grid;
+    grid-template-columns: repeat(11, 1fr);
+    grid-template-rows: repeat(11, 1fr);
+    gap: 2px;
+    width: 100%;
+    height: 600px;
+    background: #2c3e50;
+    padding: 10px;
+    border-radius: 8px;
+    position: relative;
+}
+
+/* Board Squares */
+.square {
+    background: white;
+    border: 1px solid #bdc3c7;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 4px;
+    font-size: 10px;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.square:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+/* Corner Squares */
+.square.corner {
+    background: #f8f9fa;
+    font-weight: bold;
+    font-size: 12px;
+    justify-content: center;
+}
+
+.square.corner.go {
+    background: #d4edda;
+}
+
+.square.corner.jail {
+    background: #f8d7da;
+}
+
+.square.corner.free-parking {
+    background: #fff3cd;
+}
+
+.square.corner.go-to-jail {
+    background: #f5c6cb;
+}
+
+/* Property Squares */
+.square.property {
+    position: relative;
+}
+
+.square.property .color-bar {
+    height: 20%;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+/* Color Groups */
+.color-brown { background-color: #8B4513; }
+.color-light-blue { background-color: #87CEEB; }
+.color-pink { background-color: #FF69B4; }
+.color-orange { background-color: #FFA500; }
+.color-red { background-color: #FF0000; }
+.color-yellow { background-color: #FFFF00; }
+.color-green { background-color: #008000; }
+.color-dark-blue { background-color: #0000FF; }
+
+/* Railroad and Utility */
+.square.railroad,
+.square.utility {
+    background: #f8f9fa;
+}
+
+.square.railroad::before {
+    content: '🚂';
+    font-size: 20px;
+}
+
+.square.utility::before {
+    content: '⚡';
+    font-size: 20px;
+}
+
+/* Tax Squares */
+.square.tax {
+    background: #fff3cd;
+}
+
+.square.tax::before {
+    content: '💰';
+    font-size: 20px;
+}
+
+/* Chance and Community Chest */
+.square.chance {
+    background: #d1ecf1;
+}
+
+.square.chance::before {
+    content: '?';
+    font-size: 24px;
+    font-weight: bold;
+    color: #0c5460;
+}
+
+.square.community-chest {
+    background: #d4edda;
+}
+
+.square.community-chest::before {
+    content: '🎁';
+    font-size: 20px;
+}
+
+/* Property Details */
+.property-name {
+    font-weight: bold;
+    font-size: 9px;
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+
+.property-price {
+    font-size: 8px;
+    color: #666;
+}
+
+/* Houses and Hotels */
+.houses {
+    display: flex;
+    justify-content: center;
+    gap: 1px;
+    margin-top: 2px;
+}
+
+.house {
+    width: 8px;
+    height: 8px;
+    background: #28a745;
+    border: 1px solid #1e7e34;
+}
+
+.hotel {
+    width: 12px;
+    height: 8px;
+    background: #dc3545;
+    border: 1px solid #c82333;
+}
+
+/* Player Tokens */
+.player-tokens {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.player-token {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.5s ease;
+    z-index: 5;
+}
+
+.player-token.player-1 { background-color: #e74c3c; }
+.player-token.player-2 { background-color: #3498db; }
+.player-token.player-3 { background-color: #2ecc71; }
+.player-token.player-4 { background-color: #f39c12; }
+.player-token.player-5 { background-color: #9b59b6; }
+.player-token.player-6 { background-color: #1abc9c; }
+
+/* Position tokens on squares */
+.square[data-position] {
+    position: relative;
+}
+
+.square[data-position] .player-token {
+    position: absolute;
+}
+
+/* Board Labels */
+.board-label {
+    position: absolute;
+    font-size: 10px;
+    font-weight: bold;
+    color: var(--dark-color);
+}
+
+/* Responsive Board */
+@media (max-width: 1200px) {
+    .board-grid {
+        height: 500px;
+    }
+    
+    .square {
+        font-size: 8px;
+    }
+    
+    .property-name {
+        font-size: 7px;
+    }
+}
+
+@media (max-width: 768px) {
+    .board-grid {
+        height: 400px;
+    }
+    
+    .square {
+        font-size: 6px;
+        padding: 2px;
+    }
+    
+    .property-name {
+        font-size: 5px;
+    }
+    
+    .player-token {
+        width: 15px;
+        height: 15px;
+    }
+}
+
+/* Animation for token movement */
+.token-moving {
+    animation: bounce 0.5s ease-in-out;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Highlight active square */
+.square.active {
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+    border-color: #3498db;
+}
+
+/* Owned property indicator */
+.square.owned::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-color);
+}
+
+/* Mortgaged property */
+.square.mortgaged {
+    opacity: 0.6;
+    background: repeating-linear-gradient(
+        45deg,
+        #f8f9fa,
+        #f8f9fa 5px,
+        #e9ecef 5px,
+        #e9ecef 10px
+    );
+}
+
+/* Square icons */
+.square-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+}
+
+/* Property tooltip */
+.property-tooltip {
+    position: absolute;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    max-width: 220px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.property-tooltip h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 4px;
+}
+
+.property-tooltip p {
+    margin: 4px 0;
+}
+
+/* Enhanced square styling */
+.square.corner {
+    font-size: 11px;
+    font-weight: bold;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.square.corner .square-icon {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.square.corner .square-name {
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+
+.square.corner .square-description {
+    font-size: 9px;
+    color: #666;
+}
+
+/* Railroad and utility styling */
+.square.railroad,
+.square.utility {
+    background: #f8f9fa;
+    justify-content: center;
+    align-items: center;
+}
+
+.square.railroad .square-name,
+.square.utility .square-name {
+    font-weight: bold;
+    margin-top: 4px;
+}
+
+/* Tax squares */
+.square.tax {
+    background: #fff3cd;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Chance and Community Chest */
+.square.chance,
+.square.community-chest {
+    justify-content: center;
+    align-items: center;
+}
+
+.square.chance .square-icon {
+    font-size: 28px;
+    font-weight: bold;
+    color: #0c5460;
+}
+
+.square.community-chest .square-icon {
+    font-size: 24px;
+}
+
+/* Responsive improvements */
+@media (max-width: 1200px) {
+    .square {
+        font-size: 9px;
+    }
+    
+    .property-name {
+        font-size: 8px;
+    }
+    
+    .square-icon {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .square {
+        font-size: 7px;
+        padding: 2px;
+    }
+    
+    .property-name {
+        font-size: 6px;
+    }
+    
+    .square-icon {
+        font-size: 14px;
+    }
+    
+    .property-tooltip {
+        max-width: 180px;
+        font-size: 11px;
+    }
+}
+
+/* Token positioning improvements */
+.player-token {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.5s ease;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+/* Multiple tokens on same square positioning */
+.square[data-token-count="2"] .player-token:nth-child(1) { transform: translate(-3px, -3px); }
+.square[data-token-count="2"] .player-token:nth-child(2) { transform: translate(3px, 3px); }
+.square[data-token-count="3"] .player-token:nth-child(1) { transform: translate(-4px, -4px); }
+.square[data-token-count="3"] .player-token:nth-child(2) { transform: translate(0, 0); }
+.square[data-token-count="3"] .player-token:nth-child(3) { transform: translate(4px, 4px); }
+.square[data-token-count="4+"] .player-token { transform: scale(0.8); }

@@ -1,0 +1,332 @@
+/* Modal Components */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: auto;
+    animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #dee2e6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #666;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    border-top: 1px solid #dee2e6;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* Modal Sizes */
+.modal-small {
+    max-width: 300px;
+}
+
+.modal-medium {
+    max-width: 500px;
+}
+
+.modal-large {
+    max-width: 700px;
+}
+
+.modal-full {
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+/* Modal Types */
+.modal-confirm {
+    text-align: center;
+}
+
+.modal-confirm .modal-body {
+    padding: 30px 20px;
+}
+
+.modal-confirm .modal-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.modal-confirm .modal-message {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Property Modal */
+.property-modal .modal-container {
+    max-width: 400px;
+}
+
+/* Trade Modal */
+.trade-modal .modal-container {
+    max-width: 600px;
+}
+
+.trade-section {
+    margin-bottom: 20px;
+}
+
+.trade-section h4 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.trade-properties {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 10px;
+}
+
+/* Auction Modal */
+.auction-modal .modal-container {
+    max-width: 500px;
+}
+
+.auction-info {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.auction-bid {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.auction-bid input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.auction-history {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+}
+
+/* Settings Modal */
+.settings-modal .modal-container {
+    max-width: 500px;
+}
+
+.settings-section {
+    margin-bottom: 20px;
+}
+
+.settings-section h4 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Player Setup Styles */
+.setup-section {
+    margin-bottom: 30px;
+}
+
+.setup-section h3 {
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+}
+
+.player-setup-card {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.player-setup-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.player-token-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.player-setup-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 15px;
+    align-items: end;
+}
+
+.player-setup-form .form-group {
+    margin-bottom: 0;
+}
+
+/* Player Management Styles */
+.player-management-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.player-management-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: white;
+}
+
+.player-management-item.bankrupt {
+    opacity: 0.6;
+    background: #f8f9fa;
+}
+
+.player-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.player-actions {
+    display: flex;
+    gap: 5px;
+}
+
+/* Responsive Modals */
+@media (max-width: 768px) {
+    .modal-container {
+        margin: 10px;
+        max-width: calc(100vw - 20px);
+    }
+    
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 15px;
+    }
+    
+    .modal-title {
+        font-size: 18px;
+    }
+    
+    .player-setup-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .player-management-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* Modal Backdrop Click */
+.modal-overlay.closable {
+    cursor: pointer;
+}
+
+.modal-overlay.closable .modal-container {
+    cursor: default;
+}

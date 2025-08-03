@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice System Tests</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        
+        .test-result.pass {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+        
+        .test-result.fail {
+            background: #f8d7da;
+            border-color: #dc3545;
+        }
+        
+        .test-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e9ecef;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        button:hover {
+            background: #0056b3;
+        }
+        
+        #test-output {
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            white-space: pre-wrap;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎲 Monopoly Dice System Tests</h1>
+        <p>Comprehensive testing of the dice rolling mechanics</p>
+        
+        <button onclick="runTests()">Run All Tests</button>
+        <button onclick="runIntegrationTest()">Run Integration Test</button>
+        <button onclick="clearOutput()">Clear Output</button>
+        
+        <div id="test-results"></div>
+        <div id="test-output"></div>
+    </div>
+
+    <script type="module">
+        import { DiceTestSuite } from './js/tests/dice-test.js';
+        import { dice } from './js/models/Dice.js';
+        import { diceUI } from './js/ui/DiceUI.js';
+
+        let testSuite = new DiceTestSuite();
+        let outputElement = document.getElementById('test-output');
+        let resultsElement = document.getElementById('test-results');
+
+        function log(message) {
+            outputElement.textContent += message + '\n';
+            outputElement.scrollTop = outputElement.scrollHeight;
+        }
+
+        function clearOutput() {
+            outputElement.textContent = '';
+            resultsElement.innerHTML = '';
+        }
+
+        async function runTests() {
+            clearOutput();
+            log('🎲 Starting Dice System Tests...\n');
+            
+            const startTime = Date.now();
+            const allPassed = await testSuite.runAllTests();
+            const duration = Date.now() - startTime;
+            
+            log(`\n⏱️ Tests completed in ${duration}ms`);
+            
+            // Display results
+            resultsElement.innerHTML = '';
+            testSuite.testResults.forEach(result => {
+                const div = document.createElement('div');
+                div.className = `test-result ${result.passed ? 'pass' : 'fail'}`;
+                div.innerHTML = `
+                    <strong>${result.testName}</strong><br>
+                    ${result.description}<br>
+                    <small>${result.timestamp}</small>
+                `;
+                resultsElement.appendChild(div);
+            });
+            
+            const summary = document.createElement('div');
+            summary.className = 'test-summary';
+            const passed = testSuite.testResults.filter(r => r.passed).length;
+            const total = testSuite.testResults.length;
+            summary.textContent = `${passed}/${total} tests passed (${Math.round((passed/total)*100)}%)`;
+            resultsElement.appendChild(summary);
+        }
+
+        async function runIntegrationTest() {
+            clearOutput();
+            log('🔄 Running Integration Test...\n');
+            
+            const startTime = Date.now();
+            await testSuite.runIntegrationTest();
+            const duration = Date.now() - startTime;
+            
+            log(`\n⏱️ Integration test completed in ${duration}ms`);
+        }
+
+        // Make functions global
+        window.runTests = runTests;
+        window.runIntegrationTest = runIntegrationTest;
+        window.clearOutput = clearOutput;
+
+        // Auto-run basic tests on load
+        setTimeout(() => {
+            log('🎲 Dice System Test Suite Loaded');
+            log('Click "Run All Tests" to start testing\n');
+            
+            // Quick smoke test
+            const smokeTest = dice.roll();
+            if (smokeTest) {
+                log(`✅ Smoke test passed: ${smokeTest.dice1} + ${smokeTest.dice2} = ${smokeTest.total}`);
+            }
+        }, 100);
+    </script>
+</body>
+</html>
