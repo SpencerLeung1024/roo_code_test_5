@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Monopoly Game</h1>
+            <div class="connection-status" id="connection-status">
+                <span class="status-indicator" id="status-indicator"></span>
+                <span id="status-text">Connecting...</span>
+            </div>
+        </header>
+        
+        <main>
+            <div class="game-board" id="game-board">
+                <!-- Game board will be dynamically generated here -->
+            </div>
+            
+            <div class="game-controls">
+                <button id="roll-dice" class="game-btn" disabled>Roll Dice</button>
+                <button id="end-turn" class="game-btn" disabled>End Turn</button>
+            </div>
+            
+            <div class="player-info">
+                <h2>Player Information</h2>
+                <div id="player-details">
+                    <!-- Player details will be displayed here -->
+                </div>
+            </div>
+            
+            <div class="game-log">
+                <h2>Game Log</h2>
+                <div id="log-messages">
+                    <!-- Game messages will appear here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Socket.io client library -->
+    <script src="/socket.io/socket.io.js"></script>
+    
+    <!-- Game scripts -->
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
