@@ -49,6 +49,10 @@ Made a working Monopoly core gameplay loop
 Movement, buying property, rent
 
 - moonshotai/kimi-k2 > kimi
+NOTE TO SELF: EARLY STATS TO SUBTRACT:
+$0.202, 1.84M
+I had to use 3 allowed providers: Fireworks, Parasail, and Together
+These are the only providers with the full 131k context, don't have weird quantizations, and are not hammered like the official Moonshot AI provider
 
 - z-ai/glm-4.5 > glm
 $3.6, 9.1M
