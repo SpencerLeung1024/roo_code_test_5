@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Monopoly</h1>
+            <div class="game-status">
+                <span id="current-player">Player 1's Turn</span>
+                <span id="game-phase">Roll Dice</span>
+            </div>
+            <div class="game-stats" id="game-stats">
+                <!-- Statistics will be displayed here by JavaScript -->
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="player-panel left">
+                <h2>Player 1</h2>
+                <div class="player-info">
+                    <div class="balance">Balance: $1500</div>
+                    <div class="properties">Properties: 0</div>
+                    <div class="jail-status">Jail: Not in jail</div>
+                    <div class="get-out-cards">Get Out of Jail Cards: 0</div>
+                </div>
+            </div>
+            
+            <div class="center-content">
+                <div class="board-container">
+                    <div id="game-board" class="game-board">
+                        <!-- Board will be rendered here by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="game-log-container">
+                    <h3>Game Log</h3>
+                    <div id="game-log" class="game-log"></div>
+                </div>
+            </div>
+            
+            <div class="player-panel right">
+                <h2>Player 2</h2>
+                <div class="player-info">
+                    <div class="balance">Balance: $1500</div>
+                    <div class="properties">Properties: 0</div>
+                    <div class="jail-status">Jail: Not in jail</div>
+                    <div class="get-out-cards">Get Out of Jail Cards: 0</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-controls">
+            <button id="roll-dice" class="action-button">Roll Dice</button>
+            <button id="end-turn" class="action-button">End Turn</button>
+            <button id="pause-game" class="action-button">Pause Game</button>
+            <button id="new-game" class="action-button">New Game</button>
+            <div class="dice-container">
+                <div class="dice" id="dice1">?</div>
+                <div class="dice" id="dice2">?</div>
+            </div>
+        </div>
+        
+        <div class="messages">
+            <div id="game-message">Welcome to Monopoly!</div>
+        </div>
+    </div>
+    
+    
+    <script src="js/data.js"></script>
+    <script src="js/board-manager.js"></script>
+    <script src="js/player-manager.js"></script>
+    <script src="js/property-manager.js"></script>
+    <script src="js/card-manager.js"></script>
+    <script src="js/game-state-manager.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

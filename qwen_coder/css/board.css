@@ -1,0 +1,345 @@
+/* Board-specific styles for Monopoly Game */
+
+.game-board {
+    width: 600px;
+    height: 600px;
+    background-color: #f0f0f0;
+    border: 2px solid #333;
+    position: relative;
+    display: grid;
+    grid-template-columns: 80px 1fr 80px;
+    grid-template-rows: 80px 1fr 80px;
+    grid-template-areas:
+        "top-left top-spaces top-right"
+        "left-spaces center right-spaces"
+        "bottom-left bottom-spaces bottom-right";
+}
+
+/* Make sure the board spaces fill the available area properly */
+.top-spaces,
+.bottom-spaces {
+    display: flex;
+    justify-content: space-around;
+}
+
+.left-spaces,
+.right-spaces {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.center {
+    grid-area: center;
+    background-color: #8fbc8f;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #333;
+}
+
+.center h2 {
+    font-size: 2rem;
+    color: #333;
+    text-align: center;
+}
+
+.top-spaces {
+    grid-area: top-spaces;
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.bottom-spaces {
+    grid-area: bottom-spaces;
+    display: flex;
+}
+
+.left-spaces {
+    grid-area: left-spaces;
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+.right-spaces {
+    grid-area: right-spaces;
+    display: flex;
+    flex-direction: column;
+}
+
+.corner {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #333;
+    font-weight: bold;
+    text-align: center;
+    padding: 5px;
+    position: relative;
+}
+
+.top-left {
+    grid-area: top-left;
+    background-color: #e61e14;
+    color: white;
+}
+
+.top-right {
+    grid-area: top-right;
+    background-color: #1e90ff;
+    color: white;
+}
+
+.bottom-left {
+    grid-area: bottom-left;
+    background-color: #32cd32;
+    color: white;
+}
+
+.bottom-right {
+    grid-area: bottom-right;
+    background-color: #ffd700;
+    color: black;
+}
+
+.space {
+    width: 50px;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid #333;
+    font-size: 0.7rem;
+    text-align: center;
+    padding: 2px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.vertical-space {
+    width: 80px;
+    height: 50px;
+}
+
+/* Vertical spaces need different orientation */
+.left-spaces .space,
+.right-spaces .space {
+    width: 80px;
+    height: 50px;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.left-spaces .space .space-name,
+.right-spaces .space .space-name {
+    margin-top: 0;
+    transform: rotate(-90deg);
+    width: 50px;
+    text-align: center;
+}
+
+.left-spaces .space .space-price,
+.right-spaces .space .space-price {
+    margin-top: 0;
+    transform: rotate(-90deg);
+    width: 50px;
+    text-align: center;
+}
+
+.space.property {
+    background-color: #f0f0f0;
+    cursor: pointer;
+}
+
+.space.property:hover {
+    transform: scale(1.1);
+    z-index: 5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.space.property:hover::after {
+    content: attr(data-info);
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.space.railroad {
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.space.railroad:hover {
+    transform: scale(1.1);
+    z-index: 5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.space.railroad:hover::after {
+    content: attr(data-info);
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.space.utility {
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.space.utility:hover {
+    transform: scale(1.1);
+    z-index: 5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.space.utility:hover::after {
+    content: attr(data-info);
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    z-index: 10;
+}
+
+.space.tax {
+    background-color: #fa8072;
+}
+
+.space.card {
+    background-color: #87ceeb;
+    cursor: pointer;
+}
+
+.space.card:hover {
+    transform: scale(1.1);
+    z-index: 5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.space.corner {
+    background-color: #fffacd;
+}
+
+.property-color-bar {
+    width: 100%;
+    height: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.space-name {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+.space-price {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.player-token {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 10;
+}
+
+.token-1 {
+    background-color: #e61e14;
+    top: 5px;
+    left: 5px;
+}
+
+.token-2 {
+    background-color: #1e90ff;
+    top: 5px;
+    right: 5px;
+}
+
+.token-3 {
+    background-color: #32cd32;
+    bottom: 5px;
+    left: 5px;
+}
+
+.token-4 {
+    background-color: #ffd700;
+    bottom: 5px;
+    right: 5px;
+}
+
+/* Additional token positions for when multiple players are on the same space */
+.space .token-1, .corner .token-1 {
+    top: 5px;
+    left: 5px;
+}
+
+.space .token-2, .corner .token-2 {
+    top: 5px;
+    right: 5px;
+}
+
+.space .token-3, .corner .token-3 {
+    bottom: 5px;
+    left: 5px;
+}
+
+.space .token-4, .corner .token-4 {
+    bottom: 5px;
+    right: 5px;
+}
+
+/* Ownership indicators */
+.ownership-indicator {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #333;
+}
+
+.ownership-indicator.player-1 {
+    background-color: #e61e14;
+}
+
+.ownership-indicator.player-2 {
+    background-color: #1e90ff;
+}
+
+.ownership-indicator.player-3 {
+    background-color: #32cd32;
+}
+
+.ownership-indicator.player-4 {
+    background-color: #ffd700;
+}

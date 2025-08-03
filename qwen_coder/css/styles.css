@@ -1,0 +1,370 @@
+/* Main Stylesheet for Monopoly Game */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #333;
+    line-height: 1.6;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.game-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    min-height: 90vh;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: linear-gradient(to right, #e61e14, #1e90ff);
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-status {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+}
+
+.game-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    border-radius: 8px;
+    backdrop-filter: blur(5px);
+    margin-top: 10px;
+}
+
+.game-stats > div {
+    padding: 5px 10px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+}
+
+.main-content {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 20px;
+}
+
+.center-content {
+    display: flex;
+    flex-direction: column;
+    width: 65%;
+    gap: 20px;
+}
+
+.player-panel {
+    width: 17%;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.player-panel h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 1.4rem;
+    border-bottom: 2px solid #e61e14;
+    padding-bottom: 8px;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.player-info > div {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.player-info > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.balance {
+    font-size: 1.2rem;
+    color: #2e7d32;
+    font-weight: bold;
+}
+
+.properties {
+    color: #1565c0;
+}
+
+.jail-status {
+    color: #ef6c00;
+}
+
+.get-out-cards {
+    color: #6a1b9a;
+}
+
+.board-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.game-log-container {
+    background-color: #f8f9fa;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    height: 200px;
+    overflow-y: auto;
+}
+
+.game-log-container h3 {
+    margin-bottom: 15px;
+    color: #333;
+    text-align: center;
+    border-bottom: 2px solid #1e90ff;
+    padding-bottom: 8px;
+}
+
+.game-log {
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.game-log-entry {
+    padding: 8px;
+    border-bottom: 1px solid #eee;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.game-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 20px;
+    padding: 20px;
+    background: linear-gradient(to right, #2c3e50, #4a6491);
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.action-button {
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    background: linear-gradient(to bottom, #e61e14, #c71a12);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.action-button:hover {
+    background: linear-gradient(to bottom, #ff3333, #e61e14);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.action-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.dice-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.dice {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(145deg, #ffffff, #e6e6e6);
+    border: 3px solid #333;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    font-weight: bold;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.dice.rolling {
+    animation: roll 0.5s ease infinite;
+}
+
+@keyframes roll {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.messages {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(to right, #fff9c4, #ffd54f);
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+    font-weight: 500;
+    border: 2px solid #ffd54f;
+}
+
+#game-message {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .game-container {
+        padding: 15px;
+    }
+    
+    .main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .player-panel {
+        width: 90%;
+        margin-bottom: 20px;
+    }
+    
+    .center-content {
+        width: 90%;
+    }
+    
+    .board-container {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 2.2rem;
+    }
+    
+    .game-status {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .game-controls {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .dice-container {
+        margin-top: 10px;
+    }
+}
+
+/* Current player highlighting */
+.player-panel.current-player {
+    border: 4px solid #e61e14;
+    box-shadow: 0 0 15px rgba(230, 30, 20, 0.7);
+    background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+    transform: scale(1.02);
+}
+
+/* Bankrupt player styling */
+.player-panel.bankrupt {
+    opacity: 0.7;
+    background: linear-gradient(135deg, #fafafa 0%, #e0e0e0 100%);
+    border: 2px solid #999;
+}
+
+.player-panel.bankrupt h2 {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* Player in jail styling */
+.player-panel.in-jail {
+    border: 4px solid #ffa500;
+    box-shadow: 0 0 15px rgba(255, 165, 0, 0.7);
+    background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+}
+
+/* Property hover effect */
+.property:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 5;
+}
