@@ -42,3 +42,8 @@ Undefined bugs everywhere
 - moonshotai/kimi-k2 > kimi
 
 - z-ai/glm-4.5 > glm
+$3.6, 9.1M
+Clicking "Start Game" never actually started the game
+It got tripped up and forgot which TODO items had been completed
+It chose to use Express.js and Socket.IO
+It used a server and client architecture
