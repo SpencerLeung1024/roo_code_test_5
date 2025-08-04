@@ -39,6 +39,14 @@ Undefined bugs everywhere
 - deepseek/deepseek-chat-v3-0324 > deepseek_v3
 
 - qwen/qwen3-235b-a22b-thinking-2507 > qwen_thinking
+$1.28, 10.3M
+Using default routing was making it fail tool calls all the time
+Provider set to Chutes. Still fails sometimes and has to be manually restarted
+I gave up after it get stuck trying to work on game.js
+It chose to use no framework. Pure HTML, CSS, and JS
+Game is unplayable (can't end your turn)
+It has difficulty using <apply_diff>
+It will often complete debugging subtasks without waiting for human feedback
 
 - qwen/qwen3-coder > qwen_coder
 $6.82, 16.5M

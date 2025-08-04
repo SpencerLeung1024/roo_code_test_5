@@ -131,7 +131,7 @@ function handleSpace(playerIndex) {
         case 'railroad':
         case 'utility':
             if (space.owner !== undefined && space.owner !== playerIndex) {
-                const owner = players[space.owner];
+                const owner = gameState.players[space.owner];
                 let rent = 0;
                 if (space.type === 'railroad') {
                     const railroadCount = owner.properties.filter(p => p.type === 'railroad').length;
@@ -141,7 +141,7 @@ function handleSpace(playerIndex) {
                     const utilityCount = owner.properties.filter(p => p.type === 'utility').length;
                     const multiplier = utilityCount === 2 ? 10 : 4;
                     rent = multiplier * lastDiceTotal;
-                   console.log(`[DEBUG] Utility rent: ${space.name} - Count: ${utilityCount}, Multiplier: ${multiplier}, Dice: ${lastDiceTotal}, Rent: $${rent}`);
+                   console.log(`[DEBUG] Utility rent: ${space.name} - Count: ${utilityCount}, Multiplier: ${multiplier}, Dice: ${gameState.lastDiceTotal}, Rent: $${rent}`);
                 } else {
                     rent = space.rent;
                     console.log(`[DEBUG] Property rent: ${space.name} - Base: $${space.rent}, Rent: $${rent}`);
@@ -291,6 +291,9 @@ function endTurn() {
             rollDice();
             aiLoading.style.display = 'none';
         }, 1000);
+    } else {
+        // Enable roll button for human player
+        document.getElementById('roll-dice').disabled = false;
     }
 }
 
@@ -366,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         // Handle dice roll progression
-        if (updates.gamePhase === 'moving' && updates.lastDiceTotal !== undefined) {
+        if (updates.gamePhase === 'action' && updates.lastDiceTotal !== undefined) {
             console.log(`[STATE] Triggering move with dice total: ${updates.lastDiceTotal}`);
             movePlayer(gameState.currentPlayerIndex, updates.lastDiceTotal);
         }
