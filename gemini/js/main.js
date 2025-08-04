@@ -1,7 +1,7 @@
 // Unus Venditor - Core Game Logic
 import { updateUI } from './ui.js';
 import { drawChanceCard, drawCommunityChestCard } from './cards.js';
-import { gameState, nextTurn, checkGameOver, logEvent } from './state.js';
+import { gameState, nextTurn, checkGameOver, logEvent, createPlayers } from './state.js';
 
 // =========================================================================================
 // C O R E   G A M E   L O G I C
@@ -25,6 +25,10 @@ export function rollDice() {
  */
 export function movePlayer(rollTotal) {
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    if (currentPlayer.inJail) {
+        logEvent(`${currentPlayer.name} is in jail and cannot move.`);
+        return; // Safeguard against moving while in jail
+    }
     const newPosition = (currentPlayer.position + rollTotal) % gameState.board.length; // Simplified board length
 
     if (newPosition < currentPlayer.position) {
@@ -200,10 +204,33 @@ export function endTurn() {
 // =========================================================================================
 // I N I T I A L I Z A T I O N
 // =========================================================================================
-function initGame() {
+export function initGame(numberOfPlayers) {
+    createPlayers(numberOfPlayers);
+    logEvent(`Starting a new game with ${numberOfPlayers} players!`);
     logEvent("Welcome to Unus Venditor!");
     updateUI(gameState);
 }
 
-// Start the game when the script loads
-initGame();
+// Event Listeners for Player Selection
+let selectedPlayers = 2; // Default
+
+document.querySelectorAll('.player-option-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+        selectedPlayers = parseInt(event.target.dataset.players, 10);
+        // Optional: Add some visual feedback for selection
+        document.querySelectorAll('.player-option-btn').forEach(btn => btn.classList.remove('selected'));
+        event.target.classList.add('selected');
+        console.log(`Selected players: ${selectedPlayers}`);
+    });
+});
+
+document.getElementById('start-game-btn').addEventListener('click', () => {
+    const playerSelectionScreen = document.getElementById('player-selection-screen');
+    const gameContainer = document.getElementById('game-container');
+
+    if (playerSelectionScreen && gameContainer) {
+        playerSelectionScreen.style.display = 'none';
+        gameContainer.style.display = 'block';
+        initGame(selectedPlayers);
+    }
+});
