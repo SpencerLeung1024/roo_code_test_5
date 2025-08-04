@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="board" id="board">
+            <!-- 38 cells arranged in perimeter grid (simplified for skeleton) -->
+            <div class="cell" data-index="0" style="grid-area: 1 / 1 / 2 / 2; background: white;">Go</div>
+            <div class="cell" data-index="1" style="grid-area: 1 / 2 / 2 / 3; background: #964B00;">Mediterranean Ave</div>
+            <div class="cell community-chest" data-index="2" style="grid-area: 1 / 3 / 2 / 4; background: white;">Community Chest</div>
+            <div class="cell" data-index="3" style="grid-area: 1 / 4 / 2 / 5; background: #964B00;">Baltic Ave</div>
+            <div class="cell" data-index="4" style="grid-area: 1 / 5 / 2 / 6; background: white;">Income Tax</div>
+            <div class="cell" data-index="5" style="grid-area: 1 / 6 / 2 / 7; background: #808080;">Reading Railroad</div>
+            <div class="cell" data-index="6" style="grid-area: 1 / 7 / 2 / 8; background: #0000FF;">Oriental Ave</div>
+            <div class="cell chance" data-index="7" style="grid-area: 1 / 8 / 2 / 9; background: white;">Chance</div>
+            <div class="cell" data-index="8" style="grid-area: 1 / 9 / 2 / 10; background: #0000FF;">Vermont Ave</div>
+            <div class="cell" data-index="9" style="grid-area: 1 / 10 / 2 / 11; background: #0000FF;">Connecticut Ave</div>
+            <div class="cell" data-index="10" style="grid-area: 1 / 11 / 2 / 12; background: white;">Jail</div>
+            <div class="cell" data-index="11" style="grid-area: 2 / 11 / 3 / 12; background: #AA0000;">St. Charles Place</div>
+            <div class="cell" data-index="12" style="grid-area: 3 / 11 / 4 / 12; background: white;">Electric Company</div>
+            <div class="cell" data-index="13" style="grid-area: 4 / 11 / 5 / 12; background: #AA0000;">States Ave</div>
+            <div class="cell" data-index="14" style="grid-area: 5 / 11 / 6 / 12; background: #AA0000;">Virginia Ave</div>
+            <div class="cell" data-index="15" style="grid-area: 6 / 11 / 7 / 12; background: #808080;">Pennsylvania Railroad</div>
+            <div class="cell" data-index="16" style="grid-area: 7 / 11 / 8 / 12; background: #FF0000;">St. James Place</div>
+            <div class="cell community-chest" data-index="17" style="grid-area: 8 / 11 / 9 / 12; background: white;">Community Chest</div>
+            <div class="cell" data-index="18" style="grid-area: 9 / 11 / 10 / 12; background: #FF0000;">Tennessee Ave</div>
+            <div class="cell" data-index="19" style="grid-area: 10 / 11 / 11 / 12; background: #FF0000;">New York Ave</div>
+            <div class="cell" data-index="20" style="grid-area: 11 / 11 / 12 / 12; background: white;">Free Parking</div>
+            <div class="cell" data-index="21" style="grid-area: 11 / 10 / 12 / 11; background: #FFD700;">Kentucky Ave</div>
+            <div class="cell chance" data-index="22" style="grid-area: 11 / 9 / 12 / 10; background: white;">Chance</div>
+            <div class="cell" data-index="23" style="grid-area: 11 / 8 / 12 / 9; background: #FFD700;">Indiana Ave</div>
+            <div class="cell" data-index="24" style="grid-area: 11 / 7 / 12 / 8; background: #FFD700;">Illinois Ave</div>
+            <div class="cell" data-index="25" style="grid-area: 11 / 6 / 12 / 7; background: #808080;">B&O Railroad</div>
+            <div class="cell" data-index="26" style="grid-area: 11 / 5 / 12 / 6; background: #008000;">Atlantic Ave</div>
+            <div class="cell" data-index="27" style="grid-area: 11 / 4 / 12 / 5; background: #008000;">Ventnor Ave</div>
+            <div class="cell" data-index="28" style="grid-area: 11 / 3 / 12 / 4; background: white;">Water Works</div>
+            <div class="cell" data-index="29" style="grid-area: 11 / 2 / 12 / 3; background: #008000;">Marvin Gardens</div>
+            <div class="cell" data-index="30" style="grid-area: 11 / 1 / 12 / 2; background: white;">Go To Jail</div>
+            <div class="cell" data-index="31" style="grid-area: 10 / 1 / 11 / 2; background: #000080;">Pacific Ave</div>
+            <div class="cell" data-index="32" style="grid-area: 9 / 1 / 10 / 2; background: #000080;">North Carolina Ave</div>
+            <div class="cell community-chest" data-index="33" style="grid-area: 8 / 1 / 9 / 2; background: white;">Community Chest</div>
+            <div class="cell" data-index="34" style="grid-area: 7 / 1 / 8 / 2; background: #000080;">Pennsylvania Ave</div>
+            <div class="cell" data-index="35" style="grid-area: 6 / 1 / 7 / 2; background: #808080;">Short Line</div>
+            <div class="cell chance" data-index="36" style="grid-area: 5 / 1 / 6 / 2; background: white;">Chance</div>
+            <div class="cell" data-index="37" style="grid-area: 4 / 1 / 5 / 2; background: #800080;">Park Place</div>
+            <div class="cell" data-index="38" style="grid-area: 3 / 1 / 4 / 2; background: white;">Luxury Tax</div>
+            <div class="cell" data-index="39" style="grid-area: 2 / 1 / 3 / 2; background: #800080;">Boardwalk</div>
+        </div>
+        <div class="player-info">
+            <h2>Current Player: <span id="current-player">1</span></h2>
+            <p>Balance: $<span id="balance">1500</span></p>
+            <div>Properties: <span id="properties"></span></div>
+        </div>
+            <div id="notifications"></div>
+        <div class="actions">
+            <button id="roll-dice">Roll Dice</button>
+            <div class="dice-container" style="grid-column: span 2;">
+            <div id="ai-loading" class="loading" style="display: none;">AI is thinking...</div>
+                <div class="die" id="die1">1</div>
+                <div class="die" id="die2">1</div>
+            <div class="modal" id="purchase-modal">
+                <div class="modal-content">
+                    <p>Buy <span id="property-name"></span> for $<span id="property-price"></span>?</p>
+                    <button id="buy-yes">Yes</button>
+                    <button id="buy-no">No</button>
+                </div>
+            </div>
+            <div class="modal" id="card-modal">
+                <div class="modal-content">
+                    <p id="card-text"></p>
+                    <button id="card-ok">OK</button>
+                </div>
+            </div>
+            </div>
+            <button id="buy-property" disabled>Buy Property</button>
+            <button id="end-turn" disabled>End Turn</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
