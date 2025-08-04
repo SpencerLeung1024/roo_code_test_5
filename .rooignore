@@ -7,7 +7,7 @@ gemini/*
 grok/*
 deepseek_r1/*
 deepseek_v3/*
-qwen_thinking/*
+# qwen_thinking/*
 qwen_coder/*
-# kimi/*
+kimi/*
 glm/*
