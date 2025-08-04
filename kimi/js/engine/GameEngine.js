@@ -94,6 +94,24 @@ export class GameEngine extends EventEmitter {
     }
 
     /**
+     * Handle turn start
+     * @param {Player} player - The player whose turn is starting
+     */
+    handleTurnStart(player) {
+        debugLog('info', `Turn started for ${player.name}`);
+        // Additional turn start logic can be added here
+    }
+
+    /**
+     * Handle turn end
+     * @param {Player} player - The player whose turn is ending
+     */
+    handleTurnEnd(player) {
+        debugLog('info', `Turn ended for ${player.name}`);
+        // Additional turn end logic can be added here
+    }
+
+    /**
      * Start a new game
      * @param {Object} gameConfig - Game configuration
      */
@@ -159,11 +177,23 @@ export class GameEngine extends EventEmitter {
         
         debugLog('info', `Starting turn for ${currentPlayer.name}`);
         
+        // Set current player in dice manager
+        if (this.diceManager) {
+            this.diceManager.setCurrentPlayer(currentPlayer);
+        }
+        
         // Emit turn start event
+        console.log('GameEngine emitting turn:start event');
         this.emit('turn:start', {
             player: currentPlayer,
             round: this.gameState.gameRound
         });
+        
+        // Also dispatch document event for DiceManager
+        const turnEvent = new CustomEvent('turn:start', {
+            detail: { player: currentPlayer, round: this.gameState.gameRound }
+        });
+        document.dispatchEvent(turnEvent);
         
         // Handle jail turn if player is in jail
         if (currentPlayer.inJail) {

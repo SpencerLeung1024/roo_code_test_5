@@ -9,7 +9,8 @@ import { constants } from '../config/constants.js';
  * Renders the game board and squares
  */
 export class BoardRenderer {
-    constructor() {
+    constructor(board) {
+        this.board = board;
         this.boardElement = null;
         this.squares = [];
     }
@@ -23,19 +24,34 @@ export class BoardRenderer {
         console.log('Board Renderer initialized');
     }
 
+    /**
+     * Get the board element
+     * @returns {HTMLElement} The board element
+     */
+    getElement() {
+        return this.boardElement;
+    }
+
     renderBoard(board) {
-        if (!this.boardElement || !board) return;
+        if (board) {
+            this.board = board;
+        }
+        this.render();
+    }
+
+    render() {
+        if (!this.boardElement || !this.board) return;
         
         this.boardElement.innerHTML = '';
         this.squares = [];
         
-        board.getSquares().forEach((square, index) => {
+        this.board.getSquares().forEach((square, index) => {
             const squareElement = this.createSquareElement(square, index);
             this.boardElement.appendChild(squareElement);
             this.squares.push(squareElement);
         });
         
-        console.log('Board rendered with', board.getSquares().length, 'squares');
+        console.log('Board rendered with', this.board.getSquares().length, 'squares');
     }
 
     createSquareElement(square, position) {

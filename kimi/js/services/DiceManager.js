@@ -4,7 +4,7 @@
  */
 
 import { dice } from '../models/Dice.js';
-import { diceUI } from '../ui/DiceUI.js';
+import { DiceUI } from '../ui/DiceUI.js';
 import { constants } from '../config/constants.js';
 import { debugLog } from '../config/constants.js';
 
@@ -17,6 +17,7 @@ export class DiceManager {
         this.currentPlayer = null;
         this.isProcessingRoll = false;
         this.rollQueue = [];
+        this.diceUI = new DiceUI();
         
         this.init();
     }
@@ -25,6 +26,7 @@ export class DiceManager {
      * Initialize the dice manager
      */
     init() {
+        this.diceUI.init();
         this.bindEvents();
         debugLog('info', 'DiceManager initialized');
     }
@@ -40,11 +42,13 @@ export class DiceManager {
 
         // Listen for turn start events
         document.addEventListener('turn:start', (event) => {
+            console.log('DiceManager received turn:start event:', event.detail);
             this.handleTurnStart(event.detail);
         });
 
         // Listen for turn end events
         document.addEventListener('turn:end', (event) => {
+            console.log('DiceManager received turn:end event:', event.detail);
             this.handleTurnEnd(event.detail);
         });
     }
@@ -56,9 +60,18 @@ export class DiceManager {
     handleTurnStart(eventData) {
         this.currentPlayer = eventData.player;
         dice.setCanRoll(true);
-        diceUI.setRollingEnabled(true);
+        this.diceUI.setEnabled(true);
         
         debugLog('info', `Turn started for ${this.currentPlayer.name}, dice enabled`);
+    }
+
+    /**
+     * Set the current player directly
+     * @param {Player} player - Current player
+     */
+    setCurrentPlayer(player) {
+        this.currentPlayer = player;
+        console.log('DiceManager current player set to:', player?.name);
     }
 
     /**
@@ -67,7 +80,7 @@ export class DiceManager {
      */
     handleTurnEnd(eventData) {
         dice.setCanRoll(false);
-        diceUI.setRollingEnabled(false);
+        this.diceUI.setEnabled(false);
         
         debugLog('info', `Turn ended for ${eventData.player.name}, dice disabled`);
     }
@@ -318,7 +331,7 @@ export class DiceManager {
      * @param {Object} square - Property square data
      */
     async handlePropertyLanding(square) {
-        // This will be handled by the property system
+        // Dispatch property landed event for TurnActions to handle
         const event = new CustomEvent('property:landed', {
             detail: {
                 player: this.currentPlayer,
@@ -333,10 +346,10 @@ export class DiceManager {
      * @param {Object} square - Railroad square data
      */
     async handleRailroadLanding(square) {
-        const event = new CustomEvent('railroad:landed', {
+        const event = new CustomEvent('property:landed', {
             detail: {
                 player: this.currentPlayer,
-                railroad: square
+                property: square
             }
         });
         document.dispatchEvent(event);
@@ -347,13 +360,21 @@ export class DiceManager {
      * @param {Object} square - Utility square data
      */
     async handleUtilityLanding(square) {
-        const event = new CustomEvent('utility:landed', {
+        const event = new CustomEvent('property:landed', {
             detail: {
                 player: this.currentPlayer,
-                utility: square
+                property: square
             }
         });
         document.dispatchEvent(event);
+    }
+
+    /**
+     * Handle property landed (alias for handlePropertyLanding)
+     * @param {Object} square - Property square data
+     */
+    async handlePropertyLanded(square) {
+        await this.handlePropertyLanding(square);
     }
 
     /**
@@ -430,6 +451,29 @@ export class DiceManager {
     }
 
     /**
+     * Roll the dice for the current player
+     */
+    rollDice() {
+        console.log('DiceManager.rollDice() called');
+        if (!this.canRollDice()) {
+            console.log('Cannot roll dice:', {
+                hasCurrentPlayer: !!this.currentPlayer,
+                isProcessingRoll: this.isProcessingRoll,
+                diceCanRoll: dice.canRoll,
+                isBankrupt: this.currentPlayer?.isBankrupt
+            });
+            debugLog('warn', 'Cannot roll dice: conditions not met');
+            return null;
+        }
+
+        console.log('Rolling dice...');
+        const result = dice.roll();
+        console.log('Dice rolled:', result);
+        this.handleDiceRolled(result);
+        return result;
+    }
+
+    /**
      * Force a dice roll (for testing or special events)
      * @param {number} dice1 - First die value
      * @param {number} dice2 - Second die value
@@ -464,9 +508,17 @@ export class DiceManager {
         this.isProcessingRoll = false;
         this.rollQueue = [];
         dice.reset();
-        diceUI.reset();
+        this.diceUI.reset();
         
         debugLog('info', 'DiceManager reset');
+    }
+
+    /**
+     * Set whether dice can be rolled
+     * @param {boolean} canRoll - Whether dice can be rolled
+     */
+    setCanRoll(canRoll) {
+        dice.setCanRoll(canRoll);
     }
 
     /**
@@ -474,9 +526,9 @@ export class DiceManager {
      * @returns {boolean} Whether dice can be rolled
      */
     canRollDice() {
-        return this.currentPlayer && 
-               !this.isProcessingRoll && 
-               dice.canRoll && 
+        return this.currentPlayer &&
+               !this.isProcessingRoll &&
+               dice.canRoll &&
                !this.currentPlayer.isBankrupt;
     }
 }

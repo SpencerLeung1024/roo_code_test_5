@@ -306,4 +306,28 @@ export class ModalManager {
         
         this.showModal(content);
     }
+
+    /**
+     * Show a modal by ID
+     * @param {string} modalId - The ID of the modal to show
+     */
+    show(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'block';
+            modal.classList.add('show');
+        }
+    }
+
+    /**
+     * Hide a modal by ID
+     * @param {string} modalId - The ID of the modal to hide
+     */
+    hide(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('show');
+        }
+    }
 }

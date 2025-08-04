@@ -301,6 +301,15 @@ export class TurnActions extends EventEmitter {
     }
 
     /**
+     * Handle property landed event
+     * @param {Object} event - Property landed event
+     */
+    async handlePropertyLanded(event) {
+        const { player, property } = event.detail;
+        await this.handlePropertyLanding(player, property);
+    }
+
+    /**
      * Handle card landing (Chance/Community Chest)
      * @param {Player} player - The player
      * @param {string} deckType - Type of card deck

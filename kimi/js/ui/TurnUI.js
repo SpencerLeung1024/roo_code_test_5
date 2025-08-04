@@ -261,8 +261,13 @@ export class TurnUI extends EventEmitter {
      * Handle roll dice button click
      */
     handleRollDice() {
+        console.log('Roll dice button clicked');
         if (this.gameEngine.diceManager) {
-            this.gameEngine.diceManager.rollDice();
+            console.log('Calling diceManager.rollDice()');
+            const result = this.gameEngine.diceManager.rollDice();
+            console.log('Dice roll result:', result);
+        } else {
+            console.error('diceManager not found');
         }
     }
 
