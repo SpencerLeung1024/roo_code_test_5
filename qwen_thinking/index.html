@@ -104,8 +104,32 @@
             <button id="build-confirm">Build</button>
             <button id="build-cancel">Cancel</button>
         </div>
-    </div>
-    
+     </div>
+     
+     <!-- Trade Modal -->
+     <div class="modal" id="trade-modal">
+       <div class="modal-content">
+         <h3>Trade with Player</h3>
+         <div class="trade-section">
+           <label for="trade-player-select">Select Player:</label>
+           <select id="trade-player-select"></select>
+         </div>
+         <div class="trade-section">
+           <h4>Your Offer</h4>
+           <div id="offer-properties" class="property-grid"></div>
+           <label>Money: $<input type="number" id="offer-money" min="0" value="0"></label>
+         </div>
+         <div class="trade-section">
+           <h4>Their Request</h4>
+           <div id="request-properties" class="property-grid"></div>
+           <label>Money: $<input type="number" id="request-money" min="0" value="0"></label>
+         </div>
+         <div class="modal-buttons">
+           <button id="propose-trade">Propose Trade</button>
+           <button id="cancel-trade">Cancel</button>
+         </div>
+       </div>
+     </div>
     <script type="module">
       import { updateState, gameState, subscribe } from './game-state.js';
       import { movePlayer, handleSpaceInteraction, purchaseProperty } from './board-logic.js';

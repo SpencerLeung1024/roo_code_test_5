@@ -1,4 +1,4 @@
-import { gameState, subscribe } from './game-state.js';
+import { gameState, subscribe, updateState } from './game-state.js';
 import { proposeTrade, handleTradeResponse } from './player-system.js';
 
 // DOM Elements cache
@@ -132,6 +132,15 @@ function setupEventListeners() {
       } else {
         clearInterval(interval);
         diceContainer.classList.remove('rolling');
+        
+        // Trigger game logic after animation completes
+        const die1Value = parseInt(die1.textContent);
+        const die2Value = parseInt(die2.textContent);
+        const total = die1Value + die2Value;
+        updateState({
+          lastDiceTotal: total,
+          gamePhase: 'moving'
+        });
       }
     }, 100);
   });
@@ -181,75 +190,89 @@ function setupEventListeners() {
   });
 
   // Trade functionality
-  elements.tradeButton.addEventListener('click', () => {
-    if (gameState.gamePhase !== 'rolling' || !gameState.players[gameState.currentPlayerIndex].properties.length) return;
-    showTradeModal();
-  });
- 
+  if (elements.tradeButton) {
+    elements.tradeButton.addEventListener('click', () => {
+      if (gameState.gamePhase !== 'rolling' || !gameState.players[gameState.currentPlayerIndex].properties.length) return;
+      showTradeModal();
+    });
+  }
+  
   // Building functionality
-  elements.buildButton.addEventListener('click', () => {
-    if (gameState.gamePhase !== 'rolling') return;
-    showBuildModal();
-  });
- 
-  elements.buildConfirmButton.addEventListener('click', () => {
-    const selectedProperty = document.querySelector('.build-property.selected');
-    const buildType = document.querySelector('input[name="build-type"]:checked')?.value;
-    
-    if (!selectedProperty || !buildType) {
-      showNotification('Please select a property and building type', 'error');
-      return;
-    }
-    
-    const propertyId = parseInt(selectedProperty.dataset.spaceIndex);
-    const result = buildStructure(propertyId, buildType);
-    
-    if (result.success) {
+  if (elements.buildButton) {
+    elements.buildButton.addEventListener('click', () => {
+      if (gameState.gamePhase !== 'rolling') return;
+      showBuildModal();
+    });
+  }
+  
+  if (elements.buildConfirmButton) {
+    elements.buildConfirmButton.addEventListener('click', () => {
+      const selectedProperty = document.querySelector('.build-property.selected');
+      const buildType = document.querySelector('input[name="build-type"]:checked')?.value;
+      
+      if (!selectedProperty || !buildType) {
+        showNotification('Please select a property and building type', 'error');
+        return;
+      }
+      
+      const propertyId = parseInt(selectedProperty.dataset.spaceIndex);
+      const result = buildStructure(propertyId, buildType);
+      
+      if (result.success) {
+        hideBuildModal();
+        showNotification(`Successfully built ${buildType}!`, 'success');
+        updateUI();
+      } else {
+        showNotification(`Build failed: ${result.error}`, 'error');
+      }
+    });
+  }
+  
+  if (elements.buildCancelButton) {
+    elements.buildCancelButton.addEventListener('click', () => {
       hideBuildModal();
-      showNotification(`Successfully built ${buildType}!`, 'success');
-      updateUI();
-    } else {
-      showNotification(`Build failed: ${result.error}`, 'error');
-    }
-  });
- 
-  elements.buildCancelButton.addEventListener('click', () => {
-    hideBuildModal();
-  });
- 
-  elements.groupSelect.addEventListener('change', () => {
-    renderBuildPropertyGrid();
-  });
- 
-  elements.proposeTradeButton.addEventListener('click', () => {
-    const targetPlayerIndex = parseInt(elements.tradePlayerSelect.value);
-    const offeredProperties = Array.from(elements.offerProperties.querySelectorAll('.selected-property'))
-      .map(el => parseInt(el.dataset.spaceIndex));
-    const offeredMoney = parseInt(elements.offerMoney.value) || 0;
-    const requestedProperties = Array.from(elements.requestProperties.querySelectorAll('.selected-property'))
-      .map(el => parseInt(el.dataset.spaceIndex));
-    const requestedMoney = parseInt(elements.requestMoney.value) || 0;
+    });
+  }
+  
+  if (elements.groupSelect) {
+    elements.groupSelect.addEventListener('change', () => {
+      renderBuildPropertyGrid();
+    });
+  }
+  
+  if (elements.proposeTradeButton) {
+    elements.proposeTradeButton.addEventListener('click', () => {
+      const targetPlayerIndex = parseInt(elements.tradePlayerSelect.value);
+      const offeredProperties = Array.from(elements.offerProperties.querySelectorAll('.selected-property'))
+        .map(el => parseInt(el.dataset.spaceIndex));
+      const offeredMoney = parseInt(elements.offerMoney.value) || 0;
+      const requestedProperties = Array.from(elements.requestProperties.querySelectorAll('.selected-property'))
+        .map(el => parseInt(el.dataset.spaceIndex));
+      const requestedMoney = parseInt(elements.requestMoney.value) || 0;
 
-    const result = proposeTrade(
-      gameState.currentPlayerIndex,
-      targetPlayerIndex,
-      offeredProperties,
-      offeredMoney,
-      requestedProperties,
-      requestedMoney
-    );
+      const result = proposeTrade(
+        gameState.currentPlayerIndex,
+        targetPlayerIndex,
+        offeredProperties,
+        offeredMoney,
+        requestedProperties,
+        requestedMoney
+      );
 
-    if (result.success) {
+      if (result.success) {
+        hideTradeModal();
+        showNotification('Trade proposal sent!', 'success');
+      } else {
+        showNotification(`Trade error: ${result.error}`, 'error');
+      }
+    });
+  }
+
+  if (elements.cancelTradeButton) {
+    elements.cancelTradeButton.addEventListener('click', () => {
       hideTradeModal();
-      showNotification('Trade proposal sent!', 'success');
-    } else {
-      showNotification(`Trade error: ${result.error}`, 'error');
-    }
-  });
-
-  elements.cancelTradeButton.addEventListener('click', () => {
-    hideTradeModal();
-  });
+    });
+  }
 }
 
 export function highlightBoardPosition(spaceIndex) {
