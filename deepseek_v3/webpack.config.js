@@ -24,7 +24,11 @@ module.exports = (env, argv) => ({
     ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js']
+    extensions: ['.tsx', '.ts', '.js'],
+    alias: {
+      '@backend': path.resolve(__dirname, 'src'),
+      '@frontend': path.resolve(__dirname, 'src/frontend')
+    }
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -56,8 +60,23 @@ module.exports = (env, argv) => ({
       }),
       new CssMinimizerPlugin()
     ],
+    runtimeChunk: 'single',
     splitChunks: {
-      chunks: 'all'
+      chunks: 'all',
+      maxSize: 244 * 1024, // 244KB
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true
+        }
+      }
     }
   },
   performance: {
