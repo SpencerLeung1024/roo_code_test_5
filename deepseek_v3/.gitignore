@@ -1,0 +1,4 @@
+# The model put multiple Node.js projects inside (maybe it got lost?)
+deepseek_v3
+# Ignore node_modules
+node_modules
