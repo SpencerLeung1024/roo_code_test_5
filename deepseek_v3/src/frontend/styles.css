@@ -1,0 +1,75 @@
+/* Base styles */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(11, 1fr);
+  grid-template-rows: repeat(11, 1fr);
+  gap: 5px;
+  width: 800px;
+  height: 800px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 2px solid #333;
+}
+
+.property {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  text-align: center;
+  font-size: 12px;
+  border: 1px solid #ccc;
+}
+
+/* Property color groups */
+.brown { background-color: #8B4513; color: white; }
+.lightblue { background-color: #ADD8E6; }
+.purple { background-color: #9370DB; color: white; }
+.orange { background-color: #FFA500; }
+.red { background-color: #FF0000; color: white; }
+.yellow { background-color: #FFFF00; }
+.green { background-color: #008000; color: white; }
+.darkblue { background-color: #000080; color: white; }
+.railroad { background-color: #000; color: white; }
+.utility { background-color: #808080; color: white; }
+
+/* Special spaces */
+.special {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+/* Player tokens */
+.player-token {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 2px;
+}
+
+/* Action buttons */
+.action-button {
+  padding: 8px 16px;
+  margin: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.action-button:hover {
+  opacity: 0.8;
+}
