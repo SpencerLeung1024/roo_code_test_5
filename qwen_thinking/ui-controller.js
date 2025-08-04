@@ -1,4 +1,5 @@
 import { gameState, subscribe } from './game-state.js';
+import { proposeTrade, handleTradeResponse } from './player-system.js';
 
 // DOM Elements cache
 const elements = {
@@ -11,7 +12,23 @@ const elements = {
   notifications: null,
   purchaseModal: null,
   cardModal: null,
-  jailModal: null
+  jailModal: null,
+  tradeButton: null,
+  buildButton: null,
+  buildModal: null,
+  groupSelect: null,
+  buildPropertyGrid: null,
+  buildCostDisplay: null,
+  buildConfirmButton: null,
+  buildCancelButton: null,
+  tradeModal: null,
+  tradePlayerSelect: null,
+  offerProperties: null,
+  requestProperties: null,
+  offerMoney: null,
+  requestMoney: null,
+  proposeTradeButton: null,
+  cancelTradeButton: null
 };
 
 export function initializeUI() {
@@ -26,6 +43,22 @@ export function initializeUI() {
   elements.purchaseModal = document.getElementById('purchase-modal');
   elements.cardModal = document.getElementById('card-modal');
   elements.jailModal = document.getElementById('jail-modal');
+  elements.tradeButton = document.getElementById('trade-button');
+  elements.buildButton = document.getElementById('build-button');
+  elements.buildModal = document.getElementById('build-modal');
+  elements.groupSelect = document.getElementById('group-select');
+  elements.buildPropertyGrid = document.getElementById('build-property-grid');
+  elements.buildCostDisplay = document.getElementById('build-cost-display');
+  elements.buildConfirmButton = document.getElementById('build-confirm');
+  elements.buildCancelButton = document.getElementById('build-cancel');
+  elements.tradeModal = document.getElementById('trade-modal');
+  elements.tradePlayerSelect = document.getElementById('trade-player-select');
+  elements.offerProperties = document.getElementById('offer-properties');
+  elements.requestProperties = document.getElementById('request-properties');
+  elements.offerMoney = document.getElementById('offer-money');
+  elements.requestMoney = document.getElementById('request-money');
+  elements.proposeTradeButton = document.getElementById('propose-trade');
+  elements.cancelTradeButton = document.getElementById('cancel-trade');
   
   // Set initial state
   updateUI();
@@ -53,6 +86,9 @@ function updateUI() {
   // Update all players panel
   updateAllPlayersPanel();
   
+  // Update board with building indicators
+  updateBoardWithBuildings();
+  
   // Render player tokens on board
   renderPlayerTokens();
   
@@ -72,8 +108,11 @@ function updateUI() {
   elements.rollButton.disabled = gameState.gamePhase !== 'rolling';
   elements.buyButton.disabled = gameState.currentAction !== 'purchasePrompt';
   elements.endTurnButton.disabled = gameState.gamePhase === 'rolling';
+  elements.tradeButton.disabled = gameState.gamePhase !== 'rolling' || !currentPlayer.properties.length;
+  elements.buildButton.disabled = gameState.gamePhase !== 'rolling' || !currentPlayer.properties.length;
 }
-
+ 
+// Building system implementation
 function setupEventListeners() {
   elements.rollButton.addEventListener('click', () => {
     if (gameState.gamePhase !== 'rolling') return;
@@ -139,6 +178,77 @@ function setupEventListeners() {
   document.getElementById('jail-pay')?.addEventListener('click', () => {
     elements.jailModal.style.display = 'none';
     // Handle jail payment in game logic
+  });
+
+  // Trade functionality
+  elements.tradeButton.addEventListener('click', () => {
+    if (gameState.gamePhase !== 'rolling' || !gameState.players[gameState.currentPlayerIndex].properties.length) return;
+    showTradeModal();
+  });
+ 
+  // Building functionality
+  elements.buildButton.addEventListener('click', () => {
+    if (gameState.gamePhase !== 'rolling') return;
+    showBuildModal();
+  });
+ 
+  elements.buildConfirmButton.addEventListener('click', () => {
+    const selectedProperty = document.querySelector('.build-property.selected');
+    const buildType = document.querySelector('input[name="build-type"]:checked')?.value;
+    
+    if (!selectedProperty || !buildType) {
+      showNotification('Please select a property and building type', 'error');
+      return;
+    }
+    
+    const propertyId = parseInt(selectedProperty.dataset.spaceIndex);
+    const result = buildStructure(propertyId, buildType);
+    
+    if (result.success) {
+      hideBuildModal();
+      showNotification(`Successfully built ${buildType}!`, 'success');
+      updateUI();
+    } else {
+      showNotification(`Build failed: ${result.error}`, 'error');
+    }
+  });
+ 
+  elements.buildCancelButton.addEventListener('click', () => {
+    hideBuildModal();
+  });
+ 
+  elements.groupSelect.addEventListener('change', () => {
+    renderBuildPropertyGrid();
+  });
+ 
+  elements.proposeTradeButton.addEventListener('click', () => {
+    const targetPlayerIndex = parseInt(elements.tradePlayerSelect.value);
+    const offeredProperties = Array.from(elements.offerProperties.querySelectorAll('.selected-property'))
+      .map(el => parseInt(el.dataset.spaceIndex));
+    const offeredMoney = parseInt(elements.offerMoney.value) || 0;
+    const requestedProperties = Array.from(elements.requestProperties.querySelectorAll('.selected-property'))
+      .map(el => parseInt(el.dataset.spaceIndex));
+    const requestedMoney = parseInt(elements.requestMoney.value) || 0;
+
+    const result = proposeTrade(
+      gameState.currentPlayerIndex,
+      targetPlayerIndex,
+      offeredProperties,
+      offeredMoney,
+      requestedProperties,
+      requestedMoney
+    );
+
+    if (result.success) {
+      hideTradeModal();
+      showNotification('Trade proposal sent!', 'success');
+    } else {
+      showNotification(`Trade error: ${result.error}`, 'error');
+    }
+  });
+
+  elements.cancelTradeButton.addEventListener('click', () => {
+    hideTradeModal();
   });
 }
 
@@ -223,6 +333,98 @@ export function renderPlayerTokens() {
   });
 }
 
+// Building system UI functions
+export function showBuildModal() {
+ // Populate color groups dropdown
+ elements.groupSelect.innerHTML = '';
+ 
+ const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+ const ownedProperties = currentPlayer.properties.map(idx => gameState.boardSpaces[idx]);
+ 
+ // Get unique color groups where player owns all properties
+ const fullGroups = new Set();
+ ownedProperties.forEach(prop => {
+   if (prop.type === 'property') {
+     const groupProperties = gameState.boardSpaces.filter(s =>
+       s.type === 'property' && s.color === prop.color
+     );
+     if (groupProperties.every(p => currentPlayer.properties.includes(gameState.boardSpaces.indexOf(p)))) {
+       fullGroups.add(prop.color);
+     }
+   }
+ });
+ 
+ // Add options to dropdown
+ fullGroups.forEach(color => {
+   const option = document.createElement('option');
+   option.value = color;
+   option.textContent = color.charAt(0).toUpperCase() + color.slice(1);
+   elements.groupSelect.appendChild(option);
+ });
+ 
+ if (elements.groupSelect.options.length > 0) {
+   elements.groupSelect.selectedIndex = 0;
+   renderBuildPropertyGrid();
+ } else {
+   elements.buildPropertyGrid.innerHTML = '<p>No complete color groups to build on</p>';
+ }
+ 
+ elements.buildModal.style.display = 'flex';
+}
+
+function renderBuildPropertyGrid() {
+ const color = elements.groupSelect.value;
+ if (!color) return;
+ 
+ elements.buildPropertyGrid.innerHTML = '';
+ 
+ const groupProperties = gameState.boardSpaces
+   .filter(space => space.type === 'property' && space.color === color)
+   .map(space => ({
+     ...space,
+     index: gameState.boardSpaces.indexOf(space)
+   }));
+ 
+ groupProperties.forEach(property => {
+   const propEl = document.createElement('div');
+   propEl.className = 'build-property';
+   propEl.dataset.spaceIndex = property.index;
+   
+   // Add selection click handler
+   propEl.addEventListener('click', () => {
+     document.querySelectorAll('.build-property').forEach(el => {
+       el.classList.remove('selected');
+     });
+     propEl.classList.add('selected');
+   });
+   
+   // Property name and status
+   const status = property.hotels > 0
+     ? '★'
+     : '▲'.repeat(property.houses);
+   
+   propEl.innerHTML = `
+     <div class="build-property-header">
+       <span class="property-name">${property.name}</span>
+       <span class="property-status">${status}</span>
+     </div>
+     <div class="build-options">
+       ${property.houses < 4 && !property.hotels ?
+         `<button class="build-type" data-type="house">+ House ($${property.buildCost})</button>` : ''}
+       ${property.houses === 4 ?
+         `<button class="build-type" data-type="hotel">+ Hotel ($${property.buildCost})</button>` : ''}
+     </div>
+   `;
+   
+   elements.buildPropertyGrid.appendChild(propEl);
+ });
+}
+
+export function hideBuildModal() {
+ elements.buildModal.style.display = 'none';
+}
+
+// Update UI to show building indicators
 export function updateAllPlayersPanel() {
   const playersList = document.getElementById('players-list');
   if (!playersList) return;
@@ -247,6 +449,13 @@ export function updateAllPlayersPanel() {
       const space = gameState.boardSpaces[spaceIndex];
       const propEl = document.createElement('div');
       propEl.textContent = space.name;
+      // Add building indicators
+      if (space.type === 'property') {
+        const status = space.hotels > 0
+          ? ' ★'
+          : ' ' + '▲'.repeat(space.houses);
+        propEl.textContent += status;
+      }
       propEl.className = `property ${space.color}`;
       propertiesList.appendChild(propEl);
     });
@@ -267,5 +476,77 @@ export function updateAllPlayersPanel() {
     playerItem.appendChild(propertiesList);
     
     playersList.appendChild(playerItem);
+  });
+}
+
+// Update board cells to show building indicators
+export function updateBoardWithBuildings() {
+ document.querySelectorAll('.cell[data-index]').forEach(cell => {
+   const index = parseInt(cell.dataset.index);
+   const space = gameState.boardSpaces[index];
+   
+   if (space.type === 'property') {
+     // Find the text node containing the property name
+     const textNode = Array.from(cell.childNodes).find(node =>
+       node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== ''
+     );
+     
+     if (textNode) {
+       const baseName = space.name;
+       let status = '';
+       
+       if (space.hotels > 0) {
+         status = ' ★';
+       } else if (space.houses > 0) {
+         status = ' ' + '▲'.repeat(space.houses);
+       }
+       
+       textNode.textContent = baseName + status;
+     }
+   }
+ });
+}
+
+export function showTradeModal() {
+  // Populate player dropdown (excluding current player)
+  elements.tradePlayerSelect.innerHTML = '';
+  gameState.players.forEach((player, index) => {
+    if (index !== gameState.currentPlayerIndex) {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = player.name;
+      elements.tradePlayerSelect.appendChild(option);
+    }
+  });
+
+  // Clear previous selections
+  elements.offerProperties.innerHTML = '';
+  elements.requestProperties.innerHTML = '';
+  elements.offerMoney.value = '0';
+  elements.requestMoney.value = '0';
+
+  // Populate property grids
+  renderTradePropertyGrid(elements.offerProperties, gameState.players[gameState.currentPlayerIndex].properties);
+  renderTradePropertyGrid(elements.requestProperties, []);
+
+  elements.tradeModal.style.display = 'flex';
+}
+
+export function hideTradeModal() {
+  elements.tradeModal.style.display = 'none';
+}
+
+function renderTradePropertyGrid(container, propertyIndices) {
+  container.innerHTML = '';
+  propertyIndices.forEach(spaceIndex => {
+    const space = gameState.boardSpaces[spaceIndex];
+    const propEl = document.createElement('div');
+    propEl.className = 'trade-property';
+    propEl.dataset.spaceIndex = spaceIndex;
+    propEl.textContent = space.name;
+    propEl.addEventListener('click', () => {
+      propEl.classList.toggle('selected-property');
+    });
+    container.appendChild(propEl);
   });
 }

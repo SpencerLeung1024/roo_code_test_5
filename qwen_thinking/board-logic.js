@@ -1,5 +1,6 @@
 import { gameState, updateState } from './game-state.js';
 import { drawCard } from './card-system.js';
+import { calculateRentWithImprovements } from './property-system.js';
 
 export function movePlayer(playerId, spaces) {
     const player = gameState.players.find(p => p.id === playerId);
@@ -114,7 +115,7 @@ export function handleSpaceInteraction(playerId, spaceIndex) {
                     const multiplier = utilityCount === 2 ? 10 : 4;
                     rent = multiplier * gameState.lastDiceTotal;
                 } else {
-                    rent = space.rent;
+                    rent = calculateRentWithImprovements(space);
                 }
                 
                 updateState({

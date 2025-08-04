@@ -42,6 +42,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
 }
 
 .token-container {
@@ -63,16 +64,35 @@ body {
 }
 
 /* Property color groups */
-.brown { background-color: #964B00; color: white; }
-.light-blue { background-color: #0000FF; color: white; }
-.pink { background-color: #AA0000; color: white; }
-.orange { background-color: #FF0000; color: white; }
-.red { background-color: #FFD700; }
-.yellow { background-color: #008000; color: white; }
-.green { background-color: #000080; color: white; }
-.blue { background-color: #800080; color: white; }
-.railroad { background-color: #808080; color: white; }
-.utility { background-color: white; border: 1px dashed #333; }
+/* Property color text */
+.brown { color: white; }
+.light-blue { color: white; }
+.pink { color: white; }
+.orange { color: white; }
+.red { color: black; }
+.yellow { color: white; }
+.green { color: white; }
+.blue { color: white; }
+.railroad { color: white; }
+.utility { color: #333; }
+
+/* Property color bars */
+.property-bar {
+  height: 4px;
+  width: 100%;
+  margin-bottom: 2px;
+}
+
+.brown-bar { background-color: #964B00; }
+.lightblue-bar { background-color: #0000FF; }
+.pink-bar { background-color: #AA0000; }
+.orange-bar { background-color: #FF0000; }
+.red-bar { background-color: #FFD700; }
+.yellow-bar { background-color: #008000; }
+.green-bar { background-color: #000080; }
+.blue-bar { background-color: #800080; }
+.railroad-bar { background-color: #808080; }
+.utility-bar { background-color: #333; }
 
 .player-info, .actions {
     background: white;
@@ -128,6 +148,12 @@ button:hover:not(:disabled) {
     .cell {
         font-size: 0.4rem;
         padding: 1px;
+        text-shadow: 0 0 2px rgba(0,0,0,0.3);
+    }
+    
+    /* Property bar mobile height */
+    .property-bar {
+        height: 3px;
     }
     
     /* Accessibility improvements */
@@ -169,7 +195,6 @@ button:hover:not(:disabled) {
     border-left: 4px solid #007bff;
     animation: pulse-blue 1.5s infinite;
     background-color: #f0f7ff;
-}
 
 .color-indicator {
     display: inline-block;
@@ -358,4 +383,5 @@ button:hover:not(:disabled) {
     margin-top: 10px;
     font-style: italic;
     color: #666;
+}
 }
