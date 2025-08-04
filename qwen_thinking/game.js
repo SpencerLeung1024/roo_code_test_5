@@ -89,6 +89,7 @@ function rollDice() {
     const die1 = Math.floor(Math.random() * 6) + 1;
     const die2 = Math.floor(Math.random() * 6) + 1;
     const total = die1 + die2;
+    console.log(`[DEBUG] Dice roll: ${die1} + ${die2} = ${total}`);
     lastDiceTotal = total;
     
     const diceContainer = document.querySelector('.dice-container');
@@ -124,6 +125,7 @@ function movePlayer(playerIndex, spaces) {
         if (steps < spaces) {
             const oldPos = player.position;
             player.position = (oldPos + 1) % 40;
+            console.log(`[DEBUG] Moving player ${playerIndex} from ${oldPos} to ${player.position}`);
             if (oldPos === 39 && player.position === 0) {
                 player.balance += 200;
             }
@@ -152,6 +154,7 @@ function handleSpace(playerIndex) {
     switch(space.type) {
         case 'tax':
             player.balance -= space.amount;
+            checkBankruptcy(playerIndex, null);
             createNotification(`${player.name} paid tax: $${space.amount}`);
             createNotification(`${player.name} paid tax: $${space.amount}`);
             break;
@@ -171,6 +174,7 @@ function handleSpace(playerIndex) {
                 }
                 player.balance -= rent;
                 owner.balance += rent;
+                checkBankruptcy(playerIndex, space.owner);
                 createNotification(`${player.name} paid $${rent} to ${owner.name}`);
             } else if (space.owner === undefined && player.balance >= space.price) {
                 const purchaseModal = document.getElementById('purchase-modal');
@@ -195,8 +199,9 @@ function handleSpace(playerIndex) {
                     yesButton.onclick = null;
                     noButton.onclick = null;
                 };
+            } else if (space.owner === undefined && player.balance < space.price) {
+                createNotification(`${player.name} cannot afford ${space.name} ($${space.price})`);
             }
-            
             break;
         case 'chance':
         case 'community_chest':
@@ -276,6 +281,7 @@ function buyProperty() {
     
     if (space.type === 'property' && player.balance >= space.price) {
         player.balance -= space.price;
+        checkBankruptcy(currentPlayerIndex, null);
         createNotification(`${player.name} bought ${space.name} for $${space.price}`);
         player.properties.push(space);
         space.owner = currentPlayerIndex;
@@ -300,6 +306,43 @@ function endTurn() {
         rollButton.disabled = true;
         endTurnButton.disabled = true;
         setTimeout(rollDice, 1000);
+    }
+}
+function checkBankruptcy(playerIndex, creditorIndex) {
+    const player = players[playerIndex];
+    if (player.balance <= 0) {
+        // Transfer properties to creditor if exists
+        if (creditorIndex !== null) {
+            const creditor = players[creditorIndex];
+            player.properties.forEach(property => {
+                property.owner = creditorIndex;
+                creditor.properties.push(property);
+                // Update UI ownership
+                const index = boardSpaces.indexOf(property);
+                if (index >= 0) {
+                    const cell = document.querySelector(`.cell[data-index="${index}"]`);
+                    if (cell) {
+                        cell.classList.remove(`owned-by-${playerIndex}`);
+                        cell.classList.add(`owned-by-${creditorIndex}`);
+                    }
+                }
+            });
+        }
+        // Remove bankrupt player
+        players.splice(playerIndex, 1);
+        // Adjust current player index if needed
+        if (currentPlayerIndex >= playerIndex) {
+            currentPlayerIndex--;
+        }
+        createNotification(`Player ${playerIndex + 1} is bankrupt!`);
+        // Check if game ends
+        if (players.length === 1) {
+            createNotification(`Player ${players[0].name} wins!`);
+            rollButton.disabled = true;
+            buyButton.disabled = true;
+            endTurnButton.disabled = true;
+        }
+        updateUI();
     }
 }
 
