@@ -60,27 +60,38 @@
         <div class="actions">
             <button id="roll-dice">Roll Dice</button>
             <div class="dice-container" style="grid-column: span 2;">
-            <div id="ai-loading" class="loading" style="display: none;">AI is thinking...</div>
+                <div id="ai-loading" class="loading" style="display: none;">AI is thinking...</div>
                 <div class="die" id="die1">1</div>
                 <div class="die" id="die2">1</div>
-            <div class="modal" id="purchase-modal">
-                <div class="modal-content">
-                    <p>Buy <span id="property-name"></span> for $<span id="property-price"></span>?</p>
-                    <button id="buy-yes">Yes</button>
-                    <button id="buy-no">No</button>
-                </div>
-            </div>
-            <div class="modal" id="card-modal">
-                <div class="modal-content">
-                    <p id="card-text"></p>
-                    <button id="card-ok">OK</button>
-                </div>
-            </div>
             </div>
             <button id="buy-property" disabled>Buy Property</button>
             <button id="end-turn" disabled>End Turn</button>
         </div>
     </div>
+    
+    <div class="modal" id="purchase-modal">
+        <div class="modal-content">
+            <p>Buy <span id="property-name"></span> for $<span id="property-price"></span>?</p>
+            <button id="buy-yes">Yes</button>
+            <button id="buy-no">No</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="card-modal">
+        <div class="modal-content">
+            <p id="card-text"></p>
+            <button id="card-ok">OK</button>
+        </div>
+    </div>
+    
+    <div class="modal" id="jail-modal">
+        <div class="modal-content">
+            <p>You are in jail! What would you like to do?</p>
+            <button id="jail-roll">Roll Doubles</button>
+            <button id="jail-pay">Pay $50 Bail</button>
+        </div>
+    </div>
+    
     <script src="game.js"></script>
 </body>
 </html>

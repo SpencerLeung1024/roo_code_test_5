@@ -43,8 +43,8 @@ const boardSpaces = [
 ];
 
 const players = [
-    { id: 0, name: "Player 1", position: 0, balance: 1500, properties: [] },
-    { id: 1, name: "Player 2", position: 0, balance: 1500, properties: [] }
+    { id: 0, name: "Player 1", position: 0, balance: 1500, properties: [], inJail: false, jailTurns: 0 },
+    { id: 1, name: "Player 2", position: 0, balance: 1500, properties: [], inJail: false, jailTurns: 0 }
 ];
 let currentPlayerIndex = 0;
 let lastDiceTotal = 0;
@@ -59,6 +59,7 @@ const endTurnButton = document.getElementById('end-turn');
 
 // Game Functions
 function updateUI() {
+    console.log(`[DEBUG] Updating UI for player ${currentPlayerIndex}`);
     const currentPlayer = players[currentPlayerIndex];
     currentPlayerEl.textContent = currentPlayerIndex + 1;
     balanceEl.textContent = currentPlayer.balance;
@@ -86,6 +87,63 @@ function updateUI() {
 }
 
 function rollDice() {
+    const player = players[currentPlayerIndex];
+    if (player.inJail) {
+        // Handle jail options
+        const jailModal = document.getElementById('jail-modal');
+        jailModal.style.display = 'flex';
+        
+        const rollButton = document.getElementById('jail-roll');
+        const payButton = document.getElementById('jail-pay');
+        
+        rollButton.onclick = () => {
+            const die1 = Math.floor(Math.random() * 6) + 1;
+            const die2 = Math.floor(Math.random() * 6) + 1;
+            const total = die1 + die2;
+            
+            if (die1 === die2) {
+                player.inJail = false;
+                createNotification(`${player.name} rolled doubles and got out of jail!`);
+                movePlayer(currentPlayerIndex, total);
+            } else {
+                player.jailTurns++;
+                if (player.jailTurns >= 3) {
+                    player.balance -= 50;
+                    checkBankruptcy(currentPlayerIndex, null);
+                    player.inJail = false;
+                    createNotification(`${player.name} paid $50 bail after 3 turns`);
+                    movePlayer(currentPlayerIndex, total);
+                } else {
+                    createNotification(`${player.name} failed to roll doubles (turn ${player.jailTurns}/3)`);
+                    endTurn();
+                }
+            }
+            jailModal.style.display = 'none';
+            rollButton.onclick = null;
+            payButton.onclick = null;
+        };
+        
+        payButton.onclick = () => {
+            if (player.balance >= 50) {
+                player.balance -= 50;
+                checkBankruptcy(currentPlayerIndex, null);
+                player.inJail = false;
+                createNotification(`${player.name} paid $50 bail to get out of jail`);
+                const die1 = Math.floor(Math.random() * 6) + 1;
+                const die2 = Math.floor(Math.random() * 6) + 1;
+                const total = die1 + die2;
+                movePlayer(currentPlayerIndex, total);
+            } else {
+                createNotification(`${player.name} cannot afford $50 bail!`);
+            }
+            jailModal.style.display = 'none';
+            rollButton.onclick = null;
+            payButton.onclick = null;
+        };
+        
+        return;
+    }
+    
     const die1 = Math.floor(Math.random() * 6) + 1;
     const die2 = Math.floor(Math.random() * 6) + 1;
     const total = die1 + die2;
@@ -156,7 +214,6 @@ function handleSpace(playerIndex) {
             player.balance -= space.amount;
             checkBankruptcy(playerIndex, null);
             createNotification(`${player.name} paid tax: $${space.amount}`);
-            createNotification(`${player.name} paid tax: $${space.amount}`);
             break;
         case 'property':
         case 'railroad':
@@ -167,10 +224,15 @@ function handleSpace(playerIndex) {
                 if (space.type === 'railroad') {
                     const railroadCount = owner.properties.filter(p => p.type === 'railroad').length;
                     rent = space.baseRent * railroadCount;
-                } else if (space.type === 'utility') {
-                    rent = space.multiplier * lastDiceTotal;
+                    console.log(`[DEBUG] Railroad rent: ${space.name} - Count: ${railroadCount}, Rent: $${rent}`);
+               } else if (space.type === 'utility') {
+                    const utilityCount = owner.properties.filter(p => p.type === 'utility').length;
+                    const multiplier = utilityCount === 2 ? 10 : 4;
+                    rent = multiplier * lastDiceTotal;
+                   console.log(`[DEBUG] Utility rent: ${space.name} - Count: ${utilityCount}, Multiplier: ${multiplier}, Dice: ${lastDiceTotal}, Rent: $${rent}`);
                 } else {
                     rent = space.rent;
+                    console.log(`[DEBUG] Property rent: ${space.name} - Base: $${space.rent}, Rent: $${rent}`);
                 }
                 player.balance -= rent;
                 owner.balance += rent;
@@ -235,16 +297,21 @@ function handleSpace(playerIndex) {
             };
             break;
         case 'go_to_jail':
+            console.log(`[DEBUG] Player ${playerIndex} sent to jail`);
             player.position = 10;
             updateUI();
             break;
         case 'free_parking':
             player.balance += 100;
+            createNotification(`${player.name} collected $100 from Free Parking!`);
             break;
-        // If AI player, end turn automatically after a short delay
-        if (player.id === 1) {
-            setTimeout(endTurn, 1000);
-        }
+        default:
+            console.log(`[DEBUG] Unhandled space type: ${space.type} at position ${player.position}`);
+            break;
+    }
+    // If AI player, end turn automatically after a short delay
+    if (player.id === 1) {
+        setTimeout(endTurn, 1000);
     }
     
     // Add landing effects for special spaces
@@ -267,6 +334,8 @@ function createNotification(message) {
     const notifications = document.getElementById('notifications');
     const notification = document.createElement('div');
     notification.className = 'notification';
+    notification.setAttribute('aria-live', 'polite');
+    notification.setAttribute('role', 'alert');
     notification.textContent = message;
     notifications.appendChild(notification);
     
@@ -310,6 +379,7 @@ function endTurn() {
 }
 function checkBankruptcy(playerIndex, creditorIndex) {
     const player = players[playerIndex];
+    console.log(`[DEBUG] Checking bankruptcy for player ${playerIndex}, balance: ${player.balance}`);
     if (player.balance <= 0) {
         // Transfer properties to creditor if exists
         if (creditorIndex !== null) {
