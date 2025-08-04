@@ -37,6 +37,11 @@ Game is unplayable (can't end your turn)
 Undefined bugs everywhere
 
 - deepseek/deepseek-chat-v3-0324 > deepseek_v3
+$2.41, 6.41M
+It decided that all subtasks were implemented and completed the orchestrating task
+It chose to use Express.ts, React.ts, and Socket.IO
+Game is unplayable (A white page that just says "Monopoly")
+It will often complete debugging subtasks without waiting for human feedback
 
 - qwen/qwen3-235b-a22b-thinking-2507 > qwen_thinking
 $1.28, 10.3M
