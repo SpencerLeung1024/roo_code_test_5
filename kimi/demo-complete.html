@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game - Complete Demo</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/components/turn-ui.css">
+    <link rel="stylesheet" href="css/components/dice.css">
+    <link rel="stylesheet" href="css/components/player.css">
+    <link rel="stylesheet" href="css/components/property.css">
+    <link rel="stylesheet" href="css/components/card.css">
+    <link rel="stylesheet" href="css/components/jail.css">
+    <link rel="stylesheet" href="css/components/modal.css">
+    <link rel="stylesheet" href="css/themes/default.css">
+    
+    <style>
+        body {
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .demo-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .demo-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        
+        .test-results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .test-pass {
+            color: #28a745;
+        }
+        
+        .test-fail {
+            color: #dc3545;
+        }
+        
+        .game-board-demo {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .quick-start {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .quick-start h4 {
+            margin-bottom: 10px;
+            color: #1976d2;
+        }
+        
+        .quick-start button {
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background: #2196f3;
+            color: white;
+        }
+        
+        .quick-start button:hover {
+            background: #1976d2;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🎲 Monopoly Game - Complete Demo</h1>
+            <p>Full turn-based gameplay system demonstration</p>
+        </div>
+
+        <!-- Quick Start Section -->
+        <div class="quick-start">
+            <h4>Quick Start Options</h4>
+            <button onclick="startQuickGame()">Start 2-Player Game</button>
+            <button onclick="start3PlayerGame()">Start 3-Player Game</button>
+            <button onclick="runIntegrationTests()">Run Integration Tests</button>
+            <button onclick="resetGame()">Reset Game</button>
+        </div>
+
+        <!-- Game Setup Section -->
+        <div class="demo-section">
+            <h3>Game Setup</h3>
+            <div id="setup-section">
+                <div>
+                    <label>Number of Players: 
+                        <select id="player-count" onchange="updatePlayerInputs()">
+                            <option value="2">2 Players</option>
+                            <option value="3">3 Players</option>
+                            <option value="4">4 Players</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="player-setup">
+                    <!-- Player inputs will be generated here -->
+                </div>
+                <button onclick="startCustomGame()" class="btn btn-primary">Start Custom Game</button>
+            </div>
+        </div>
+
+        <!-- Game Board Section -->
+        <div class="demo-section">
+            <h3>Game Board</h3>
+            <div id="game-board-container" class="game-board-demo">
+                <p>Game board will appear here when game starts</p>
+            </div>
+        </div>
+
+        <!-- Turn Management Section -->
+        <div class="demo-section">
+            <h3>Turn Management</h3>
+            <div id="turn-info">
+                <p>Current Player: <span id="current-player-name">-</span></p>
+                <p>Turn Number: <span id="turn-number">-</span></p>
+                <p>Game Round: <span id="game-round">-</span></p>
+            </div>
+            <div class="test-controls">
+                <button onclick="rollDice()" disabled id="roll-btn">Roll Dice</button>
+                <button onclick="endTurn()" disabled id="end-turn-btn">End Turn</button>
+                <button onclick="buyProperty()" disabled id="buy-btn">Buy Property</button>
+                <button onclick="buildHouse()" disabled id="build-btn">Build House</button>
+                <button onclick="tradeWithPlayer()" disabled id="trade-btn">Trade</button>
+            </div>
+        </div>
+
+        <!-- Game Actions Section -->
+        <div class="demo-section">
+            <h3>Game Actions</h3>
+            <div class="test-controls">
+                <button onclick="showPlayerInfo()">Show Player Info</button>
+                <button onclick="showGameStats()">Show Game Stats</button>
+                <button onclick="saveGame()">Save Game</button>
+                <button onclick="loadGame()">Load Game</button>
+                <button onclick="pauseGame()">Pause Game</button>
+                <button onclick="resumeGame()">Resume Game</button>
+            </div>
+        </div>
+
+        <!-- Test Results Section -->
+        <div class="demo-section">
+            <h3>Test Results & Logs</h3>
+            <div class="test-controls">
+                <button onclick="clearLogs()">Clear Logs</button>
+                <button onclick="exportLogs()">Export Logs</button>
+            </div>
+            <div id="test-results" class="test-results">
+                <p>Test results will appear here...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { MonopolyGame } from './js/engine/MonopolyGame.js';
+        import { IntegrationTest } from './js/tests/integration-test.js';
+
+        // Global variables
+        let game = null;
+        let testRunner = null;
+
+        // Initialize demo
+        async function initDemo() {
+            log('🎲 Initializing Monopoly Game Demo...');
+            
+            try {
+                game = new MonopolyGame();
+                await game.init();
+                
+                testRunner = new IntegrationTest();
+                
+                log('✅ Demo initialized successfully');
+                updatePlayerInputs();
+                
+            } catch (error) {
+                log('❌ Demo initialization failed: ' + error.message, 'error');
+            }
+        }
+
+        // Quick start functions
+        window.startQuickGame = async function() {
+            const config = {
+                players: [
+                    { name: 'Alice', token: '🚗', money: 1500 },
+                    { name: 'Bob', token: '🐕', money: 1500 }
+                ],
+                settings: { autoSave: false, turnTimeout: 0 }
+            };
+            
+            await startGame(config);
+        };
+
+        window.start3PlayerGame = async function() {
+            const config = {
+                players: [
+                    { name: 'Alice', token: '🚗', money: 1500 },
+                    { name: 'Bob', token: '🐕', money: 1500 },
+                    { name: 'Charlie', token: '🎩', money: 1500 }
+                ],
+                settings: { autoSave: false, turnTimeout: 0 }
+            };
+            
+            await startGame(config);
+        };
+
+        window.runIntegrationTests = async function() {
+            log('🧪 Running integration tests...');
+            try {
+                await testRunner.runAllTests();
+                log('✅ All integration tests passed!');
+            } catch (error) {
+                log('❌ Integration tests failed: ' + error.message, 'error');
+            }
+        };
+
+        window.resetGame = async function() {
+            if (game) {
+                await game.restartGame();
+                updateUI();
+                log('🔄 Game reset');
+            }
+        };
+
+        // Game setup functions
+        window.updatePlayerInputs = function() {
+            const count = parseInt(document.getElementById('player-count').value);
+            const container = document.getElementById('player-setup');
+            
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+                const div = document.createElement('div');
+                div.innerHTML = `
+                    <label>Player ${i + 1}:
+                        <input type="text" id="player-${i}-name" value="Player ${i + 1}" />
+                        <select id="player-${i}-token">
+                            <option value="🚗">🚗 Car</option>
+                            <option value="🐕">🐕 Dog</option>
+                            <option value="🎩">🎩 Hat</option>
+                            <option value="👢">👢 Boot</option>
+                        </select>
+                    </label>
+                `;
+                container.appendChild(div);
+            }
+        };
+
+        window.startCustomGame = async function() {
+            const count = parseInt(document.getElementById('player-count').value);
+            const players = [];
+            
+            for (let i = 0; i < count; i++) {
+                const name = document.getElementById(`player-${i}-name`).value || `Player ${i + 1}`;
+                const token = document.getElementById(`player-${i}-token`).value;
+                players.push({ name, token, money: 1500 });
+            }
+            
+            const config = { players, settings: { autoSave: false, turnTimeout: 0 } };
+            await startGame(config);
+        };
+
+        async function startGame(config) {
+            try {
+                log('🎲 Starting game...');
+                await game.startGame(config);
+                
+                // Render board
+                const boardContainer = document.getElementById('game-board-container');
+                if (game.gameEngine.boardRenderer) {
+                    boardContainer.innerHTML = '';
+                    boardContainer.appendChild(game.gameEngine.boardRenderer.getElement());
+                    game.gameEngine.boardRenderer.render();
+                }
+                
+                // Enable controls
+                document.getElementById('roll-btn').disabled = false;
+                document.getElementById('end-turn-btn').disabled = false;
+                document.getElementById('buy-btn').disabled = false;
+                document.getElementById('build-btn').disabled = false;
+                document.getElementById('trade-btn').disabled = false;
+                
+                updateUI();
+                log('✅ Game started successfully');
+                
+            } catch (error) {
+                log('❌ Failed to start game: ' + error.message, 'error');
+            }
+        }
+
+        // Game action functions
+        window.rollDice = function() {
+            if (!game || !game.isActive()) {
+                log('❌ Game not active', 'error');
+                return;
+            }
+            
+            try {
+                const diceManager = game.gameEngine.diceManager;
+                const result = diceManager.rollDice();
+                log(`🎲 Rolled: ${result.dice1} + ${result.dice2} = ${result.total}`);
+                
+                if (result.isDouble) {
+                    log('🎯 Doubles rolled!');
+                }
+                
+                updateUI();
+            } catch (error) {
+                log('❌ Failed to roll dice: ' + error.message, 'error');
+            }
+        };
+
+        window.endTurn = function() {
+            if (!game || !game.isActive()) {
+                log('❌ Game not active', 'error');
+                return;
+            }
+            
+            try {
+                game.gameEngine.endTurn();
+                log('⏭️ Turn ended');
+                updateUI();
+            } catch (error) {
+                log('❌ Failed to end turn: ' + error.message, 'error');
+            }
+        };
+
+        window.buyProperty = function() {
+            log('🏠 Buy property - Feature coming soon');
+        };
+
+        window.buildHouse = function() {
+            log('🏗️ Build house - Feature coming soon');
+        };
+
+        window.tradeWithPlayer = function() {
+            log('🤝 Trade - Feature coming soon');
+        };
+
+        window.showPlayerInfo = function() {
+            if (!game || !game.isActive()) {
+                log('❌ Game not active', 'error');
+                return;
+            }
+            
+            const players = game.gameEngine.playerManager.getActivePlayers();
+            players.forEach(player => {
+                log(`👤 ${player.name}: $${player.money}, Position: ${player.position}`);
+            });
+        };
+
+        window.showGameStats = function() {
+            if (!game) {
+                log('❌ Game not initialized', 'error');
+                return;
+            }
+            
+            const stats = game.getGameStats();
+            log(`📊 Game Stats: ${JSON.stringify(stats, null, 2)}`);
+        };
+
+        window.saveGame = async function() {
+            try {
+                await game.saveGame();
+                log('💾 Game saved');
+            } catch (error) {
+                log('❌ Failed to save game: ' + error.message, 'error');
+            }
+        };
+
+        window.loadGame = async function() {
+            try {
+                await game.loadGame();
+                updateUI();
+                log('📂 Game loaded');
+            } catch (error) {
+                log('❌ Failed to load game: ' + error.message, 'error');
+            }
+        };
+
+        window.pauseGame = function() {
+            game.pauseGame();
+            log('⏸️ Game paused');
+        };
+
+        window.resumeGame = function() {
+            game.resumeGame();
+            log('▶️ Game resumed');
+        };
+
+        // Utility functions
+        function log(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = type === 'error' ? 'test-fail' : 'test-pass';
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            results.appendChild(div);
+            results.scrollTop = results.scrollHeight;
+        }
+
+        window.clearLogs = function() {
+            document.getElementById('test-results').innerHTML = '';
+        };
+
+        window.exportLogs = function() {
+            const logs = document.getElementById('test-results').innerText;
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'monopoly-demo-logs.txt';
+            a.click();
+        };
+
+        function updateUI() {
+            if (!game || !game.isActive()) return;
+            
+            const currentPlayer = game.gameEngine.getCurrentPlayer();
+            if (currentPlayer) {
+                document.getElementById('current-player-name').textContent = currentPlayer.name;
+            }
+            
+            const turnStats = game.turnManager?.getTurnStats();
+            if (turnStats) {
+                document.getElementById('turn-number').textContent = turnStats.totalTurns;
+                document.getElementById('game-round').textContent = game.gameEngine.getCurrentRound();
+            }
+        }
+
+        // Initialize when page loads
+        initDemo();
+    </script>
+</body>
+</html>

@@ -77,6 +77,57 @@ export class Player {
     }
 
     /**
+     * Send player to jail
+     */
+    goToJail() {
+        this.inJail = true;
+        this.jailTurns = 0;
+        this.position = constants.BOARD.JAIL_POSITION;
+        this.stats.turnsInJail++;
+        
+        debugLog('info', `${this.name} was sent to jail`);
+        
+        // Dispatch event
+        this.dispatchEvent('jail:entered', { player: this });
+    }
+
+    /**
+     * Get player out of jail
+     * @param {boolean} usedCard - Whether a Get Out of Jail Free card was used
+     */
+    getOutOfJail(usedCard = false) {
+        if (!this.inJail) return;
+        
+        this.inJail = false;
+        this.jailTurns = 0;
+        
+        if (usedCard) {
+            this.getOutOfJailFreeCards = Math.max(0, this.getOutOfJailFreeCards - 1);
+        }
+        
+        debugLog('info', `${this.name} got out of jail${usedCard ? ' using a card' : ''}`);
+        
+        // Dispatch event
+        this.dispatchEvent('jail:exited', { player: this, usedCard });
+    }
+
+    /**
+     * Check if player can pay jail fine
+     * @returns {boolean} True if player can pay the fine
+     */
+    canPayJailFine() {
+        return this.money >= constants.JAIL.BAIL_AMOUNT;
+    }
+
+    /**
+     * Check if player has Get Out of Jail Free cards
+     * @returns {boolean} True if player has cards
+     */
+    hasGetOutOfJailCards() {
+        return this.getOutOfJailFreeCards > 0;
+    }
+
+    /**
      * Add money to player's balance
      * @param {number} amount - Amount to add
      * @param {string} [reason] - Reason for adding money

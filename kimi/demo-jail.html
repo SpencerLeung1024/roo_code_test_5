@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jail System Demo - Monopoly Game</title>
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/components/jail.css">
+    <link rel="stylesheet" href="css/themes/default.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .demo-btn:hover {
+            background: #2980b9;
+        }
+        
+        .demo-btn.danger {
+            background: #e74c3c;
+        }
+        
+        .demo-btn.danger:hover {
+            background: #c0392b;
+        }
+        
+        .demo-btn.success {
+            background: #2ecc71;
+        }
+        
+        .demo-btn.success:hover {
+            background: #27ae60;
+        }
+        
+        .demo-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .player-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .player-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .player-card.in-jail {
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .jail-status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .test-results {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>🚨 Jail System Demo</h1>
+            <p>Test all jail mechanics in the Monopoly game</p>
+        </div>
+
+        <div class="demo-controls">
+            <button class="demo-btn" onclick="demoJail.sendToJail()">Send to Jail</button>
+            <button class="demo-btn" onclick="demoJail.payFine()">Pay $50 Fine</button>
+            <button class="demo-btn" onclick="demoJail.useCard()">Use Get Out Card</button>
+            <button class="demo-btn" onclick="demoJail.rollForDoubles()">Roll for Doubles</button>
+            <button class="demo-btn" onclick="demoJail.showJailModal()">Show Jail Modal</button>
+            <button class="demo-btn" onclick="demoJail.resetPlayer()">Reset Player</button>
+            <button class="demo-btn danger" onclick="demoJail.testAll()">Run All Tests</button>
+        </div>
+
+        <div class="demo-info">
+            <h3>Current Game State</h3>
+            <div id="game-state">
+                <p>Loading...</p>
+            </div>
+        </div>
+
+        <div class="player-info" id="player-info">
+            <!-- Player cards will be populated here -->
+        </div>
+
+        <div class="jail-status" id="jail-status">
+            <h4>Jail System Status</h4>
+            <div id="jail-details">
+                <p>Initializing...</p>
+            </div>
+        </div>
+
+        <div class="test-results" id="test-results">
+            <h4>Test Results</h4>
+            <p>Click "Run All Tests" to execute jail system tests</p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { GameEngine } from './js/engine/GameEngine.js';
+        import { runJailTests } from './js/tests/jail-test.js';
+        import { jailUI } from './js/ui/JailUI.js';
+        import { constants } from './js/config/constants.js';
+
+        class JailDemo {
+            constructor() {
+                this.gameEngine = null;
+                this.currentPlayer = null;
+            }
+
+            async init() {
+                console.log('🎮 Initializing Jail Demo...');
+                
+                this.gameEngine = new GameEngine();
+                await this.gameEngine.init();
+                
+                // Create test player
+                const testPlayer = { 
+                    id: 'demo-player', 
+                    name: 'Demo Player', 
+                    token: '🎩', 
+                    money: 1500 
+                };
+                
+                this.gameEngine.playerManager.createPlayers([testPlayer]);
+                this.gameEngine.gameState.isGameActive = true;
+                
+                this.currentPlayer = this.gameEngine.getCurrentPlayer();
+                
+                this.updateDisplay();
+                console.log('✅ Jail Demo initialized');
+            }
+
+            updateDisplay() {
+                const player = this.currentPlayer;
+                
+                // Update game state
+                document.getElementById('game-state').innerHTML = `
+                    <p><strong>Player:</strong> ${player.name}</p>
+                    <p><strong>Position:</strong> ${player.position}</p>
+                    <p><strong>Money:</strong> $${player.money}</p>
+                    <p><strong>In Jail:</strong> ${player.inJail ? 'Yes' : 'No'}</p>
+                    <p><strong>Jail Turns:</strong> ${player.jailTurns}</p>
+                    <p><strong>Get Out Cards:</strong> ${player.getOutOfJailFreeCards}</p>
+                `;
+
+                // Update player info
+                document.getElementById('player-info').innerHTML = `
+                    <div class="player-card ${player.inJail ? 'in-jail' : ''}">
+                        <h4>${player.name} ${player.inJail ? '🔒' : ''}</h4>
+                        <p>Money: $${player.money}</p>
+                        <p>Position: ${player.position}</p>
+                        <p>Jail Status: ${player.inJail ? `In jail (Turn ${player.jailTurns + 1}/3)` : 'Free'}</p>
+                        <p>Cards: ${player.getOutOfJailFreeCards}</p>
+                    </div>
+                `;
+
+                // Update jail status
+                document.getElementById('jail-details').innerHTML = `
+                    <p><strong>Jail Position:</strong> ${constants.BOARD.JAIL_POSITION}</p>
+                    <p><strong>Bail Amount:</strong> $${constants.JAIL.BAIL_AMOUNT}</p>
+                    <p><strong>Max Turns:</strong> ${constants.JAIL.MAX_TURNS_IN_JAIL}</p>
+                    <p><strong>Current Player:</strong> ${player.name}</p>
+                    <p><strong>Can Collect Rent in Jail:</strong> Yes</p>
+                `;
+            }
+
+            sendToJail() {
+                this.currentPlayer.goToJail();
+                this.updateDisplay();
+                this.showNotification('Jail', `${this.currentPlayer.name} was sent to jail!`);
+            }
+
+            payFine() {
+                if (!this.currentPlayer.inJail) {
+                    this.showNotification('Error', 'Player is not in jail!');
+                    return;
+                }
+                
+                if (this.currentPlayer.money < constants.JAIL.BAIL_AMOUNT) {
+                    this.showNotification('Error', 'Not enough money to pay fine!');
+                    return;
+                }
+                
+                this.currentPlayer.removeMoney(constants.JAIL.BAIL_AMOUNT, 'Jail fine');
+                this.currentPlayer.getOutOfJail(false);
+                this.updateDisplay();
+                this.showNotification('Jail', `${this.currentPlayer.name} paid $50 and is out of jail!`);
+            }
+
+            useCard() {
+                if (!this.currentPlayer.inJail) {
+                    this.showNotification('Error', 'Player is not in jail!');
+                    return;
+                }
+                
+                if (this.currentPlayer.getOutOfJailFreeCards <= 0) {
+                    this.showNotification('Error', 'No Get Out of Jail Free cards available!');
+                    return;
+                }
+                
+                this.currentPlayer.getOutOfJail(true);
+                this.updateDisplay();
+                this.showNotification('Jail', `${this.currentPlayer.name} used a Get Out of Jail Free card!`);
+            }
+
+            rollForDoubles() {
+                if (!this.currentPlayer.inJail) {
+                    this.showNotification('Error', 'Player is not in jail!');
+                    return;
+                }
+                
+                const dice1 = Math.floor(Math.random() * 6) + 1;
+                const dice2 = Math.floor(Math.random() * 6) + 1;
+                const isDoubles = dice1 === dice2;
+                
+                if (isDoubles) {
+                    this.currentPlayer.getOutOfJail(false);
+                    this.showNotification('Lucky!', `${this.currentPlayer.name} rolled doubles (${dice1}, ${dice2}) and is free!`);
+                } else {
+                    this.currentPlayer.jailTurns++;
+                    this.showNotification('Unlucky', `${this.currentPlayer.name} rolled ${dice1}, ${dice2} - no doubles, stays in jail`);
+                }
+                
+                this.updateDisplay();
+            }
+
+            showJailModal() {
+                jailUI.showJailModal(this.currentPlayer);
+            }
+
+            resetPlayer() {
+                this.currentPlayer.inJail = false;
+                this.currentPlayer.jailTurns = 0;
+                this.currentPlayer.getOutOfJailFreeCards = 0;
+                this.currentPlayer.position = 0;
+                this.currentPlayer.money = 1500;
+                this.updateDisplay();
+                this.showNotification('Reset', 'Player reset to initial state');
+            }
+
+            async testAll() {
+                document.getElementById('test-results').innerHTML = '<p>Running tests...</p>';
+                
+                try {
+                    await runJailTests();
+                    document.getElementById('test-results').innerHTML = '<p>✅ Tests completed! Check console for details.</p>';
+                } catch (error) {
+                    document.getElementById('test-results').innerHTML = `<p>❌ Error: ${error.message}</p>`;
+                }
+            }
+
+            showNotification(title, message) {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #2c3e50;
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                    z-index: 1000;
+                    max-width: 300px;
+                    animation: slideIn 0.3s ease-out;
+                `;
+                notification.innerHTML = `
+                    <h4>${title}</h4>
+                    <p>${message}</p>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 3000);
+            }
+        }
+
+        // Initialize demo
+        const demoJail = new JailDemo();
+        demoJail.init();
+
+        // Make demo available globally
+        window.demoJail = demoJail;
+    </script>
+</body>
+</html>

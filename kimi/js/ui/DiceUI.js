@@ -1,330 +1,361 @@
 /**
- * Dice UI Component
- * Handles visual dice display and animations
+ * Enhanced Dice UI Component
+ * Provides sophisticated dice rolling animations and effects
  */
 
-import { constants } from '../config/constants.js';
-import { dice } from '../models/Dice.js';
-import { debugLog } from '../config/constants.js';
-
-/**
- * Dice UI class for handling visual dice display
- */
 export class DiceUI {
-    constructor(containerId = 'dice-container') {
-        this.container = document.getElementById(containerId);
-        this.diceElements = [];
-        this.isAnimating = false;
-        this.animationTimeout = null;
+    constructor() {
+        this.diceContainer = null;
+        this.dice1 = null;
+        this.dice2 = null;
+        this.isRolling = false;
+        this.animationDuration = 1500;
+    }
+
+    async init() {
+        this.diceContainer = document.getElementById('dice-container');
+        this.dice1 = document.getElementById('dice-1');
+        this.dice2 = document.getElementById('dice-2');
         
-        if (!this.container) {
-            debugLog('error', `Dice container with id '${containerId}' not found`);
+        if (!this.diceContainer || !this.dice1 || !this.dice2) {
+            console.warn('Dice elements not found');
             return;
         }
         
-        this.init();
+        this.setupEventListeners();
+        console.log('✅ Enhanced Dice UI initialized');
     }
 
-    /**
-     * Initialize the dice UI
-     */
-    init() {
-        this.createDiceElements();
-        this.bindEvents();
-        this.render();
-    }
-
-    /**
-     * Create dice DOM elements
-     */
-    createDiceElements() {
-        this.container.innerHTML = `
-            <div class="dice-ui">
-                <div class="dice-display">
-                    <div class="dice dice-1" data-dice="1">
-                        <div class="dice-face">
-                            <div class="dots"></div>
-                        </div>
-                    </div>
-                    <div class="dice dice-2" data-dice="2">
-                        <div class="dice-face">
-                            <div class="dots"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="dice-controls">
-                    <button class="roll-button" id="roll-dice-btn">
-                        <span class="btn-text">Roll Dice</span>
-                        <span class="btn-spinner" style="display: none;">🎲</span>
-                    </button>
-                </div>
-                <div class="dice-result">
-                    <div class="total-display">
-                        <span class="total-label">Total:</span>
-                        <span class="total-value">-</span>
-                    </div>
-                    <div class="doubles-indicator" style="display: none;">
-                        <span class="doubles-text">DOUBLES!</span>
-                        <span class="roll-again-text">Roll Again</span>
-                    </div>
-                </div>
-                <div class="roll-history" style="display: none;">
-                    <h4>Recent Rolls</h4>
-                    <div class="history-list"></div>
-                </div>
-            </div>
-        `;
-
-        this.diceElements = [
-            this.container.querySelector('.dice-1'),
-            this.container.querySelector('.dice-2')
-        ];
-        
-        this.rollButton = this.container.querySelector('#roll-dice-btn');
-        this.totalDisplay = this.container.querySelector('.total-value');
-        this.doublesIndicator = this.container.querySelector('.doubles-indicator');
-        this.historyPanel = this.container.querySelector('.roll-history');
-        this.historyList = this.container.querySelector('.history-list');
-    }
-
-    /**
-     * Bind event listeners
-     */
-    bindEvents() {
-        // Roll button click
-        this.rollButton?.addEventListener('click', () => {
-            this.handleRollClick();
-        });
-
-        // Listen for dice rolled events
-        document.addEventListener('dice:rolled', (event) => {
-            this.handleDiceRolled(event.detail);
-        });
-
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (event) => {
-            if (event.code === 'Space' && event.target.tagName !== 'INPUT') {
-                event.preventDefault();
-                this.handleRollClick();
+    setupEventListeners() {
+        // Add click handlers for dice
+        [this.dice1, this.dice2].forEach(dice => {
+            if (dice) {
+                dice.addEventListener('click', () => this.showDiceDetails());
             }
         });
     }
 
-    /**
-     * Handle roll button click
-     */
-    handleRollClick() {
-        if (this.isAnimating || !dice.canRoll) {
-            debugLog('warn', 'Cannot roll: animation in progress or rolling disabled');
-            return;
-        }
-
-        this.rollButton.disabled = true;
+    async rollDice(diceValues = null) {
+        if (this.isRolling) return;
+        
+        this.isRolling = true;
+        const values = diceValues || [this.getRandomDiceValue(), this.getRandomDiceValue()];
+        
+        // Start rolling animation
         this.startRollingAnimation();
         
-        // Roll dice after animation starts
-        setTimeout(() => {
-            const result = dice.roll();
-            if (result) {
-                this.animateRoll(result);
-            }
-        }, 200);
+        // Wait for animation to complete
+        await this.delay(this.animationDuration);
+        
+        // Show final values
+        this.showFinalValues(values);
+        
+        // Check for doubles
+        const isDouble = values[0] === values[1];
+        
+        // Update result display
+        this.updateResultDisplay(values, isDouble);
+        
+        this.isRolling = false;
+        
+        return { values, isDouble, total: values[0] + values[1] };
     }
 
-    /**
-     * Start rolling animation
-     */
     startRollingAnimation() {
-        this.isAnimating = true;
+        // Add rolling class
+        this.diceContainer.classList.add('rolling');
         
-        // Add rolling class to dice
-        this.diceElements.forEach(diceEl => {
-            diceEl.classList.add('rolling');
-        });
+        // Start rapid dice changes
+        const interval = setInterval(() => {
+            this.setDiceValue(this.dice1, this.getRandomDiceValue());
+            this.setDiceValue(this.dice2, this.getRandomDiceValue());
+        }, 100);
         
-        // Show spinner on button
-        const spinner = this.rollButton.querySelector('.btn-spinner');
-        const text = this.rollButton.querySelector('.btn-text');
-        if (spinner && text) {
-            spinner.style.display = 'inline';
-            text.style.display = 'none';
-        }
-    }
-
-    /**
-     * Animate dice roll
-     * @param {Object} result - Roll result
-     */
-    animateRoll(result) {
-        // Stop rolling animation
-        this.diceElements.forEach(diceEl => {
-            diceEl.classList.remove('rolling');
-        });
-
-        // Update dice faces
-        this.updateDiceFace(this.diceElements[0], result.dice1);
-        this.updateDiceFace(this.diceElements[1], result.dice2);
-
-        // Update total display
-        this.totalDisplay.textContent = result.total;
-
-        // Show doubles indicator
-        if (result.isDoubles) {
-            this.doublesIndicator.style.display = 'block';
-            this.doublesIndicator.classList.add('show');
-        } else {
-            this.doublesIndicator.style.display = 'none';
-            this.doublesIndicator.classList.remove('show');
-        }
-
-        // Update history
-        this.updateHistory();
-
-        // Reset button
+        // Stop after animation duration
         setTimeout(() => {
-            this.rollButton.disabled = false;
-            const spinner = this.rollButton.querySelector('.btn-spinner');
-            const text = this.rollButton.querySelector('.btn-text');
-            if (spinner && text) {
-                spinner.style.display = 'none';
-                text.style.display = 'inline';
-            }
-            this.isAnimating = false;
-        }, constants.UI.DICE_ROLL_DURATION);
+            clearInterval(interval);
+            this.diceContainer.classList.remove('rolling');
+        }, this.animationDuration - 200);
     }
 
-    /**
-     * Update dice face with dots
-     * @param {Element} diceElement - Dice DOM element
-     * @param {number} value - Dice value (1-6)
-     */
-    updateDiceFace(diceElement, value) {
-        const dotsContainer = diceElement.querySelector('.dots');
-        dotsContainer.innerHTML = '';
+    showFinalValues(values) {
+        // Add final animation
+        this.dice1.classList.add('final-roll');
+        this.dice2.classList.add('final-roll');
         
-        // Create dots based on dice value
+        this.setDiceValue(this.dice1, values[0]);
+        this.setDiceValue(this.dice2, values[1]);
+        
+        // Remove animation class
+        setTimeout(() => {
+            this.dice1.classList.remove('final-roll');
+            this.dice2.classList.remove('final-roll');
+        }, 500);
+    }
+
+    setDiceValue(diceElement, value) {
+        if (!diceElement) return;
+        
+        const diceFace = diceElement.querySelector('.dice-face');
+        if (!diceFace) return;
+        
+        // Clear existing dots
+        diceFace.innerHTML = '';
+        
+        // Create dots based on value
         const dotPositions = this.getDotPositions(value);
         
         dotPositions.forEach(position => {
             const dot = document.createElement('div');
             dot.className = 'dot';
-            dot.style.left = position.x + '%';
-            dot.style.top = position.y + '%';
-            dotsContainer.appendChild(dot);
+            dot.style.cssText = `
+                position: absolute;
+                width: 20%;
+                height: 20%;
+                background: #2c3e50;
+                border-radius: 50%;
+                top: ${position.top};
+                left: ${position.left};
+                transform: translate(-50%, -50%);
+            `;
+            diceFace.appendChild(dot);
         });
-
+        
+        // Add value attribute for accessibility
         diceElement.setAttribute('data-value', value);
     }
 
-    /**
-     * Get dot positions for each dice value
-     * @param {number} value - Dice value (1-6)
-     * @returns {Array} Array of dot positions
-     */
     getDotPositions(value) {
         const positions = {
-            1: [{ x: 50, y: 50 }],
-            2: [{ x: 20, y: 20 }, { x: 80, y: 80 }],
-            3: [{ x: 20, y: 20 }, { x: 50, y: 50 }, { x: 80, y: 80 }],
-            4: [{ x: 20, y: 20 }, { x: 80, y: 20 }, { x: 20, y: 80 }, { x: 80, y: 80 }],
-            5: [{ x: 20, y: 20 }, { x: 80, y: 20 }, { x: 50, y: 50 }, { x: 20, y: 80 }, { x: 80, y: 80 }],
-            6: [{ x: 20, y: 20 }, { x: 80, y: 20 }, { x: 20, y: 50 }, { x: 80, y: 50 }, { x: 20, y: 80 }, { x: 80, y: 80 }]
+            1: [{ top: '50%', left: '50%' }],
+            2: [
+                { top: '25%', left: '25%' },
+                { top: '75%', left: '75%' }
+            ],
+            3: [
+                { top: '25%', left: '25%' },
+                { top: '50%', left: '50%' },
+                { top: '75%', left: '75%' }
+            ],
+            4: [
+                { top: '25%', left: '25%' },
+                { top: '25%', left: '75%' },
+                { top: '75%', left: '25%' },
+                { top: '75%', left: '75%' }
+            ],
+            5: [
+                { top: '25%', left: '25%' },
+                { top: '25%', left: '75%' },
+                { top: '50%', left: '50%' },
+                { top: '75%', left: '25%' },
+                { top: '75%', left: '75%' }
+            ],
+            6: [
+                { top: '25%', left: '25%' },
+                { top: '25%', left: '75%' },
+                { top: '50%', left: '25%' },
+                { top: '50%', left: '75%' },
+                { top: '75%', left: '25%' },
+                { top: '75%', left: '75%' }
+            ]
         };
         
         return positions[value] || positions[1];
     }
 
-    /**
-     * Handle dice rolled event
-     * @param {Object} result - Roll result
-     */
-    handleDiceRolled(result) {
-        debugLog('info', 'DiceUI received dice:rolled event', result);
-    }
-
-    /**
-     * Update roll history display
-     */
-    updateHistory() {
-        const history = dice.getRollHistory(5);
-        this.historyList.innerHTML = '';
+    updateResultDisplay(values, isDouble) {
+        const resultElement = document.getElementById('dice-result');
+        if (!resultElement) return;
         
-        history.forEach((roll, index) => {
-            const item = document.createElement('div');
-            item.className = 'history-item';
-            item.innerHTML = `
-                <span class="dice-values">${roll.dice1} + ${roll.dice2}</span>
-                <span class="total">= ${roll.total}</span>
-                ${roll.isDoubles ? '<span class="doubles-badge">D</span>' : ''}
-            `;
-            
-            if (index === history.length - 1) {
-                item.classList.add('latest');
-            }
-            
-            this.historyList.appendChild(item);
-        });
-
-        // Show history panel if there are rolls
-        if (history.length > 0) {
-            this.historyPanel.style.display = 'block';
+        const total = values[0] + values[1];
+        const doubleText = isDouble ? ' 🎲 DOUBLES!' : '';
+        
+        resultElement.innerHTML = `
+            <div class="dice-result-content">
+                <span class="dice-values">${values[0]} + ${values[1]} = ${total}</span>
+                <span class="double-indicator">${doubleText}</span>
+            </div>
+        `;
+        
+        // Add celebration effect for doubles
+        if (isDouble) {
+            this.celebrateDoubles();
         }
     }
 
-    /**
-     * Show/hide roll history
-     * @param {boolean} show - Whether to show history
-     */
-    toggleHistory(show = null) {
-        const shouldShow = show !== null ? show : this.historyPanel.style.display === 'none';
-        this.historyPanel.style.display = shouldShow ? 'block' : 'none';
+    celebrateDoubles() {
+        // Create confetti effect
+        this.createConfetti();
+        
+        // Add glow effect
+        this.diceContainer.classList.add('doubles-glow');
+        setTimeout(() => {
+            this.diceContainer.classList.remove('doubles-glow');
+        }, 2000);
     }
 
-    /**
-     * Enable/disable dice rolling
-     * @param {boolean} enabled - Whether rolling is enabled
-     */
-    setRollingEnabled(enabled) {
-        this.rollButton.disabled = !enabled;
-        dice.setCanRoll(enabled);
+    createConfetti() {
+        const colors = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#9b59b6'];
+        
+        for (let i = 0; i < 10; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: absolute;
+                width: 6px;
+                height: 6px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                left: 50%;
+                top: 50%;
+                border-radius: 50%;
+                animation: confetti-fall 1s ease-out forwards;
+                z-index: 100;
+            `;
+            
+            this.diceContainer.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 1000);
+        }
     }
 
-    /**
-     * Reset dice display
-     */
+    showDiceDetails() {
+        // Create modal with dice statistics
+        const modal = document.createElement('div');
+        modal.className = 'modal dice-details-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>🎲 Dice Statistics</h2>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="dice-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Total Rolls:</span>
+                            <span class="stat-value" id="total-rolls">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Doubles:</span>
+                            <span class="stat-value" id="total-doubles">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Average Roll:</span>
+                            <span class="stat-value" id="average-roll">0</span>
+                        </div>
+                    </div>
+                    <div class="dice-distribution">
+                        <h3>Roll Distribution</h3>
+                        <div class="distribution-chart" id="distribution-chart"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Add event listeners
+        modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+        });
+    }
+
+    getRandomDiceValue() {
+        return Math.floor(Math.random() * 6) + 1;
+    }
+
+    delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Public methods for external use
+    setEnabled(enabled) {
+        if (this.diceContainer) {
+            this.diceContainer.style.pointerEvents = enabled ? 'auto' : 'none';
+            this.diceContainer.style.opacity = enabled ? '1' : '0.6';
+        }
+    }
+
     reset() {
-        this.diceElements.forEach(diceEl => {
-            this.updateDiceFace(diceEl, 1);
-            diceEl.classList.remove('rolling');
-        });
+        if (this.dice1) this.setDiceValue(this.dice1, 1);
+        if (this.dice2) this.setDiceValue(this.dice2, 1);
         
-        this.totalDisplay.textContent = '-';
-        this.doublesIndicator.style.display = 'none';
-        this.historyPanel.style.display = 'none';
-        this.historyList.innerHTML = '';
-        
-        this.rollButton.disabled = false;
-        this.isAnimating = false;
+        const resultElement = document.getElementById('dice-result');
+        if (resultElement) {
+            resultElement.innerHTML = '<div class="dice-result-content">Roll the dice to start</div>';
+        }
     }
 
-    /**
-     * Render the dice UI
-     */
-    render() {
-        // Initial dice faces
-        this.diceElements.forEach(diceEl => {
-            this.updateDiceFace(diceEl, 1);
-        });
+    // Animation presets
+    setAnimationDuration(duration) {
+        this.animationDuration = duration;
     }
 
-    /**
-     * Get dice container element
-     * @returns {Element} Container element
-     */
-    getContainer() {
-        return this.container;
+    // Add CSS for animations
+    addStyles() {
+        const style = document.createElement('style');
+        style.textContent = `
+            .dice-container.rolling .dice {
+                animation: diceRoll 0.1s infinite;
+            }
+            
+            @keyframes diceRoll {
+                0% { transform: rotateX(0deg) rotateY(0deg); }
+                25% { transform: rotateX(90deg) rotateY(90deg); }
+                50% { transform: rotateX(180deg) rotateY(180deg); }
+                75% { transform: rotateX(270deg) rotateY(270deg); }
+                100% { transform: rotateX(360deg) rotateY(360deg); }
+            }
+            
+            .dice.final-roll {
+                animation: finalRoll 0.5s ease-out;
+            }
+            
+            @keyframes finalRoll {
+                0% { transform: scale(1.2) rotate(360deg); }
+                100% { transform: scale(1) rotate(0deg); }
+            }
+            
+            .dice-container.doubles-glow {
+                animation: doublesGlow 2s ease-in-out;
+            }
+            
+            @keyframes doublesGlow {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.7); }
+                50% { box-shadow: 0 0 20px 10px rgba(212, 175, 55, 0.3); }
+            }
+            
+            @keyframes confetti-fall {
+                0% {
+                    transform: translateY(0) rotate(0deg);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translateY(100px) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+            
+            .dice-result-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+            
+            .dice-values {
+                font-size: 18px;
+                font-weight: bold;
+                color: var(--primary-color);
+            }
+            
+            .double-indicator {
+                font-size: 14px;
+                color: var(--accent-color);
+                font-weight: bold;
+                animation: pulse 1s infinite;
+            }
+        `;
+        
+        document.head.appendChild(style);
     }
 }
-
-// Create singleton instance
-export const diceUI = new DiceUI();

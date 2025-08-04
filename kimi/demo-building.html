@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Building System Demo</title>
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/components/building.css">
+    <link rel="stylesheet" href="css/themes/default.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .demo-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .game-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-panel {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .board-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .player-info {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .player-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            min-width: 200px;
+        }
+        
+        .property-list {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        
+        .property-item {
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.9rem;
+        }
+        
+        .property-item:last-child {
+            border-bottom: none;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #229954;
+        }
+        
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>Monopoly Building System Demo</h1>
+            <p>Test the complete house and hotel building system</p>
+        </div>
+
+        <div class="demo-controls">
+            <button class="btn btn-primary" onclick="buildingDemo.showBuildingUI()">Open Building UI</button>
+            <button class="btn btn-success" onclick="buildingDemo.nextPlayer()">Next Player</button>
+            <button class="btn btn-warning" onclick="buildingDemo.resetGame()">Reset Game</button>
+        </div>
+
+        <div class="game-info">
+            <div class="info-panel">
+                <h3>Building Inventory</h3>
+                <p>Houses Available: <span id="houses-count">32</span></p>
+                <p>Hotels Available: <span id="hotels-count">12</span></p>
+                <h4>Building Statistics</h4>
+                <p>Houses Built: <span id="houses-built">0</span></p>
+                <p>Hotels Built: <span id="hotels-built">0</span></p>
+                <p>Total Spent: $<span id="total-spent">0</span></p>
+            </div>
+            
+            <div class="info-panel">
+                <h3>Current Player</h3>
+                <p>Name: <span id="current-player-name">Player 1</span></p>
+                <p>Money: $<span id="current-player-money">1500</span></p>
+                <p>Properties: <span id="current-player-properties">0</span></p>
+            </div>
+        </div>
+
+        <div class="board-container">
+            <div id="board-grid" class="board"></div>
+            <div id="player-tokens"></div>
+        </div>
+
+        <div class="player-info" id="player-info">
+            <!-- Player cards will be populated here -->
+        </div>
+    </div>
+
+    <script type="module">
+        import { Board } from './js/models/Board.js';
+        import { Player } from './js/models/Player.js';
+        import { BuildingManager } from './js/services/BuildingManager.js';
+        import { BuildingUI } from './js/ui/BuildingUI.js';
+        import { BoardRenderer } from './js/ui/BoardRenderer.js';
+
+        class BuildingDemo {
+            constructor() {
+                this.board = new Board();
+                this.boardRenderer = new BoardRenderer();
+                this.buildingManager = null;
+                this.buildingUI = null;
+                this.players = [];
+                this.currentPlayerIndex = 0;
+                
+                this.init();
+            }
+
+            async init() {
+                await this.boardRenderer.init();
+                this.setupPlayers();
+                this.setupBuildingSystem();
+                this.renderBoard();
+                this.updateUI();
+            }
+
+            setupPlayers() {
+                // Create demo players
+                this.players = [
+                    new Player({ id: 'player1', name: 'Player 1', token: '🔴', money: 1500 }),
+                    new Player({ id: 'player2', name: 'Player 2', token: '🔵', money: 1500 })
+                ];
+
+                // Give players some properties for testing
+                const mediterranean = this.board.getSquare(1).data;
+                const baltic = this.board.getSquare(3).data;
+                const oriental = this.board.getSquare(6).data;
+                const vermont = this.board.getSquare(8).data;
+                const connecticut = this.board.getSquare(9).data;
+
+                // Player 1 gets brown properties (monopoly)
+                mediterranean.setOwner(this.players[0]);
+                baltic.setOwner(this.players[0]);
+                this.players[0].addProperty(mediterranean);
+                this.players[0].addProperty(baltic);
+
+                // Player 2 gets light blue properties (monopoly)
+                oriental.setOwner(this.players[1]);
+                vermont.setOwner(this.players[1]);
+                connecticut.setOwner(this.players[1]);
+                this.players[1].addProperty(oriental);
+                this.players[1].addProperty(vermont);
+                this.players[1].addProperty(connecticut);
+
+                // Set initial positions
+                this.players.forEach(player => {
+                    player.position = 0;
+                });
+            }
+
+            setupBuildingSystem() {
+                const gameState = {
+                    board: this.board,
+                    players: this.players,
+                    getCurrentPlayer: () => this.players[this.currentPlayerIndex]
+                };
+
+                this.buildingManager = new BuildingManager(gameState);
+                this.buildingUI = new BuildingUI(this.buildingManager, gameState);
+                this.buildingUI.init();
+
+                // Listen for building events
+                this.buildingManager.on('house:built', (data) => {
+                    console.log('House built:', data);
+                    this.updateUI();
+                    this.renderBoard();
+                });
+
+                this.buildingManager.on('hotel:built', (data) => {
+                    console.log('Hotel built:', data);
+                    this.updateUI();
+                    this.renderBoard();
+                });
+
+                this.buildingManager.on('house:sold', (data) => {
+                    console.log('House sold:', data);
+                    this.updateUI();
+                    this.renderBoard();
+                });
+
+                this.buildingManager.on('hotel:sold', (data) => {
+                    console.log('Hotel sold:', data);
+                    this.updateUI();
+                    this.renderBoard();
+                });
+            }
+
+            renderBoard() {
+                this.boardRenderer.renderBoard(this.board);
+                this.boardRenderer.updatePlayerTokens(this.players);
+
+                // Update property states
+                this.board.getSquares().forEach((square, position) => {
+                    if (square.type === 'property' && square.data) {
+                        this.boardRenderer.updatePropertyState(square, position, square.data.owner);
+                    }
+                });
+            }
+
+            showBuildingUI() {
+                const currentPlayer = this.players[this.currentPlayerIndex];
+                this.buildingUI.show(currentPlayer);
+            }
+
+            nextPlayer() {
+                this.currentPlayerIndex = (this.currentPlayerIndex + 1) % this.players.length;
+                this.updateUI();
+                this.buildingUI.updatePlayer(this.players[this.currentPlayerIndex]);
+            }
+
+            resetGame() {
+                this.buildingManager.resetInventory();
+                this.buildingManager.resetStats();
+                
+                // Reset properties
+                this.players.forEach(player => {
+                    player.properties.forEach(property => {
+                        property.houses = 0;
+                        property.hasHotel = false;
+                    });
+                });
+
+                this.updateUI();
+                this.renderBoard();
+            }
+
+            updateUI() {
+                const currentPlayer = this.players[this.currentPlayerIndex];
+                
+                // Update building inventory
+                const inventory = this.buildingManager.getBuildingInventory();
+                document.getElementById('houses-count').textContent = inventory.houses;
+                document.getElementById('hotels-count').textContent = inventory.hotels;
+
+                // Update building stats
+                const stats = this.buildingManager.getBuildingStats();
+                document.getElementById('houses-built').textContent = stats.totalHousesBuilt;
+                document.getElementById('hotels-built').textContent = stats.totalHotelsBuilt;
+                document.getElementById('total-spent').textContent = stats.totalBuildingSpent;
+
+                // Update current player info
+                document.getElementById('current-player-name').textContent = currentPlayer.name;
+                document.getElementById('current-player-money').textContent = currentPlayer.money;
+                document.getElementById('current-player-properties').textContent = currentPlayer.properties.length;
+
+                // Update player cards
+                this.updatePlayerCards();
+            }
+
+            updatePlayerCards() {
+                const container = document.getElementById('player-info');
+                container.innerHTML = '';
+
+                this.players.forEach((player, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'player-card';
+                    if (index === this.currentPlayerIndex) {
+                        card.style.border = '2px solid #3498db';
+                    }
+
+                    const propertiesList = player.properties.map(p => 
+                        `${p.name} ${p.hasHotel ? '🏨' : p.houses > 0 ? '🏠'.repeat(p.houses) : ''}`
+                    ).join('<br>');
+
+                    card.innerHTML = `
+                        <h4>${player.name} ${player.token}</h4>
+                        <p>Money: $${player.money}</p>
+                        <p>Properties: ${player.properties.length}</p>
+                        <div class="property-list">
+                            ${propertiesList || 'No properties'}
+                        </div>
+                    `;
+
+                    container.appendChild(card);
+                });
+            }
+        }
+
+        // Create global instance for button handlers
+        window.buildingDemo = new BuildingDemo();
+    </script>
+</body>
+</html>

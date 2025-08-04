@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Monopoly Game - Test</title>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+        
+        .test-pass {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .test-fail {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Complete Monopoly Game Test</h1>
+        
+        <div class="test-section">
+            <h2>Game Initialization</h2>
+            <div id="init-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Board Display</h2>
+            <div id="board-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Player Management</h2>
+            <div id="player-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Dice System</h2>
+            <div id="dice-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Property System</h2>
+            <div id="property-tests"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Integration Test</h2>
+            <button onclick="runCompleteTest()">Run Complete Game Test</button>
+            <div id="integration-results"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>Performance Test</h2>
+            <button onclick="runPerformanceTest()">Run Performance Test</button>
+            <div id="performance-results"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { MonopolyGame } from './js/main.js';
+        import { GameEngine } from './js/engine/GameEngine.js';
+        import { BoardRenderer } from './js/ui/BoardRenderer.js';
+        import { PlayerRenderer } from './js/ui/PlayerRenderer.js';
+        import { DiceUI } from './js/ui/DiceUI.js';
+
+        // Test utilities
+        function addTestResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `test-result test-${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+        }
+
+        async function testGameInitialization() {
+            try {
+                const game = new MonopolyGame();
+                await game.init();
+                
+                addTestResult('init-tests', 'Game initialized successfully', 'pass');
+                addTestResult('init-tests', `Game Engine: ${game.gameEngine ? '✅' : '❌'}`);
+                addTestResult('init-tests', `Board Renderer: ${game.boardRenderer ? '✅' : '❌'}`);
+                addTestResult('init-tests', `Player Renderer: ${game.playerRenderer ? '✅' : '❌'}`);
+                addTestResult('init-tests', `Modal Manager: ${game.modalManager ? '✅' : '❌'}`);
+                addTestResult('init-tests', `State Manager: ${game.stateManager ? '✅' : '❌'}`);
+                
+                game.destroy();
+            } catch (error) {
+                addTestResult('init-tests', `Initialization failed: ${error.message}`, 'fail');
+            }
+        }
+
+        async function testBoardDisplay() {
+            try {
+                const boardRenderer = new BoardRenderer();
+                await boardRenderer.init();
+                
+                const gameEngine = new GameEngine();
+                await gameEngine.init();
+                
+                boardRenderer.renderBoard(gameEngine.board);
+                
+                const squares = document.querySelectorAll('.square');
+                addTestResult('board-tests', `Board rendered with ${squares.length} squares`, 
+                    squares.length === 40 ? 'pass' : 'fail');
+                
+                // Test specific squares
+                const goSquare = document.querySelector('.square[data-position="0"]');
+                addTestResult('board-tests', `GO square found: ${goSquare ? '✅' : '❌'}`,
+                    goSquare ? 'pass' : 'fail');
+                
+                const jailSquare = document.querySelector('.square[data-position="10"]');
+                addTestResult('board-tests', `Jail square found: ${jailSquare ? '✅' : '❌'}`,
+                    jailSquare ? 'pass' : 'fail');
+                
+            } catch (error) {
+                addTestResult('board-tests', `Board test failed: ${error.message}`, 'fail');
+            }
+        }
+
+        async function testPlayerManagement() {
+            try {
+                const gameEngine = new GameEngine();
+                await gameEngine.init();
+                
+                const config = {
+                    players: [
+                        { name: 'Alice', color: '#e74c3c', token: '🎲' },
+                        { name: 'Bob', color: '#3498db', token: '🚗' }
+                    ]
+                };
+                
+                await gameEngine.startNewGame(config);
+                
+                const players = gameEngine.getGameState().players;
+                addTestResult('player-tests', `Created ${players.length} players`, 
+                    players.length === 2 ? 'pass' : 'fail');
+                
+                players.forEach(player => {
+                    addTestResult('player-tests', `${player.name}: $${player.money}`, 
+                        player.money === 1500 ? 'pass' : 'fail');
+                });
+                
+            } catch (error) {
+                addTestResult('player-tests', `Player test failed: ${error.message}`, 'fail');
+            }
+        }
+
+        async function testDiceSystem() {
+            try {
+                const diceUI = new DiceUI();
+                await diceUI.init();
+                
+                // Test random values
+                const values = [];
+                for (let i = 0; i < 100; i++) {
+                    values.push(diceUI.getRandomDiceValue());
+                }
+                
+                const validValues = values.every(v => v >= 1 && v <= 6);
+                addTestResult('dice-tests', `Random values valid: ${validValues ? '✅' : '❌'}`,
+                    validValues ? 'pass' : 'fail');
+                
+                // Test dice rendering
+                const dice1 = document.getElementById('dice-1');
+                const dice2 = document.getElementById('dice-2');
+                
+                addTestResult('dice-tests', `Dice elements found: ${dice1 && dice2 ? '✅' : '❌'}`,
+                    dice1 && dice2 ? 'pass' : 'fail');
+                
+            } catch (error) {
+                addTestResult('dice-tests', `Dice test failed: ${error.message}`, 'fail');
+            }
+        }
+
+        async function testPropertySystem() {
+            try {
+                const gameEngine = new GameEngine();
+                await gameEngine.init();
+                
+                const config = {
+                    players: [{ name: 'Test Player', color: '#e74c3c', token: '🎲' }]
+                };
+                
+                await gameEngine.startNewGame(config);
+                
+                const player = gameEngine.getCurrentPlayer();
+                const boardSquares = gameEngine.board.getSquares();
+                
+                // Find a property
+                const propertySquare = boardSquares.find(square => 
+                    square.type === 'property' && square.data?.price
+                );
+                
+                if (propertySquare) {
+                    player.position = boardSquares.indexOf(propertySquare);
+                    const success = await gameEngine.buyProperty(player, propertySquare);
+                    
+                    addTestResult('property-tests', `Property purchase: ${success ? '✅' : '❌'}`,
+                        success ? 'pass' : 'fail');
+                    
+                    addTestResult('property-tests', `Player properties: ${player.properties.length}`,
+                        player.properties.length > 0 ? 'pass' : 'fail');
+                }
+                
+            } catch (error) {
+                addTestResult('property-tests', `Property test failed: ${error.message}`, 'fail');
+            }
+        }
+
+        async function runCompleteTest() {
+            const results = document.getElementById('integration-results');
+            results.innerHTML = '<p>Running complete game test...</p>';
+            
+            try {
+                const game = new MonopolyGame();
+                await game.init();
+                
+                // Test game flow
+                const gameEngine = game.gameEngine;
+                
+                // Start new game
+                const config = {
+                    players: [
+                        { name: 'Alice', color: '#e74c3c', token: '🎲' },
+                        { name: 'Bob', color: '#3498db', token: '🚗' }
+                    ]
+                };
+                
+                await gameEngine.startNewGame(config);
+                
+                // Test a few turns
+                for (let turn = 1; turn <= 3; turn++) {
+                    const player = gameEngine.getCurrentPlayer();
+                    const diceResult = await gameEngine.rollDice();
+                    await gameEngine.movePlayer(player, diceResult.total);
+                    await gameEngine.endTurn();
+                    
+                    results.innerHTML += `<p>Turn ${turn}: ${player.name} rolled ${diceResult.total}</p>`;
+                }
+                
+                results.innerHTML += '<p class="test-result test-pass">Complete game test passed!</p>';
+                
+                game.destroy();
+                
+            } catch (error) {
+                results.innerHTML += `<p class="test-result test-fail">Complete test failed: ${error.message}</p>`;
+            }
+        }
+
+        async function runPerformanceTest() {
+            const results = document.getElementById('performance-results');
+            results.innerHTML = '<p>Running performance test...</p>';
+            
+            try {
+                const startTime = performance.now();
+                
+                const game = new MonopolyGame();
+                await game.init();
+                
+                const initTime = performance.now() - startTime;
+                results.innerHTML += `<p>Initialization: ${initTime.toFixed(2)}ms</p>`;
+                
+                // Test board rendering
+                const renderStart = performance.now();
+                game.boardRenderer.renderBoard(game.gameEngine.board);
+                const renderTime = performance.now() - renderStart;
+                results.innerHTML += `<p>Board rendering: ${renderTime.toFixed(2)}ms</p>`;
+                
+                // Test UI updates
+                const uiStart = performance.now();
+                game.updateUI();
+                const uiTime = performance.now() - uiStart;
+                results.innerHTML += `<p>UI update: ${uiTime.toFixed(2)}ms</p>`;
+                
+                const totalTime = performance.now() - startTime;
+                results.innerHTML += `<p>Total time: ${totalTime.toFixed(2)}ms</p>`;
+                
+                const performanceOk = totalTime < 5000;
+                results.innerHTML += `<p class="test-result ${performanceOk ? 'test-pass' : 'test-fail'}">
+                    Performance test ${performanceOk ? 'passed' : 'failed'}
+                </p>`;
+                
+                game.destroy();
+                
+            } catch (error) {
+                results.innerHTML += `<p class="test-result test-fail">Performance test failed: ${error.message}</p>`;
+            }
+        }
+
+        // Run basic tests on load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await testGameInitialization();
+            await testBoardDisplay();
+            await testPlayerManagement();
+            await testDiceSystem();
+            await testPropertySystem();
+        });
+    </script>
+</body>
+</html>

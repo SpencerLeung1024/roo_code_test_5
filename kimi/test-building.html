@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building System Test</title>
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/components/building.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background-color: #d4edda; color: #155724; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .info { background-color: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Building System Test</h1>
+        <div id="test-results"></div>
+    </div>
+
+    <script type="module">
+        import { Board } from './js/models/Board.js';
+        import { Player } from './js/models/Player.js';
+        import { BuildingManager } from './js/services/BuildingManager.js';
+
+        class BuildingTest {
+            constructor() {
+                this.results = [];
+                this.board = new Board();
+                this.buildingManager = null;
+                this.player = null;
+                this.properties = {};
+            }
+
+            log(message, type = 'info') {
+                const div = document.createElement('div');
+                div.className = `test-result ${type}`;
+                div.textContent = message;
+                document.getElementById('test-results').appendChild(div);
+                this.results.push({ message, type });
+            }
+
+            async runTests() {
+                this.log('Starting Building System Tests...', 'info');
+                
+                try {
+                    await this.setupTestEnvironment();
+                    await this.testBuildingValidation();
+                    await this.testBuildingOperations();
+                    await this.testEvenBuildingRule();
+                    await this.testInventoryManagement();
+                    
+                    this.log('All tests completed successfully!', 'success');
+                } catch (error) {
+                    this.log(`Test failed: ${error.message}`, 'error');
+                }
+            }
+
+            async setupTestEnvironment() {
+                this.log('Setting up test environment...', 'info');
+                
+                // Create test player
+                this.player = new Player({ 
+                    id: 'test-player', 
+                    name: 'Test Player', 
+                    token: '🧪', 
+                    money: 2000 
+                });
+
+                // Get test properties
+                this.properties.mediterranean = this.board.getSquare(1).data;
+                this.properties.baltic = this.board.getSquare(3).data;
+                this.properties.oriental = this.board.getSquare(6).data;
+                this.properties.vermont = this.board.getSquare(8).data;
+
+                // Give player properties
+                this.properties.mediterranean.setOwner(this.player);
+                this.properties.baltic.setOwner(this.player);
+                this.player.addProperty(this.properties.mediterranean);
+                this.player.addProperty(this.properties.baltic);
+
+                // Setup building manager
+                const gameState = {
+                    board: this.board,
+                    players: [this.player],
+                    getCurrentPlayer: () => this.player
+                };
+                
+                this.buildingManager = new BuildingManager(gameState);
+                
+                this.log('Test environment setup complete', 'success');
+            }
+
+            async testBuildingValidation() {
+                this.log('Testing building validation...', 'info');
+
+                // Test monopoly requirement
+                const canBuildHouse = this.buildingManager.canBuildHouse(this.properties.mediterranean, this.player);
+                if (canBuildHouse.canBuild) {
+                    this.log('✓ Monopoly validation passed', 'success');
+                } else {
+                    this.log(`✗ Monopoly validation failed: ${canBuildHouse.reason}`, 'error');
+                }
+
+                // Test mortgage restriction
+                this.properties.mediterranean.isMortgaged = true;
+                const mortgagedCheck = this.buildingManager.canBuildHouse(this.properties.mediterranean, this.player);
+                if (!mortgagedCheck.canBuild) {
+                    this.log('✓ Mortgage restriction working', 'success');
+                } else {
+                    this.log('✗ Mortgage restriction failed', 'error');
+                }
+                this.properties.mediterranean.isMortgaged = false;
+
+                // Test fund validation
+                this.player.money = 10;
+                const fundCheck = this.buildingManager.canBuildHouse(this.properties.mediterranean, this.player);
+                if (!fundCheck.canBuild) {
+                    this.log('✓ Fund validation working', 'success');
+                } else {
+                    this.log('✗ Fund validation failed', 'error');
+                }
+                this.player.money = 2000;
+            }
+
+            async testBuildingOperations() {
+                this.log('Testing building operations...', 'info');
+
+                // Test building a house
+                const buildResult = this.buildingManager.buildHouse(this.properties.mediterranean, this.player);
+                if (buildResult.success) {
+                    this.log('✓ House building successful', 'success');
+                    this.log(`   Cost: $${buildResult.cost}, Houses: ${this.properties.mediterranean.houses}`);
+                } else {
+                    this.log(`✗ House building failed: ${buildResult.message}`, 'error');
+                }
+
+                // Test building more houses
+                for (let i = 0; i < 3; i++) {
+                    this.buildingManager.buildHouse(this.properties.mediterranean, this.player);
+                }
+
+                // Test building hotel
+                const hotelResult = this.buildingManager.buildHotel(this.properties.mediterranean, this.player);
+                if (hotelResult.success) {
+                    this.log('✓ Hotel building successful', 'success');
+                    this.log(`   Has hotel: ${this.properties.mediterranean.hasHotel}`);
+                } else {
+                    this.log(`✗ Hotel building failed: ${hotelResult.message}`, 'error');
+                }
+
+                // Test selling
+                const sellResult = this.buildingManager.sellHotel(this.properties.mediterranean, this.player);
+                if (sellResult.success) {
+                    this.log('✓ Hotel selling successful', 'success');
+                    this.log(`   Refund: $${sellResult.refund}, Houses: ${this.properties.mediterranean.houses}`);
+                }
+            }
+
+            async testEvenBuildingRule() {
+                this.log('Testing even building rule...', 'info');
+
+                // Build houses on both properties in group
+                this.buildingManager.buildHouse(this.properties.mediterranean, this.player);
+                this.buildingManager.buildHouse(this.properties.baltic, this.player);
+
+                // Try to build unevenly
+                const unevenResult = this.buildingManager.buildHouse(this.properties.mediterranean, this.player);
+                if (!unevenResult.success) {
+                    this.log('✓ Even building rule enforced', 'success');
+                    this.log(`   Reason: ${unevenResult.message}`);
+                } else {
+                    this.log('✗ Even building rule not enforced', 'error');
+                }
+            }
+
+            async testInventoryManagement() {
+                this.log('Testing inventory management...', 'info');
+
+                const initialInventory = this.buildingManager.getBuildingInventory();
+                this.log(`Initial inventory: ${initialInventory.houses} houses, ${initialInventory.hotels} hotels`);
+
+                // Build some houses
+                this.buildingManager.buildHouse(this.properties.mediterranean, this.player);
+                this.buildingManager.buildHouse(this.properties.baltic, this.player);
+
+                const afterBuild = this.buildingManager.getBuildingInventory();
+                this.log(`After building: ${afterBuild.houses} houses, ${afterBuild.hotels} hotels`);
+
+                // Check stats
+                const stats = this.buildingManager.getBuildingStats();
+                this.log(`Stats: ${stats.totalHousesBuilt} houses built, ${stats.totalBuildingSpent} spent`);
+            }
+        }
+
+        // Run tests when page loads
+        const test = new BuildingTest();
+        test.runTests();
+    </script>
+</body>
+</html>

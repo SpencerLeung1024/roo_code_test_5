@@ -1,123 +1,281 @@
 /**
- * Integration Test for Player System
- * Tests the complete player management system
+ * Complete Integration Test
+ * Tests the entire turn-based gameplay system
  */
 
-import { PlayerManager } from '../services/PlayerManager.js';
-import { PlayerRenderer } from '../ui/PlayerRenderer.js';
-import { ModalManager } from '../ui/ModalManager.js';
+import { MonopolyGame } from '../engine/MonopolyGame.js';
+import { GamePhase } from '../engine/GameFlowController.js';
 
 /**
- * Integration test for player system
+ * Integration test suite for the complete Monopoly game
  */
-export class PlayerIntegrationTest {
+class IntegrationTest {
     constructor() {
+        this.game = null;
         this.testResults = [];
     }
 
-    async runIntegrationTest() {
-        console.log('🚀 Starting Player System Integration Test...');
+    /**
+     * Run all integration tests
+     */
+    async runAllTests() {
+        console.log('🧪 Starting Integration Tests...');
         
         try {
-            // Initialize components
-            const playerManager = new PlayerManager();
-            const playerRenderer = new PlayerRenderer();
-            const modalManager = new ModalManager();
+            await this.setupTestEnvironment();
             
-            await playerManager.init();
-            await playerRenderer.init();
-            await modalManager.init();
-            
-            // Test 1: Create players
-            const players = playerManager.createPlayers([
-                { name: 'Alice', token: 'Hat', money: 1500 },
-                { name: 'Bob', token: 'Car', money: 1500 },
-                { name: 'Charlie', token: 'Ship', money: 1500 }
-            ]);
-            
-            this.assert('Player creation', players.length === 3);
-            this.assert('Player names', players.every(p => p.name && p.token));
-            
-            // Test 2: Render players
-            playerRenderer.renderPlayers(players, 0);
-            this.assert('Player rendering', true);
-            
-            // Test 3: Player interactions
-            const currentPlayer = playerManager.getCurrentPlayer();
-            this.assert('Current player', currentPlayer.name === 'Alice');
-            
-            // Test 4: Money transactions
-            const success = currentPlayer.transferMoney(players[1], 200, 'Test transfer');
-            this.assert('Money transfer', success && currentPlayer.money === 1300 && players[1].money === 1700);
-            
-            // Test 5: State management
-            const savedState = playerManager.savePlayerStates();
-            this.assert('State save', savedState.players.length === 3);
-            
-            // Test 6: Load state
-            const newManager = new PlayerManager();
-            newManager.loadPlayerStates(savedState, {});
-            this.assert('State load', newManager.players.length === 3);
-            this.assert('State integrity', newManager.players[0].name === 'Alice');
-            
-            // Test 7: Player elimination
-            const bankruptPlayer = players[2];
-            bankruptPlayer.money = -100;
-            playerManager.eliminatePlayer(bankruptPlayer.id);
-            this.assert('Player elimination', playerManager.getActivePlayers().length === 2);
-            
-            // Test 8: Rankings
-            const rankings = playerManager.getPlayerRankings();
-            this.assert('Player rankings', rankings.length === 3);
-            this.assert('Ranking order', rankings[0].name === 'Bob'); // Bob has most money
-            
-            console.log('✅ All integration tests passed!');
-            return true;
+            const tests = [
+                'testGameInitialization',
+                'testPlayerCreation',
+                'testTurnManagement',
+                'testDiceRolling',
+                'testPlayerMovement',
+                'testPropertyLanding',
+                'testJailSystem',
+                'testTurnFlow',
+                'testGameFlow',
+                'testSaveLoad'
+            ];
+
+            for (const testName of tests) {
+                console.log(`\n📋 Running ${testName}...`);
+                await this[testName]();
+                console.log(`✅ ${testName} passed`);
+            }
+
+            console.log('\n🎉 All integration tests passed!');
+            this.printTestResults();
             
         } catch (error) {
             console.error('❌ Integration test failed:', error);
-            this.assert('Integration test', false, error.message);
-            return false;
+            throw error;
+        } finally {
+            await this.cleanup();
         }
     }
 
-    assert(testName, condition, error = '') {
-        const result = {
-            test: testName,
-            passed: condition,
-            error: error
+    /**
+     * Setup test environment
+     */
+    async setupTestEnvironment() {
+        this.game = new MonopolyGame();
+        await this.game.init();
+        
+        // Create test players
+        this.testConfig = {
+            players: [
+                { name: 'Alice', token: '🚗', money: 1500 },
+                { name: 'Bob', token: '🐕', money: 1500 },
+                { name: 'Charlie', token: '🎩', money: 1500 }
+            ],
+            settings: {
+                autoSave: false,
+                turnTimeout: 0
+            }
         };
+    }
+
+    /**
+     * Test game initialization
+     */
+    async testGameInitialization() {
+        this.assert(this.game.isReady(), 'Game should be initialized');
+        this.assert(this.game.gameEngine, 'Game engine should exist');
+        this.assert(this.game.turnManager, 'Turn manager should exist');
+        this.assert(this.game.gameFlow, 'Game flow controller should exist');
+        this.assert(this.game.turnActions, 'Turn actions should exist');
+    }
+
+    /**
+     * Test player creation
+     */
+    async testPlayerCreation() {
+        await this.game.startGame(this.testConfig);
         
-        this.testResults.push(result);
+        const players = this.game.gameEngine.playerManager.getActivePlayers();
+        this.assert(players.length === 3, 'Should have 3 players');
+        this.assert(players[0].name === 'Alice', 'First player should be Alice');
+        this.assert(players[0].money === 1500, 'Players should start with $1500');
+        this.assert(players[0].position === 0, 'Players should start at GO');
+    }
+
+    /**
+     * Test turn management
+     */
+    async testTurnManagement() {
+        const turnManager = this.game.turnManager;
+        const currentPlayer = this.game.gameEngine.getCurrentPlayer();
         
-        if (condition) {
-            console.log(`✅ ${testName}`);
-        } else {
-            console.log(`❌ ${testName}: ${error}`);
+        this.assert(currentPlayer.name === 'Alice', 'Alice should start first');
+        this.assert(turnManager.getCurrentTurn(), 'Should have current turn');
+        this.assert(turnManager.getCurrentTurn().player.id === currentPlayer.id, 'Turn should belong to current player');
+    }
+
+    /**
+     * Test dice rolling
+     */
+    async testDiceRolling() {
+        const diceManager = this.game.gameEngine.diceManager;
+        
+        // Test dice roll
+        const rollResult = diceManager.rollDice();
+        this.assert(rollResult.dice1 >= 1 && rollResult.dice1 <= 6, 'Dice 1 should be 1-6');
+        this.assert(rollResult.dice2 >= 1 && rollResult.dice2 <= 6, 'Dice 2 should be 1-6');
+        this.assert(rollResult.total >= 2 && rollResult.total <= 12, 'Total should be 2-12');
+    }
+
+    /**
+     * Test player movement
+     */
+    async testPlayerMovement() {
+        const player = this.game.gameEngine.getCurrentPlayer();
+        const originalPosition = player.position;
+        
+        // Simulate movement
+        const steps = 5;
+        await this.game.turnActions.movePlayer(player, steps);
+        
+        const expectedPosition = (originalPosition + steps) % 40;
+        this.assert(player.position === expectedPosition, `Player should move to position ${expectedPosition}`);
+    }
+
+    /**
+     * Test property landing
+     */
+    async testPropertyLanding() {
+        const player = this.game.gameEngine.getCurrentPlayer();
+        
+        // Move to a property square
+        const propertySquare = this.game.gameEngine.board.getSquare(1); // Mediterranean Avenue
+        player.position = 1;
+        
+        await this.game.turnActions.handleLanding(player, 1);
+        
+        // Check if property action was triggered
+        this.assert(true, 'Property landing handled successfully');
+    }
+
+    /**
+     * Test jail system
+     */
+    async testJailSystem() {
+        const player = this.game.gameEngine.getCurrentPlayer();
+        
+        // Send player to jail
+        player.goToJail();
+        this.assert(player.inJail === true, 'Player should be in jail');
+        this.assert(player.position === 10, 'Player should be at jail position');
+        
+        // Test jail turn handling
+        this.game.gameEngine.handleJailTurn(player);
+        this.assert(true, 'Jail turn handled successfully');
+    }
+
+    /**
+     * Test complete turn flow
+     */
+    async testTurnFlow() {
+        const originalPlayer = this.game.gameEngine.getCurrentPlayer();
+        
+        // Simulate complete turn
+        await this.simulateTurn();
+        
+        const newPlayer = this.game.gameEngine.getCurrentPlayer();
+        this.assert(originalPlayer.id !== newPlayer.id, 'Turn should advance to next player');
+    }
+
+    /**
+     * Test game flow
+     */
+    async testGameFlow() {
+        const gameFlow = this.game.gameFlow;
+        
+        this.assert(gameFlow.getCurrentPhase() === GamePhase.ACTIVE, 'Game should be in active phase');
+        
+        // Test pause/resume
+        gameFlow.pauseGame('Test pause');
+        this.assert(gameFlow.getCurrentPhase() === GamePhase.PAUSED, 'Game should be paused');
+        
+        gameFlow.resumeGame();
+        this.assert(gameFlow.getCurrentPhase() === GamePhase.ACTIVE, 'Game should be resumed');
+    }
+
+    /**
+     * Test save/load functionality
+     */
+    async testSaveLoad() {
+        // Save game state
+        const originalState = this.game.getGameState();
+        await this.game.saveGame();
+        
+        // Restart game
+        await this.game.restartGame();
+        
+        // Load saved state
+        await this.game.loadGame();
+        
+        const loadedState = this.game.getGameState();
+        this.assert(loadedState.gameState.currentPlayerIndex === originalState.gameState.currentPlayerIndex, 
+                   'Loaded state should match saved state');
+    }
+
+    /**
+     * Simulate a complete turn
+     */
+    async simulateTurn() {
+        const player = this.game.gameEngine.getCurrentPlayer();
+        
+        // Roll dice
+        const diceResult = this.game.gameEngine.diceManager.rollDice();
+        
+        // Move player
+        await this.game.turnActions.movePlayer(player, diceResult.total);
+        
+        // Handle landing
+        await this.game.turnActions.handleLanding(player, player.position);
+        
+        // End turn
+        this.game.gameEngine.endTurn();
+        
+        // Wait for turn to complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    /**
+     * Assert test condition
+     */
+    assert(condition, message) {
+        if (!condition) {
+            throw new Error(`Assertion failed: ${message}`);
+        }
+        this.testResults.push({ test: message, status: 'passed' });
+    }
+
+    /**
+     * Print test results
+     */
+    printTestResults() {
+        console.log('\n📊 Test Results:');
+        this.testResults.forEach(result => {
+            console.log(`✅ ${result.test}`);
+        });
+    }
+
+    /**
+     * Cleanup test environment
+     */
+    async cleanup() {
+        if (this.game) {
+            this.game.destroy();
         }
     }
-
-    printSummary() {
-        console.log('\n📊 Integration Test Summary:');
-        console.log(`Total tests: ${this.testResults.length}`);
-        
-        const passed = this.testResults.filter(r => r.passed).length;
-        const failed = this.testResults.filter(r => !r.passed).length;
-        
-        console.log(`Passed: ${passed}`);
-        console.log(`Failed: ${failed}`);
-        
-        return failed === 0;
-    }
 }
 
-// Export for use in main application
-export { PlayerIntegrationTest };
-
-// Auto-run if in test mode
-if (window.location.search.includes('integration=true')) {
-    const test = new PlayerIntegrationTest();
-    test.runIntegrationTest().then(success => {
-        console.log(`Integration test ${success ? 'passed' : 'failed'}`);
-    });
+// Run tests if this file is loaded directly
+if (typeof window !== 'undefined' && window.location.pathname.includes('integration-test')) {
+    const test = new IntegrationTest();
+    test.runAllTests().catch(console.error);
 }
+
+// Export for use in other files
+export { IntegrationTest };

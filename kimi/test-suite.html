@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monopoly Game - Comprehensive Test Suite</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/components/modal.css">
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .test-suite-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+        
+        .test-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .test-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .test-results {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            background: #f9f9f9;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .test-result {
+            padding: 5px;
+            margin: 2px 0;
+            border-radius: 3px;
+        }
+        
+        .test-pass {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .test-fail {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .test-info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: #007bff;
+            transition: width 0.3s ease;
+        }
+        
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .metric-card {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .browser-info {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .error-log {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 4px;
+            padding: 10px;
+            margin-top: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-suite-container">
+        <div class="test-header">
+            <h1>🎲 Monopoly Game - Comprehensive Test Suite</h1>
+            <p>Complete testing framework for all game systems</p>
+        </div>
+
+        <div class="browser-info" id="browser-info">
+            <h3>Browser Information</h3>
+            <div id="browser-details"></div>
+        </div>
+
+        <div class="test-controls">
+            <button class="btn btn-primary" onclick="runAllTests()">Run All Tests</button>
+            <button class="btn btn-secondary" onclick="runSystemTests()">System Tests</button>
+            <button class="btn btn-secondary" onclick="runUITests()">UI Tests</button>
+            <button class="btn btn-secondary" onclick="runEdgeCaseTests()">Edge Cases</button>
+            <button class="btn btn-secondary" onclick="runPerformanceTests()">Performance</button>
+            <button class="btn btn-secondary" onclick="clearResults()">Clear Results</button>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>📊 Test Progress</h3>
+            <div id="test-progress">
+                <p>Click "Run All Tests" to begin comprehensive testing</p>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>🧪 Test Results</h3>
+            <div class="test-results" id="test-results">
+                <div class="test-info">Ready to run tests...</div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>⚡ Performance Metrics</h3>
+            <div class="performance-metrics" id="performance-metrics">
+                <div class="metric-card">
+                    <div class="metric-value" id="total-tests">0</div>
+                    <div>Total Tests</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="passed-tests">0</div>
+                    <div>Passed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="failed-tests">0</div>
+                    <div>Failed</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="success-rate">0%</div>
+                    <div>Success Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>❌ Error Log</h3>
+            <div class="error-log" id="error-log">
+                No errors yet...
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { ComprehensiveTestSuite } from './js/tests/comprehensive-test-suite.js';
+
+        let testSuite = null;
+        let isRunning = false;
+
+        // Display browser information
+        function displayBrowserInfo() {
+            const browserDetails = document.getElementById('browser-details');
+            browserDetails.innerHTML = `
+                <strong>User Agent:</strong> ${navigator.userAgent}<br>
+                <strong>Platform:</strong> ${navigator.platform}<br>
+                <strong>Screen:</strong> ${screen.width}x${screen.height}<br>
+                <strong>Viewport:</strong> ${window.innerWidth}x${window.innerHeight}<br>
+                <strong>Touch Support:</strong> ${'ontouchstart' in window ? 'Yes' : 'No'}
+            `;
+        }
+
+        // Add test result to display
+        function addTestResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('test-results');
+            const div = document.createElement('div');
+            div.className = `test-result test-${type}`;
+            div.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            resultsDiv.appendChild(div);
+            resultsDiv.scrollTop = resultsDiv.scrollHeight;
+        }
+
+        // Update progress
+        function updateProgress(current, total) {
+            const progress = (current / total) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('test-progress').textContent = 
+                `Running test ${current} of ${total}...`;
+        }
+
+        // Update metrics
+        function updateMetrics(summary) {
+            document.getElementById('total-tests').textContent = summary.total;
+            document.getElementById('passed-tests').textContent = summary.passed;
+            document.getElementById('failed-tests').textContent = summary.failed;
+            document.getElementById('success-rate').textContent = 
+                `${((summary.passed / summary.total) * 100).toFixed(1)}%`;
+        }
+
+        // Add error to log
+        function addError(error) {
+            const errorLog = document.getElementById('error-log');
+            const div = document.createElement('div');
+            div.innerHTML = `<strong>${new Date().toLocaleTimeString()}</strong><br>${error.message || error}`;
+            errorLog.appendChild(div);
+            errorLog.scrollTop = errorLog.scrollHeight;
+        }
+
+        // Initialize test suite
+        async function initializeTestSuite() {
+            try {
+                addTestResult('Initializing test suite...', 'info');
+                testSuite = new ComprehensiveTestSuite();
+                addTestResult('Test suite initialized', 'info');
+            } catch (error) {
+                addTestResult(`Failed to initialize: ${error.message}`, 'fail');
+                addError(error);
+            }
+        }
+
+        // Run all tests
+        async function runAllTests() {
+            if (isRunning) return;
+            isRunning = true;
+
+            try {
+                addTestResult('Starting comprehensive test suite...', 'info');
+                const summary = await testSuite.runAllTests();
+                updateMetrics(summary);
+                addTestResult('All tests completed!', 'pass');
+            } catch (error) {
+                addTestResult(`Test suite failed: ${error.message}`, 'fail');
+                addError(error);
+            } finally {
+                isRunning = false;
+            }
+        }
+
+        // Run specific test categories
+        async function runSystemTests() {
+            if (isRunning) return;
+            isRunning = true;
+
+            try {
+                addTestResult('Running system integration tests...', 'info');
+                await testSuite.runSystemIntegrationTests();
+                addTestResult('System tests completed', 'pass');
+            } catch (error) {
+                addTestResult(`System tests failed: ${error.message}`, 'fail');
+                addError(error);
+            } finally {
+                isRunning = false;
+            }
+        }
+
+        async function runUITests() {
+            if (isRunning) return;
+            isRunning = true;
+
+            try {
+                addTestResult('Running UI/UX tests...', 'info');
+                await testSuite.runUITests();
+                addTestResult('UI tests completed', 'pass');
+            } catch (error) {
+                addTestResult(`UI tests failed: ${error.message}`, 'fail');
+                addError(error);
+            } finally {
+                isRunning = false;
+            }
+        }
+
+        async function runEdgeCaseTests() {
+            if (isRunning) return;
+            isRunning = true;
+
+            try {
+                addTestResult('Running edge case tests...', 'info');
+                await testSuite.runEdgeCaseTests();
+                addTestResult('Edge case tests completed', 'pass');
+            } catch (error) {
+                addTestResult(`Edge case tests failed: ${error.message}`, 'fail');
+                addError(error);
+            } finally {
+                isRunning = false;
+            }
+        }
+
+        async function runPerformanceTests() {
+            if (isRunning) return;
+            isRunning = true;
+
+            try {
+                addTestResult('Running performance tests...', 'info');
+                await testSuite.runPerformanceTests();
+                addTestResult('Performance tests completed', 'pass');
+            } catch (error) {
+                addTestResult(`Performance tests failed: ${error.message}`, 'fail');
+                addError(error);
+            } finally {
+                isRunning = false;
+            }
+        }
+
+        function clearResults() {
+            document.getElementById('test-results').innerHTML = '<div class="test-info">Results cleared...</div>';
+            document.getElementById('error-log').innerHTML = 'No errors yet...';
+            document.getElementById('progress-fill').style.width = '0%';
+            document.getElementById('test-progress').textContent = 'Click "Run All Tests" to begin';
+            updateMetrics({ total: 0, passed: 0, failed: 0 });
+        }
+
+        // Make functions global for onclick handlers
+        window.runAllTests = runAllTests;
+        window.runSystemTests = runSystemTests;
+        window.runUITests = runUITests;
+        window.runEdgeCaseTests = runEdgeCaseTests;
+        window.runPerformanceTests = runPerformanceTests;
+        window.clearResults = clearResults;
+
+        // Initialize on load
+        displayBrowserInfo();
+        initializeTestSuite();
+    </script>
+</body>
+</html>

@@ -97,6 +97,12 @@ export class DiceManager {
                 return;
             }
 
+            // Handle jail dice rolling
+            if (this.currentPlayer.inJail) {
+                await this.handleJailDiceRoll(rollResult);
+                return;
+            }
+
             // Move player based on dice total
             await this.movePlayer(rollResult.total);
 
@@ -140,6 +146,94 @@ export class DiceManager {
         dice.doublesCount = 0;
         
         // End turn
+        setTimeout(() => {
+            this.gameManager.endTurn();
+        }, 2000);
+    }
+
+    /**
+     * Handle dice roll when player is in jail
+     * @param {Object} rollResult - Dice roll result
+     */
+    async handleJailDiceRoll(rollResult) {
+        debugLog('info', `${this.currentPlayer.name} rolled in jail: ${rollResult.dice1} + ${rollResult.dice2} = ${rollResult.total}`);
+        
+        if (rollResult.isDoubles) {
+            // Player rolled doubles - gets out of jail
+            debugLog('info', `${this.currentPlayer.name} rolled doubles and is out of jail`);
+            
+            this.showNotification(
+                'Lucky Roll!',
+                `${this.currentPlayer.name} rolled doubles and is free from jail!`
+            );
+            
+            // Release from jail
+            this.currentPlayer.getOutOfJail(false);
+            
+            // Move player based on dice total
+            await this.movePlayer(rollResult.total);
+            
+            // Check if player can roll again (doubles)
+            setTimeout(() => {
+                if (rollResult.isDoubles) {
+                    dice.setCanRoll(true);
+                    diceUI.setRollingEnabled(true);
+                } else {
+                    this.gameManager.endTurn();
+                }
+            }, 1000);
+        } else {
+            // Player stays in jail
+            debugLog('info', `${this.currentPlayer.name} did not roll doubles, stays in jail`);
+            
+            this.showNotification(
+                'Still in Jail',
+                `${this.currentPlayer.name} did not roll doubles and remains in jail`
+            );
+            
+            // Increment jail turns
+            this.currentPlayer.jailTurns++;
+            this.currentPlayer.stats.turnsInJail++;
+            
+            // Check if player must pay fine (3rd turn)
+            if (this.currentPlayer.jailTurns >= constants.JAIL.MAX_TURNS_IN_JAIL) {
+                debugLog('info', `${this.currentPlayer.name} must pay fine to get out of jail`);
+                
+                setTimeout(() => {
+                    this.handleForcedJailExit();
+                }, 2000);
+            } else {
+                // End turn
+                setTimeout(() => {
+                    this.gameManager.endTurn();
+                }, 2000);
+            }
+        }
+    }
+
+    /**
+     * Handle forced jail exit after 3 turns
+     */
+    async handleForcedJailExit() {
+        if (!this.currentPlayer.inJail) return;
+
+        if (this.currentPlayer.money >= constants.JAIL.BAIL_AMOUNT) {
+            this.currentPlayer.removeMoney(constants.JAIL.BAIL_AMOUNT, 'Jail fine (forced)');
+            this.currentPlayer.getOutOfJail(false);
+            
+            this.showNotification(
+                'Jail Fine Paid',
+                `${this.currentPlayer.name} paid $50 to get out of jail`
+            );
+        } else {
+            // Handle bankruptcy
+            this.showNotification(
+                'Bankruptcy',
+                `${this.currentPlayer.name} cannot afford the jail fine and must declare bankruptcy`
+            );
+            this.currentPlayer.declareBankrupt();
+        }
+        
         setTimeout(() => {
             this.gameManager.endTurn();
         }, 2000);
