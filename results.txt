@@ -4,6 +4,7 @@ I gave up after it kept messing up board tile sizes further and further
 It chose to use React.ts and Vite
 Made a working Monopoly core gameplay loop
 Movement, buying property, rent
+Decided to implement its own rng.ts for some reason
 
 - openrouter/horizon-beta > horizon_beta
 FREE, 5.3M
@@ -11,12 +12,13 @@ It decided that all subtasks were implemented and completed the orchestrating ta
 It chose to use React.ts and Vite
 Game is unplayable (unclosable modals)
 Board is messed up
+Also decided to implement its own rng.ts
 
 - anthropic/claude-sonnet-4 > sonnet
 $28.4, 29.5M
 I gave up after it made no progress in moving players off GO in several turns
 It chose to use Vue.js and Vite
-Actually extremely thorough (wrote like 10 markdown docs at the beginning)
+Extremely thorough (wrote like 10 markdown docs at the beginning)
 Never encountered an error in the log, just buggy behavior
 Maybe the throughness and complexity of its plan killed it
 
@@ -49,15 +51,25 @@ Made a working Monopoly core gameplay loop
 Movement, buying property, rent
 
 - moonshotai/kimi-k2 > kimi
-NOTE TO SELF: EARLY STATS TO SUBTRACT:
-$0.202, 1.84M
+$10.21, 15.9M
 Preferred provider was set to Fireworks
 I needed something with 131k context, isn't quantized weird, and isn't hammered like the official Moonshot AI API
 With default routing, Roo Code will use 32k context (it checks the cheapest which is Chutes)
+It decided that all subtasks were implemented and completed the orchestrating task
+It chose to use no framework. Pure HTML, CSS, and JS
+Game is unplayable (loading failed)
+Wrote a markdown doc and a HTML integration test at the end of each subtask
+Rarely reads its own markdown again
+Enjoys spamming .md and .html tests at top level in its folder
+Rarely runs its own test or tells the user to open it in a browser to test
+It has some tool use quirks
+Seems to not understand that && and & don't work in PowerShell
+Often fails <attempt_completion> twice before actually writing a result into it
 
 - z-ai/glm-4.5 > glm
 $3.6, 9.1M
-Clicking "Start Game" never actually started the game
-It got tripped up and forgot which TODO items had been completed
+It decided that all subtasks were implemented and completed the orchestrating task
 It chose to use Express.js and Socket.IO
+Game is unplayable (clicking "Start Game" never actually started the game)
+It got tripped up and forgot which TODO items had been completed
 It used a server and client architecture
