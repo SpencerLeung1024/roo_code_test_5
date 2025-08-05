@@ -3,8 +3,8 @@ horizon_alpha/*
 horizon_beta/*
 sonnet/*
 opus/*
-# gemini/*
-grok/*
+gemini/*
+# grok/*
 deepseek_r1/*
 deepseek_v3/*
 qwen_thinking/*

@@ -9,7 +9,7 @@ Decided to implement its own rng.ts for some reason
 
 - openrouter/horizon-beta > horizon_beta
 FREE, 5.3M
-It decided that all subtasks were implemented and completed the orchestrating task
+It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use React.ts and Vite
 Game is unplayable (unclosable modals)
 Board is messed up
@@ -26,7 +26,13 @@ Maybe the throughness and complexity of its plan killed it
 - anthropic/claude-opus-4 > opus
 
 - google/gemini-2.5-pro > gemini
+$5.53, 6.41M
+It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use no framework. Pure HTML, CSS, and JS
+Made a working Monopoly core gameplay loop
+Movement, buying property, rent
+No trade or mortgaging
+Player tokens are not visible
 
 - x-ai/grok-4 > grok
 
@@ -40,7 +46,7 @@ Undefined bugs everywhere
 
 - deepseek/deepseek-chat-v3-0324 > deepseek_v3
 $2.41, 6.41M
-It decided that all subtasks were implemented and completed the orchestrating task
+It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use Express.ts, React.ts, and Socket.IO
 Game is unplayable (A white page that just says "Monopoly")
 It will often complete debugging subtasks without waiting for human feedback
@@ -58,7 +64,7 @@ It will often complete debugging subtasks without waiting for human feedback
 - qwen/qwen3-coder > qwen_coder
 $6.82, 16.5M
 I had to bad DeepInfra because the fp4 quantization destroyed the model's ability to use tool calls
-It decided that all subtasks were implemented and completed the orchestrating task
+It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use no framework. Pure HTML, CSS, and JS
 Hardcoded and laid out with 2 players
 Unlike Horizon Alpha, this model actually fixed board styling without deteriorating
@@ -69,13 +75,11 @@ No trade or mortgaging
 You can bankrupt yourself with a tax since you can't mortgage an existing property
 
 - moonshotai/kimi-k2 > kimi
-AFTER WIPING FP4: $0.202, 1.84M
-AFTER INITIAL COMPLETION: $10.41, 17.74M = $10.21, 15.9M
-AFTER GIVING UP: $13.05, 22.12M = $12.85, 20.28M
+$12.85, 20.28M
 Preferred provider was set to Fireworks
 I needed something with 131k context, isn't quantized weird, and isn't hammered like the official Moonshot AI API
 With default routing, Roo Code will use 32k context (it checks the cheapest which is Chutes)
-It decided that all subtasks were implemented and completed the orchestrating task
+It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use no framework. Pure HTML, CSS, and JS
 Like Deepseek R1, undefined bugs everywhere (how did Qwen Coder manage to do it with JS hell?)
 Game is unplayable (Roll Dice does nothing)
@@ -91,7 +95,7 @@ Even if you tell it to wait for human feedback, it forgets within a few turns
 
 - z-ai/glm-4.5 > glm
 $3.6, 9.1M
-It decided that all subtasks were implemented and completed the orchestrating task
+It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use Express.js and Socket.IO
 Game is unplayable (clicking "Start Game" never actually started the game)
 It got tripped up and forgot which TODO items had been completed

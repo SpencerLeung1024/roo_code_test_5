@@ -150,6 +150,12 @@ function handlePropertyLanding(player, space) {
             } else if (utilitiesOwned === 2) {
                 rent = diceRoll * 10;
             }
+        } else if (property.group === 'railroad') {
+            const railroadsOwned = owner.properties.filter(pId => {
+                const prop = gameState.properties.find(prop => prop.id === pId);
+                return prop && prop.group === 'railroad';
+            }).length;
+            rent = property.rent[railroadsOwned - 1];
         } else {
             rent = property.rent[property.houses]; // Original rent calculation
         }
