@@ -27,7 +27,6 @@
 - openrouter/horizon-alpha > horizon_alpha
 - openrouter/horizon-beta > horizon_beta
 - anthropic/claude-sonnet-4 > sonnet
-- anthropic/claude-opus-4 > opus
 - google/gemini-2.5-pro > gemini
 - x-ai/grok-4 > grok
 - deepseek/deepseek-r1-0528 > deepseek_r1

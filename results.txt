@@ -23,8 +23,6 @@ Extremely thorough (wrote like 10 markdown docs at the beginning)
 Never encountered an error in the log, just buggy behavior
 Maybe the throughness and complexity of its plan killed it
 
-- anthropic/claude-opus-4 > opus
-
 - google/gemini-2.5-pro > gemini
 $5.53, 6.41M
 It decided that all subtasks were implemented and completed the orchestrator task
