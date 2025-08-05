@@ -4,7 +4,7 @@ horizon_beta/*
 sonnet/*
 opus/*
 gemini/*
-# grok/*
+grok/*
 deepseek_r1/*
 deepseek_v3/*
 qwen_thinking/*

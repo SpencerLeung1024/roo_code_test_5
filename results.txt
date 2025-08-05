@@ -2,7 +2,7 @@
 FREE, 5.86M
 I gave up after it kept messing up board tile sizes further and further
 It chose to use React.ts and Vite
-Made a working Monopoly core gameplay loop
+Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
 No trade or mortgaging
 Decided to implement its own rng.ts for some reason
@@ -29,16 +29,22 @@ Maybe the throughness and complexity of its plan killed it
 $5.53, 6.41M
 It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use no framework. Pure HTML, CSS, and JS
-Made a working Monopoly core gameplay loop
+Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
 No trade or mortgaging
 Player tokens are not visible
 
 - x-ai/grok-4 > grok
+$5.74, 1.69M
+I gave up after it kept getting stuck in loops or returning empty responses
+It gets very confused by the Roo Code harness and will sometimes repeat what it sees
+Unable to progress through TODO item 6/7: "Test and debug the game"
+It chose to use Express.js and React.js
+Game is unfinished (I gave up restarting its stuck subtasks)
 
 - deepseek/deepseek-r1-0528 > deepseek_r1
 $0.922, 1.9M
-I gave up after 10 turns of it quitting halfway through its TODO list
+I gave up after it kept quitting halfway through its TODO list
 It keeps forgetting to do the last items (almost as if it's in a rush?)
 It chose to use no framework. Pure HTML, CSS, and JS
 Game is unplayable (can't end your turn)
@@ -63,13 +69,13 @@ It will often complete debugging subtasks without waiting for human feedback
 
 - qwen/qwen3-coder > qwen_coder
 $6.82, 16.5M
-I had to bad DeepInfra because the fp4 quantization destroyed the model's ability to use tool calls
+I had to ban DeepInfra because the fp4 quantization destroyed the model's ability to use tool calls
 It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use no framework. Pure HTML, CSS, and JS
 Hardcoded and laid out with 2 players
 Unlike Horizon Alpha, this model actually fixed board styling without deteriorating
 The greens and blues side is still flipped though
-Made a working Monopoly core gameplay loop
+Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
 No trade or mortgaging
 You can bankrupt yourself with a tax since you can't mortgage an existing property
