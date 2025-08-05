@@ -4,7 +4,7 @@ I gave up after it kept messing up board tile sizes further and further
 It chose to use React.ts and Vite
 Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
-No trade or mortgaging
+No trade, houses, or mortgaging
 Decided to implement its own rng.ts for some reason
 
 - openrouter/horizon-beta > horizon_beta
@@ -29,7 +29,7 @@ It decided that all subtasks were implemented and completed the orchestrator tas
 It chose to use no framework. Pure HTML, CSS, and JS
 Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
-No trade or mortgaging
+No trade, houses, or mortgaging
 Player tokens are not visible
 
 - x-ai/grok-4 > grok
@@ -45,7 +45,7 @@ $0.922, 1.9M
 I gave up after it kept quitting halfway through its TODO list
 It keeps forgetting to do the last items (almost as if it's in a rush?)
 It chose to use no framework. Pure HTML, CSS, and JS
-Game is unplayable (can't end your turn)
+Game is unplayable (next player can't roll dice)
 Undefined bugs everywhere
 
 - deepseek/deepseek-chat-v3-0324 > deepseek_v3
@@ -75,7 +75,7 @@ Unlike Horizon Alpha, this model actually fixed board styling without deteriorat
 The greens and blues side is still flipped though
 Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
-No trade or mortgaging
+No trade, houses, or mortgaging
 You can bankrupt yourself with a tax since you can't mortgage an existing property
 
 - moonshotai/kimi-k2 > kimi
@@ -86,7 +86,7 @@ With default routing, Roo Code will use 32k context (it checks the cheapest whic
 It decided that all subtasks were implemented and completed the orchestrator task
 It chose to use no framework. Pure HTML, CSS, and JS
 Like Deepseek R1, undefined bugs everywhere (how did Qwen Coder manage to do it with JS hell?)
-Game is unplayable (Roll Dice does nothing)
+Game is unplayable (you can't buy property)
 Wrote a markdown doc and a HTML integration test at the end of each subtask
 Rarely reads its own markdown again
 Enjoys spamming .md and .html tests at top level in its folder
