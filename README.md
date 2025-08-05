@@ -7,6 +7,7 @@ I was bored, so I got a bunch of models to re-implement the classic friendship r
 ## Cool Table
 
 |Model|Playable?|Cost|Tokens|Requests|Date|
+|---|---|---|---|---|---|
 |openrouter/horizon-alpha|✅|FREE|5.86M|192|2025-08-02|
 |openrouter/horizon-beta|❌|FREE|5.86M|148|2025-08-02|
 |anthropic/claude-sonnet-4|❌|$28.4|29.5M|371|2025-08-01|
@@ -20,6 +21,7 @@ I was bored, so I got a bunch of models to re-implement the classic friendship r
 |z-ai/glm-4.5|❌|$3.6|9.1M|208|2025-08-02|
 
 |Folder|Framework|Command In Folder|
+|---|---|---|
 |`horizon_alpha`|React.ts, Vite|`npm run dev`|
 |`horizon_beta`|React.ts, Vite|`npm run dev`|
 |`sonnet`|Vue.js, Vite|`npm run dev`|
@@ -34,11 +36,49 @@ I was bored, so I got a bunch of models to re-implement the classic friendship r
 
 ## Gallery
 
-help how do I do images in markdown
+<details>
+<summary>Playable ✅ (3 models)</summary>
 
-### Playable
+![Horizon Alpha](IMAGES/horizon_alpha.png)
+*Horizon Alpha - React.ts, Vite*
 
-### Not Playable
+![Gemini 2.5 Pro](IMAGES/gemini.png)
+*Gemini 2.5 Pro - Pure HTML+CSS+JS*
+
+![Qwen3 Coder](IMAGES/qwen_coder.png)
+*Qwen3 Coder - Pure HTML+CSS+JS*
+
+</details>
+
+<details>
+<summary>Not Playable ❌ (8 models)</summary>
+
+![Horizon Beta](IMAGES/horizon_beta.png)
+*Horizon Beta - React.ts, Vite*
+
+![Sonnet (Top)](IMAGES/sonnet_top.png)
+![Sonnet (Bottom)](IMAGES/sonnet_bottom.png)
+*Claude Sonnet 4 - Vue.js, Vite*
+
+![Grok 4](IMAGES/grok.png)
+*Grok 4 - Pure HTML+CSS+JS*
+
+![Deepseek R1](IMAGES/deepseek_r1.png)
+*Deepseek R1 - Pure HTML+CSS+JS*
+
+![Deepseek V3](IMAGES/deepseek_v3.png)
+*Deepseek V3 - Express.ts, React.ts, Socket.IO*
+
+![Qwen3 Thinking](IMAGES/qwen_thinking.png)
+*Qwen3 Thinking - Pure HTML+CSS+JS*
+
+![Kimi K2](IMAGES/kimi.png)
+*Kimi K2 - Pure HTML+CSS+JS*
+
+![GLM 4.5](IMAGES/glm.png)
+*GLM 4.5 - Express.js, Socket.IO*
+
+</details>
 
 ## Repo Contents
 
@@ -74,6 +114,7 @@ Most models used the default provider routing from OpenRouter. Qwen3 Thinking, Q
 - Horizon Alpha and Beta decided to implement their own `rng.ts` for some reason.
 - Sonnet started by creating 10 .md files besides the `README.md` from Vue.js. It seemed to read these at reasonable points.
 - Kimi also writes .md documentation. It even writes test .html files. It does so far more (18x .md, 13x .html) than even Sonnet. But it will *not* actually read the documentation it wrote previously or run the tests.
+- Deepseek R1 and Qwen3 Thinking sometimes talk about "time constraints" in their thinking. "Due to time constraints, animations will not be implemented", etc. I don't know if this happened during their reinforcement learning or if they're just yapping.
 - Problems keeping track of what's done / not done:
 - - Horizon Beta
 - - Deepseek R1
