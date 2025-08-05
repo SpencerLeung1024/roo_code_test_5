@@ -1,6 +1,6 @@
 // Unus Venditor - UI Logic
 
-import { rollDice, movePlayer, endTurn } from './main.js';
+import { handleRoll, endTurn } from './main.js';
 import { gameState, logEvent } from './state.js';
 
 // =========================================================================================
@@ -9,6 +9,8 @@ import { gameState, logEvent } from './state.js';
 
 const rollDiceBtn = document.getElementById('roll-dice-btn');
 const endTurnBtn = document.getElementById('end-turn-btn');
+const buyPropertyBtn = document.getElementById('buy-property-btn');
+const passBtn = document.getElementById('pass-btn');
 const playerInfoPanel = document.getElementById('player-info');
 const gameLogEntries = document.querySelector('#game-log .log-entries');
 const gameBoard = document.getElementById('game-board');
@@ -34,29 +36,20 @@ const playerTokensContainer = document.getElementById('player-tokens');
  */
 function initializeUI() {
     rollDiceBtn.addEventListener('click', () => {
-        if (gameState.hasRolled) {
-            console.log("You have already rolled this turn.");
-            return;
-        }
-
-        const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-        if (currentPlayer.inJail) {
-            logEvent(`${currentPlayer.name} is in jail and cannot move.`);
-            // For now, they just miss their turn on a roll attempt.
-            // Full jail logic (rolling doubles, paying fine) can be added later.
-            gameState.hasRolled = true; // Mark as rolled even for a failed attempt
-            updateUI(gameState);
-            return;
-        }
-
-        const roll = rollDice();
-        movePlayer(roll);
-        gameState.hasRolled = true;
-        updateUI(gameState);
+        handleRoll();
+        updateUI(gameState); // Update the UI after the roll is fully handled
     });
 
     endTurnBtn.addEventListener('click', () => {
         endTurn();
+    });
+
+    buyPropertyBtn.addEventListener('click', () => {
+        handleBuyProperty();
+    });
+
+    passBtn.addEventListener('click', () => {
+        handlePass();
     });
 
     console.log("UI Initialized.");
@@ -71,10 +64,11 @@ function initializeUI() {
  * @param {object} gameState - The current state of the game.
  */
 export function updateUI(gameState) {
-    updatePlayerInfo(gameState.players, gameState.currentPlayerIndex);
+    updatePlayerInfo(gameState.players, gameState.currentPlayerId);
     updateGameLog(gameState.gameLog);
     updateAllPlayerPositions(gameState.players);
     updateBoardOwnership();
+    updateActionButtons();
 }
 
 /**
@@ -119,14 +113,21 @@ export function updatePlayerPosition(player) {
  * @param {Array} players - The array of player objects.
  * @param {number} currentPlayerIndex - The index of the active player.
  */
-function updatePlayerInfo(players, currentPlayerIndex) {
+function updatePlayerInfo(players, currentPlayerId) {
     if (!playerInfoPanel) return;
-    playerInfoPanel.innerHTML = '<h2>Players</h2>'; // Clear previous state
-    players.forEach((player, index) => {
+    playerInfoPanel.innerHTML = ''; // FIX: Clear previous state completely
+    const title = document.createElement('h2');
+    title.textContent = 'Players';
+    playerInfoPanel.appendChild(title);
+
+    players.forEach(player => {
         const playerCard = document.createElement('div');
-        playerCard.className = `player-card ${index === currentPlayerIndex ? 'active' : ''}`;
+        playerCard.className = 'player-card';
+        // ADD: Add active-player class for the current player
+        if (player.id === currentPlayerId) {
+            playerCard.classList.add('active-player');
+        }
         playerCard.innerHTML = `
-            <h3>${player.name}</h3>
             <h3>${player.name} ${player.inJail ? ' (Jailed)' : ''}</h3>
             <p>Money: $${player.money}</p>
             <p>Token: ${player.token}</p>
@@ -265,3 +266,54 @@ document.addEventListener('DOMContentLoaded', () => {
     drawBoard();
     drawPlayerTokens();
 });
+
+
+/**
+ * Shows or hides buttons based on the current game state, like purchase options.
+ */
+function updateActionButtons() {
+   if (gameState.purchasePending) {
+        rollDiceBtn.style.display = 'none';
+        endTurnBtn.style.display = 'none';
+        buyPropertyBtn.style.display = 'block';
+        passBtn.style.display = 'block';
+    } else {
+        // Default state
+        rollDiceBtn.style.display = 'block';
+        endTurnBtn.style.display = 'block';
+        buyPropertyBtn.style.display = 'none';
+        passBtn.style.display = 'none';
+        
+        // Enable/disable buttons based on whether the player has rolled
+        rollDiceBtn.disabled = gameState.hasRolled;
+        endTurnBtn.disabled = !gameState.hasRolled;
+    }
+}
+
+function handleBuyProperty() {
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    const currentSpace = gameState.board[currentPlayer.position];
+    const property = gameState.properties.find(p => p.id === currentSpace.id);
+
+    if (property && property.owner === null && currentPlayer.money >= property.price) {
+        currentPlayer.money -= property.price;
+        property.owner = currentPlayer.id;
+        currentPlayer.properties.push(property.id);
+        logEvent(`${currentPlayer.name} purchased ${property.name} for $${property.price}.`);
+    }
+
+    gameState.purchasePending = false;
+    updateUI(gameState);
+    endTurnBtn.disabled = false;
+}
+
+function handlePass() {
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    const currentSpace = gameState.board[currentPlayer.position];
+    const property = gameState.properties.find(p => p.id === currentSpace.id);
+
+    logEvent(`${currentPlayer.name} declined to purchase ${property.name}.`);
+    gameState.purchasePending = false;
+    updateUI(gameState);
+    endTurnBtn.disabled = false;
+}

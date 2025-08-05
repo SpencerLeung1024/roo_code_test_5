@@ -4,6 +4,7 @@ I gave up after it kept messing up board tile sizes further and further
 It chose to use React.ts and Vite
 Made a working Monopoly core gameplay loop
 Movement, buying property, rent
+No trade or mortgaging
 Decided to implement its own rng.ts for some reason
 
 - openrouter/horizon-beta > horizon_beta
@@ -25,6 +26,7 @@ Maybe the throughness and complexity of its plan killed it
 - anthropic/claude-opus-4 > opus
 
 - google/gemini-2.5-pro > gemini
+It chose to use no framework. Pure HTML, CSS, and JS
 
 - x-ai/grok-4 > grok
 
@@ -63,6 +65,8 @@ Unlike Horizon Alpha, this model actually fixed board styling without deteriorat
 The greens and blues side is still flipped though
 Made a working Monopoly core gameplay loop
 Movement, buying property, rent
+No trade or mortgaging
+You can bankrupt yourself with a tax since you can't mortgage an existing property
 
 - moonshotai/kimi-k2 > kimi
 AFTER WIPING FP4: $0.202, 1.84M

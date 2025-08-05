@@ -79,6 +79,7 @@ export const gameState = {
     gameLog: [],
     gameOver: false,
     hasRolled: false,
+    purchasePending: false,
 };
 
 /**
@@ -96,8 +97,8 @@ export function createPlayers(numberOfPlayers) {
             position: 0,
             properties: [],
             inJail: false,
-            getOutOfJailFreeCards: 0,
-            rollsInJail: 0
+            jailTurns: 0,
+            getOutOfJailFreeCards: 0
         });
     }
 }

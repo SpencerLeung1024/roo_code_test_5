@@ -15,8 +15,45 @@ export function rollDice() {
     const die1 = Math.floor(Math.random() * 6) + 1;
     const die2 = Math.floor(Math.random() * 6) + 1;
     gameState.dice = [die1, die2];
-    logEvent(`Rolled a ${die1} and a ${die2}.`);
     return die1 + die2;
+}
+
+/**
+ * Initiates the dice roll and subsequent turn actions.
+ */
+export function handleRoll() {
+    if (gameState.hasRolled) {
+        logEvent("You have already rolled on this turn.");
+        return;
+    }
+    gameState.hasRolled = true;
+    
+    const rollTotal = rollDice();
+    logEvent(`Rolled a ${gameState.dice[0]} and a ${gameState.dice[1]}.`);
+    handleTurn(rollTotal);
+    
+    // Check for game over *after* the turn is handled
+    if (checkGameOver()) {
+        updateUI(gameState);
+        return;
+    }
+
+    updateUI(gameState); // Update UI after the move
+}
+
+/**
+ * Handles a player's complete turn based on a dice roll.
+* @param {number} rollTotal - The total from the dice roll.
+ */
+function handleTurn(rollTotal) {
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    const dice = gameState.dice;
+
+    if (currentPlayer.inJail) {
+        handleJailTurn(currentPlayer, dice);
+    } else {
+        movePlayer(rollTotal);
+    }
 }
 
 /**
@@ -25,11 +62,7 @@ export function rollDice() {
  */
 export function movePlayer(rollTotal) {
     const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-    if (currentPlayer.inJail) {
-        logEvent(`${currentPlayer.name} is in jail and cannot move.`);
-        return; // Safeguard against moving while in jail
-    }
-    const newPosition = (currentPlayer.position + rollTotal) % gameState.board.length; // Simplified board length
+    const newPosition = (currentPlayer.position + rollTotal) % gameState.board.length;
 
     if (newPosition < currentPlayer.position) {
         // Passed Go
@@ -38,7 +71,15 @@ export function movePlayer(rollTotal) {
     }
 
     currentPlayer.position = newPosition;
-    logEvent(`${currentPlayer.name} moved to ${gameState.board[newPosition].name}.`);
+    const currentSpace = gameState.board[currentPlayer.position];
+    let spaceName = currentSpace.name;
+    if (currentSpace.type === 'property') {
+        const propertyDetails = gameState.properties.find(p => p.id === currentSpace.id);
+        if (propertyDetails) {
+            spaceName = propertyDetails.name;
+        }
+    }
+    logEvent(`${currentPlayer.name} moved to ${spaceName}.`);
 
     handleLanding();
 }
@@ -85,19 +126,33 @@ function handlePropertyLanding(player, space) {
 
     if (property.owner === null) {
         // Unowned property
+        // Present the option to buy
         if (player.money >= property.price) {
-            // For now, auto-buy if they can afford it
-            player.money -= property.price;
-            property.owner = player.id;
-            player.properties.push(property.id);
-            logEvent(`${player.name} bought ${property.name} for $${property.price}.`);
+            logEvent(`${player.name} has the option to buy ${property.name} for $${property.price}.`);
+            gameState.purchasePending = true;
         } else {
             logEvent(`${player.name} cannot afford to buy ${property.name}.`);
         }
     } else if (property.owner !== player.id) {
         // Owned by another player
         const owner = gameState.players.find(p => p.id === property.owner);
-        const rent = property.rent[property.houses]; // Simplified rent calculation
+        let rent = 0;
+
+        if (property.group === 'utility') {
+            const diceRoll = gameState.dice[0] + gameState.dice[1];
+            const utilitiesOwned = owner.properties.filter(pId => {
+                const prop = gameState.properties.find(prop => prop.id === pId);
+                return prop && prop.group === 'utility';
+            }).length;
+
+            if (utilitiesOwned === 1) {
+                rent = diceRoll * 4;
+            } else if (utilitiesOwned === 2) {
+                rent = diceRoll * 10;
+            }
+        } else {
+            rent = property.rent[property.houses]; // Original rent calculation
+        }
         
         player.money -= rent;
         owner.money += rent;
@@ -141,7 +196,15 @@ function applyCardAction(player, action) {
                logEvent(`${player.name} passed Go and collected $200.`);
            }
            player.position = action.position;
-           logEvent(`${player.name} moves to ${gameState.board[player.position].name}.`);
+           const newSpace = gameState.board[player.position];
+           let spaceName = newSpace.name;
+            if (newSpace.type === 'property') {
+                const property = gameState.properties.find(p => p.id === newSpace.id);
+                if (property) {
+                    spaceName = property.name;
+                }
+            }
+           logEvent(`${player.name} moves to ${spaceName}.`);
            handleLanding(); // Handle the new space
            break;
        case 'go_to_jail':
@@ -182,11 +245,41 @@ function goToJail(player) {
        player.position = jailPosition;
    }
    player.inJail = true;
+   player.jailTurns = 0; // Reset jail turn counter upon entering
    logEvent(`${player.name} has been sent to Jail!`);
 }
 
 /**
- * Ends the current player's turn and advances to the next player.
+* Handles the logic for a player's turn while they are in jail.
+* @param {object} player - The current player object.
+* @param {Array<number>} dice - The two dice values.
+*/
+function handleJailTurn(player, dice) {
+   player.jailTurns++;
+   logEvent(`${player.name} is in jail (turn ${player.jailTurns}).`);
+
+   const isDouble = dice[0] === dice[1];
+
+   if (isDouble) {
+       logEvent(`They rolled a double! ${player.name} is released from jail.`);
+       player.inJail = false;
+       player.jailTurns = 0;
+       movePlayer(dice[0] + dice[1]); // Move the rolled amount
+   } else if (player.jailTurns >= 3) {
+       logEvent(`${player.name} has served 3 turns and is released from jail (but misses this turn).`);
+       player.inJail = false;
+       player.jailTurns = 0;
+       // Player does not move on this turn, it just ends.
+       endTurn();
+   } else {
+       logEvent(`${player.name} did not roll a double and remains in jail.`);
+       endTurn();
+   }
+}
+
+
+/**
+* Ends the current player's turn and advances to the next player.
  */
 export function endTurn() {
     const currentPlayerName = gameState.players[gameState.currentPlayerIndex].name;
