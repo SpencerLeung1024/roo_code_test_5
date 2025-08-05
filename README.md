@@ -1,5 +1,7 @@
 # Roo Code Test 5: Make the entire Monopoly board game
 
+![Title Image and Summary of Results](IMAGES/ling5wik6zin2hoi1mou4loeng6sat1jip6.png)
+
 Can a robot write Monopoly? Can a robot turn a ~~canvas~~`<div>` into a beautiful property? Can you?
 
 I was bored, so I got a bunch of models to re-implement the classic friendship ruining experience in Roo Code.
@@ -9,7 +11,7 @@ I was bored, so I got a bunch of models to re-implement the classic friendship r
 |Model|Playable?|Cost|Tokens|Requests|Date|
 |---|---|---|---|---|---|
 |openrouter/horizon-alpha|✅|FREE|5.86M|192|2025-08-02|
-|openrouter/horizon-beta|❌|FREE|5.86M|148|2025-08-02|
+|openrouter/horizon-beta|❌|FREE|5.3M|148|2025-08-02|
 |anthropic/claude-sonnet-4|❌|$28.4|29.5M|371|2025-08-01|
 |google/gemini-2.5-pro|✅|$5.53|6.41M|239|2025-08-04|
 |x-ai/grok-4|❌|$5.74|1.69M|92|2025-08-04|
@@ -58,7 +60,7 @@ I was bored, so I got a bunch of models to re-implement the classic friendship r
 
 ![Sonnet (Top)](IMAGES/sonnet_top.png)
 ![Sonnet (Bottom)](IMAGES/sonnet_bottom.png)
-*Claude Sonnet 4 - Vue.js, Vite*
+*Claude Sonnet 4 - Vue.js, Vite (zooming out to try to fit the whole page alters the layout)*
 
 ![Grok 4](IMAGES/grok.png)
 *Grok 4 - Pure HTML+CSS+JS*
@@ -99,7 +101,7 @@ The test is not automated or a fair comparison. I give up when I feel like there
 
 I may know a bit about programming. I may have replied in ways that non-programmers or vibe coders wouldn't be able to.
 
-A game is marked *playable* if it has movement, buying property, and rent. Most of these models also have jail and chance / community chest card mechanics that seem to work (I can't do a thorough analysis). No model that tried to implement trade, houses, or mortgaging also kept a playable core gameplay loop. Every project has UI bugs but I didn't think it was worth pursuing.
+A game is marked *playable* if it has movement, buying property, and rent. Most of these models also have jail and chance / community chest card mechanics that seem to work (I can't do a thorough analysis). No model that tried to implement trade, houses, or mortgaging also kept a playable core gameplay loop. Every project has UI bugs (such as needing to zoom out to see everything) but I didn't think it was worth pursuing.
 
 Most models used the default provider routing from OpenRouter. Qwen3 Thinking, Qwen3 Coder, and Kimi K2 are exceptions. See `results.txt` for details.
 
@@ -113,7 +115,7 @@ Most models used the default provider routing from OpenRouter. Qwen3 Thinking, Q
 
 - Horizon Alpha and Beta decided to implement their own `rng.ts` for some reason.
 - Sonnet started by creating 10 .md files besides the `README.md` from Vue.js. It seemed to read these at reasonable points.
-- Kimi also writes .md documentation. It even writes test .html files. It does so far more (18x .md, 13x .html) than even Sonnet. But it will *not* actually read the documentation it wrote previously or run the tests.
+- Kimi also writes .md documentation. It even writes test .html files. It does so far more (18 .md files, 13 .html files) than even Sonnet. But it will *not* actually read the documentation it wrote previously or run the tests.
 - Deepseek R1 and Qwen3 Thinking sometimes talk about "time constraints" in their thinking. "Due to time constraints, animations will not be implemented", etc. I don't know if this happened during their reinforcement learning or if they're just yapping.
 - Problems keeping track of what's done / not done:
 - - Horizon Beta
@@ -132,3 +134,7 @@ Most models used the default provider routing from OpenRouter. Qwen3 Thinking, Q
 - Problems lying ("Certainly!"):
 - - Sonnet 4
 - - Kimi K2 (severe)
+
+![Typical K2 Task Completion](IMAGES/kiminokuroobaa.png)
+
+*Kimi K2 failed to test during fifty subtasks before user intervention. At the end of user intervention, it fails to test during one more subtask, making its total amount of failures to test to be fifty one.*
