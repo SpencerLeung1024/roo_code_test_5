@@ -17,7 +17,7 @@
 - The game should have as many mechanics from Monopoly as possible
 - One exception: No Monopoly money bills. Use a number for everything. Half of every Monopoly game is spent counting bills and I hate it
 - All files must go inside your short name folder
-- Do not read results.txt or other models' files
+- Do not read results.txt, README.md (it's the report of results for people to read) or other models' files
 - You can use any framework you want. Use the terminal to install dependencies
 - Node.js, npm, and git are available in the terminal
 - Roo Code is set to auto-approve everything, including commands, so don't wander off and wipe everything ok?

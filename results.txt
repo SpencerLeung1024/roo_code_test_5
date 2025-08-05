@@ -76,7 +76,6 @@ The greens and blues side is still flipped though
 Game is considered playable (Monopoly core gameplay loop)
 Movement, buying property, rent
 No trade, houses, or mortgaging
-You can bankrupt yourself with a tax since you can't mortgage an existing property
 
 - moonshotai/kimi-k2 > kimi
 $12.85, 20.28M

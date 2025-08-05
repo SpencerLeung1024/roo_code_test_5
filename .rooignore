@@ -1,4 +1,5 @@
 # Ignore every folder except the model being tested
+# This is in report mode so no model is active
 horizon_alpha/*
 horizon_beta/*
 sonnet/*
@@ -10,3 +11,6 @@ qwen_thinking/*
 qwen_coder/*
 kimi/*
 glm/*
+# Ignore report stuff
+IMAGES/*
+TASKS/*
